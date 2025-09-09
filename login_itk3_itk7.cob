@@ -1,0 +1,54 @@
+IDENTIFICATION DIVISION.
+PROGRAM-ID. LOGIN-ITK3-ITK7.
+
+ENVIRONMENT DIVISION.
+INPUT-OUTPUT SECTION.
+FILE-CONTROL.
+       SELECT USER-FILE ASSIGN TO "users.dat"
+           ORGANIZATION IS LINE SEQUENTIAL.
+
+DATA DIVISION.
+FILE SECTION.
+FD USER-FILE.
+01 USER-LINE   PIC X(80)
+
+WORKING-STORAGE SECTION.
+01 USERNAME-IN     PIC X(20).
+01 PASSWORD-IN     PIC X(20).
+01 FILE-USERNAME   PIC X(20).
+01 FILE-PASSWORD   PIC X(20).
+01 FOUND-FLAG      PIC X VALUE "N".
+01 EOF-FLAG        PIC X VALUE "N".
+
+PROCEDURE DIVISION.
+MAIN.
+       DISPLAY "Username: " ACCEPT USERNAME-IN
+       DISPLAY "Password: " ACCEPT PASSWORD-IN
+
+       MOVE "N" TO FOUND-FLAG
+       MOVE "N" TO EOF-FLAG
+       OPEN INPUT USER-FILE
+       PERFORM UNTIL EOF-FLAG = "Y"
+           READ USER-FILE
+               AT END MOVE "Y" TO EOF-FLAG
+               NOT AT END
+                   UNSTRING USER-LIKE DELIMITED BY ","
+                       INTO FILE-USERNAME FILE-PASSWORD
+                   IF FUNCTION TRIM(FILE-USERNAME) =
+                       FUNCTION TRIM(USERNAME-IN)
+                      AND
+                      FUNCTION TRIM(FILE-PASSWORD) =
+                       FUNCTION TRIM(PASSWORD-IN)
+                      MOVE "Y" TO FOUND-FLAG
+                      MOVE "Y" TO EOF-FLAG
+                   END-IF
+           END-READ
+       END-PERFORM
+       CLOSE USER-FILE
+
+       IF FOUND-FLAG = "Y"
+           DISPLAY "Login successful!"
+       ELSE
+           DISPLAY "Login failed. Invalid Username or Password."
+       END-IF
+       STOP RUN.
