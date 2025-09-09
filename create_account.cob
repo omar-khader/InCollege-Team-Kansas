@@ -1,87 +1,82 @@
-IDENTIFICATION DIVISION.
-PROGRAM-ID. CREATE-ACCOUNT.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CREATE-ACCOUNT.
 
-ENVIRONMENT DIVISION.
-INPUT-OUTPIUT SECTION.
-FILE-CONTROL.
-    SELECT USER-FILE ASSIGN TO "users.dat"
-        ORGANIZATION IS LINE SEQUENTIAL.
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT USER-FILE ASSIGN TO "users.dat"
+               ORGANIZATION IS LINE SEQUENTIAL
+               FILE STATUS IS WS-USER-STATUS.
 
-DATA DIVISION.
-FILE SECTION.
-FD USER-FILE.
-01 USER-LINE   PIC X(80).
+       DATA DIVISION.
+       FILE SECTION.
+       FD  USER-FILE
+           RECORD CONTAINS 80 CHARACTERS.
+       01  USER-LINE                     PIC X(80).
 
-WORKING-STORAGE SECTION.
-01 MAX-ACCOUNTS    PIC 9(3) VALUE 5.
-01 USER-COUNT  PIC 9(4) VALUE 0.
-01 USERNAME-IN    PIC X(20).
-01 PASSWORD-IN    PIC X(20).
-01 FILE-USERNAME PIC X(20).
-01 FILE-PASSWORD PIC X(20).
-01 FOUND-FLAG    PIC X VALUE 'N'.
-01 EOF-FLAG     PIC X VALUE 'N'.
-01 DUP-FLAG    PIC X VALUE "N"
-01 OUT-LINE   PIC X(80).
+       WORKING-STORAGE SECTION.
+       01  WS-USER-STATUS                PIC XX     VALUE "00".
+           88  WS-FS-OK                            VALUE "00".
+       01  WS-EOF                        PIC X      VALUE "N".
+       01  WS-FOUND                      PIC X      VALUE "N".
+       01  USERNAME-IN                   PIC X(10).
+       01  PASSWORD-IN                   PIC X(12).
+       01  FILE-USERNAME                 PIC X(10).
+       01  FILE-PASSWORD                 PIC X(12).
 
-PROCEDURE DIVISION.
-MAIN.
-    PERFORM ENSURE-FILE-EXISTS
-    PERFORM COUNT-USERS
-    IF USER-COUNT >= MAX-ACCOUNTS
-       DISPLAY "Registration blocked: too many accounts ("
-           USER-COUNT "). Max is " MAX-ACCOUNTS "."
-       STOP RUN
-    END-IF
+       PROCEDURE DIVISION.
+       MAIN.
+           *> Ensure file exists (OPEN INPUT; if not, create with OUTPUT)
+           OPEN INPUT USER-FILE
+           IF NOT WS-FS-OK
+              OPEN OUTPUT USER-FILE
+              CLOSE USER-FILE
+           ELSE
+              CLOSE USER-FILE
+           END-IF
 
-    DISPLAY "Choose a username: " ACCEPT USERNAME-IN
-    PERFORM CHECK-DUPLICATE-USERNAME
-    IF DUP-FLAG = 'Y'
-        DISPLAY "Username already exists. Please choose another."
-        STOP RUN
-    END-IF
+           DISPLAY "Enter new username (<=10, letters/digits): " WITH NO ADVANCING
+           ACCEPT USERNAME-IN
+           DISPLAY "Enter new password (8-12 chars): " WITH NO ADVANCING
+           ACCEPT PASSWORD-IN
 
-    DISPLAY "Choose a password: " ACCEPT PASSWORD-IN
-    STRING FUNCTION TRIM(USERNAME-IN) "," FUNCTION TRIM(PASSWORD-IN)
-        DELIMITED BY SIZE INTO OUT-LINE
-    END-STRING
-    OPEN EXTEND USER-FILE
-    WRITE USER-LINE FROM OUT-LINE
-    CLOSE USER-FILE
-    DISPLAY "Account created. (" USER-COUNT + 1 " of " MAX-ACCOUNTS ")"
-    STOP RUN.
+           PERFORM USER-EXISTS
+           IF WS-FOUND = "Y"
+               DISPLAY "Username already exists. Account not created."
+               STOP RUN
+           END-IF
 
-ENSURE-FILE-EXISTS.
-    OPEN EXTEND USER-FILE
-    CLOSE USER-FILE.
+           PERFORM APPEND-USER
 
-COUNT-USERS
-       MOVE 0 TO USER-COUNT
-       MOVE "N" TO EOF-FLAG
-       OPEN INPUT USER-FILE
-       PERFORM UNTIL EOF-FLAG = "Y"
-           READ USER-FILE
-               AT END MOVE "Y" TO EOF-FLAG
-               NOT AT END ADD 1 TO USER-COUNT
-           END-READ
-       END-PERFORM
-       CLOSE USER-FILE.
+           DISPLAY "Account created successfully."
+           STOP RUN.
 
-CHECK-DUPLICATE-USERNAME.
-    MOVE "N" TO DUP-FLAG
-    MOVE "N" TO E0F-FLAG
-    OPEN INPUT USER-FILE
-    PERFORM UNTIL EOF-FLAG = "Y"
-       READ USER-FILE
-           AT END MOVE "Y" TO EOF-FLAG
-           NOT AT END
-               UNSTRING USER-LINE DELIMITED BY ","
-                   INTO FILE-USERNAME FILE-PASSWORD
-               IF FUNCTION TRIM(FILE-USERNAME)
-                   = FUNCTION TRIM(USERNAME-IN)
-                   MOVE "Y" TO FDUP-FLAG
-                   MOVE "Y" TO EOF-FLAG
-               END-IF
-       END-READ
-    END-PERFORM
-    CLOSE USER-FILE.
+       USER-EXISTS.
+           MOVE "N" TO WS-FOUND
+           MOVE "N" TO WS-EOF
+           OPEN INPUT USER-FILE
+           PERFORM UNTIL WS-EOF = "Y"
+               READ USER-FILE
+                   AT END MOVE "Y" TO WS-EOF
+                   NOT AT END
+                       UNSTRING USER-LINE DELIMITED BY ","
+                           INTO FILE-USERNAME, FILE-PASSWORD
+                       IF FUNCTION TRIM(FILE-USERNAME)
+                          = FUNCTION TRIM(USERNAME-IN)
+                           MOVE "Y" TO WS-FOUND
+                           MOVE "Y" TO WS-EOF
+                       END-IF
+               END-READ
+           END-PERFORM
+           CLOSE USER-FILE.
+
+       APPEND-USER.
+           OPEN EXTEND USER-FILE
+           STRING
+               FUNCTION TRIM(USERNAME-IN) DELIMITED BY SIZE
+               ","                         DELIMITED BY SIZE
+               FUNCTION TRIM(PASSWORD-IN)  DELIMITED BY SIZE
+               INTO USER-LINE
+           END-STRING
+           WRITE USER-LINE
+           CLOSE USER-FILE.
