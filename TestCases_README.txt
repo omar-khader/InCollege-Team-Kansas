@@ -1,15 +1,19 @@
-1) Create userA and login (seeds users.dat #1)
-1b) Create userB and login (seed #2)
-1c) Create userC and login (seed #3)
-1d) Create userD and login (seed #4)
-1e) Create userE and login (seed #5)
-2) Invalid password — too short
-3) Invalid password — no uppercase
-4) Invalid password — no digit
-5) Invalid password — no special
-6) Login wrong once, then right (assumes userA exists)
-7) Login wrong, then EOF (assumes userA exists; should exit, not hang)
-8) Account limit reached (run after users A–E exist)
-9) Invalid initial choice, then exit
-10) Case-insensitive command (uppercase LOGIN)
-11) Leading whitespace tolerated
+The test cases are present in the InCollege-Test.txt file
+they are structed in this format with the first desgined to test 1
+and the last designed to test 11
+
+#1–#5 → Create users A–E successfully.
+
+#6–#9 → Invalid passwords (too short, no uppercase, no digit, no special).
+
+#10 → Login wrong once, then right.
+
+#11 → Login wrong, then EOF (stop test file at that line if you want to simulate EOF).
+
+#12 → Account limit reached.
+
+#13 → Invalid initial choice (just 9 on its own).
+
+#14 → Case-insensitive (I repeated login with userA).
+
+#15 → Leading whitespace tolerated before the 2.
