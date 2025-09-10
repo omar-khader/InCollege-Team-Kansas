@@ -107,6 +107,3 @@ Welcome, userA!
 
 MIT
 
----
-
-Would you like me to also **collapse the “Test Cases” into a short table** (case number → scenario) so it looks even cleaner?
