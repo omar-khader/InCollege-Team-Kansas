@@ -16,7 +16,7 @@ Works the same on **Windows 11** and **macOS** (Apple Silicon and Intel).
 2. When prompted, click **“Reopen in Container”**. (Or run *Dev Containers: Reopen in Container* from the Command Palette.)
 3. Open ``.
 4. Press **Ctrl+Shift+B** (or **⇧⌘B** on Mac) to **Build**, or run the task **COBOL: Run active file (after build)** from the command palette.
-5. The compiled program will be placed in `bin/` and run in the VS Code terminal.
+5. The compiled program will be placed in `bin/CreateAccountLogin` and run in the VS Code terminal.
 
 ## Features
 - Docker image with **Ubuntu 22.04 + GNU COBOL (gnucobol)**.
@@ -27,7 +27,7 @@ Works the same on **Windows 11** and **macOS** (Apple Silicon and Intel).
 ## Common Commands (inside the container)
 ```bash
 # Compile and run a COBOL program manually
-cobc -x -o bin/ src/.cob
+cobc -x -o bin/ src/CreateAccountLogin.cob
 ./bin/
 ```
 
@@ -35,7 +35,7 @@ cobc -x -o bin/ src/.cob
 - If VS Code doesn’t prompt to reopen in a container, run **Dev Containers: Reopen in Container** manually.
 - On Windows, make sure Docker Desktop is running with **WSL 2** enabled.
 - On Apple Silicon (M1/M2/M3), Docker will pull the correct multi-arch Ubuntu image automatically.
-- If you see permission issues on `bin/` after pulling from a different OS, run: `sudo chmod -R a+rw bin` (inside the container).
+- If you see permission issues on `bin/CreateAccountLogin` after pulling from a different OS, run: `sudo chmod -R a+rw bin` (inside the container).
 
 ## Folder Structure
 ```
