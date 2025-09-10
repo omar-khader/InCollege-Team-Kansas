@@ -1,6 +1,3 @@
-Here’s a **shortened version** of your README that still checks all the boxes your professor/grader expects: compile/run steps, input prep, and output location.
-
----
 
 # InCollege — GNU COBOL Project
 
