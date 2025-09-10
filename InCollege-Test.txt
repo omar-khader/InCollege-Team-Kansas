@@ -47,9 +47,10 @@ WhiteOk1!
 1
 whiteA
 WhiteOk1!
-1
-2
 3
+4
 1
-2
-6
+whiteA
+WhiteOk1!
+5
+4
