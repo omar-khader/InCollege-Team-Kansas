@@ -96,13 +96,6 @@ Welcome, userA!
 
 ---
 
-## Notes
-
-* Exits immediately after successful login (no post-login menu).
-* If building under WSL, prefer a Linux home directory (`~/`) over `/mnt/c` to avoid file locks.
-
----
-
 ## License
 
 MIT
