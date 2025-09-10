@@ -50,14 +50,14 @@
        procedure division.                                     *> start of logic
        main.                                                   *> main paragraph
 
-           open output user-file                               *> ensure users.dat exists
+           open extend user-file                               *> ensure users.dat exists
            close user-file                                     *> close right away
 
            perform until menu-choice = 3                       *> loop until exit selected
               perform show-menu                                *> show menu
               accept menu-choice                               *> read user choice
               evaluate menu-choice                             *> route on choice
-                 when 1                                         
+                 when 1
                     perform interactive-create                 *> interactive create flow
                  when 2
                     perform interactive-login                  *> interactive login flow
