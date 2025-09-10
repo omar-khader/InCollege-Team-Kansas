@@ -82,14 +82,32 @@ Welcome, userA!
 
 ## Test Cases
 
-* \#1–#5 → Create users A–E successfully
-* \#6–#9 → Invalid passwords (too short, no uppercase, no digit, no special)
-* \#10 → Login wrong once, then right
-* \#11 → Login wrong, then EOF
-* \#12 → Account limit (max 5 users)
-* \#13 → Invalid initial choice
-* \#14 → Case-insensitive command
-* \#15 → Leading whitespace tolerated
+
+#1–#5 → Create users A–E successfully
+
+#6 → Invalid password (too short)
+
+#7 → Invalid password (no uppercase)
+
+#8 → Invalid password (no digit)
+
+#9 → Invalid password (no special character)
+
+#10 → Login wrong once, then right (userA)
+
+#11 → Login wrong, then EOF (stop run here to test EOF behavior)
+
+#12 → Account limit reached (userF, 6th attempt)
+
+#13 → Invalid initial choice (9)
+
+#14 → Case-insensitive login (login userA)
+
+#15 → Leading whitespace tolerated before 2 (create whiteA and login)
+
+#16 → Post-login valid choice: Learn a New Skill (3) then Exit (4)
+
+#17 → Post-login invalid choice: enter 5 (invalid menu) then Exit (4)
 
 ---
 
