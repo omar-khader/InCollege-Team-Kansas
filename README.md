@@ -1,49 +1,117 @@
-# GNU COBOL + Docker + VS Code Dev Containers
 
-A cross-platform template for teaching **GNU COBOL** using **Docker** and **VS Code Dev Containers**. 
-Works the same on **Windows 11** and **macOS** (Apple Silicon and Intel).
+# InCollege — GNU COBOL Project
 
-## Quick Start (Students)
+A simple COBOL program that supports **account creation** and **login** using file-driven input/output.
+Runs in **Docker + VS Code Dev Containers** (cross-platform: Windows/macOS/Linux).
 
-**Prerequisites**
-- Install **Docker Desktop**: https://www.docker.com/products/docker-desktop/
-  - Windows: enable **WSL 2** backend during installation.
-- Install **VS Code**: https://code.visualstudio.com/
-- In VS Code, install the **Dev Containers** extension (ID: `ms-vscode-remote.remote-containers`).
+---
 
-**Run the template**
+## Quick Start
+
+### Prerequisites
+
+* **Docker Desktop** ([download](https://www.docker.com/products/docker-desktop))
+* **VS Code** ([download](https://code.visualstudio.com/))
+* Install the VS Code **Dev Containers** extension (`ms-vscode-remote.remote-containers`)
+
+### Build & Run
+
 1. Clone this repo and open it in VS Code.
-2. When prompted, click **“Reopen in Container”**. (Or run *Dev Containers: Reopen in Container* from the Command Palette.)
-3. Open ``.
-4. Press **Ctrl+Shift+B** (or **⇧⌘B** on Mac) to **Build**, or run the task **COBOL: Run active file (after build)** from the command palette.
-5. The compiled program will be placed in `bin/CreateAccountLogin` and run in the VS Code terminal.
+2. Reopen in container when prompted.
+3. Build & run:
 
-## Features
-- Docker image with **Ubuntu 22.04 + GNU COBOL (gnucobol)**.
-- VS Code tasks to **build and run the active COBOL file**.
-- Default UTF-8 locale configured.
-- No extra installs on host OS beyond Docker + VS Code.
+   ```bash
+   cobc -x -free InCollege.cob -o InCollege
+   ./InCollege
+   ```
 
-## Common Commands (inside the container)
-```bash
-# Compile and run a COBOL program manually
-cobc -x -o bin/ src/CreateAccountLogin.cob
-./bin/
+---
+
+## Input & Output
+
+* **Runtime input:** `InCollege-Input.txt`
+  (plain text, one token per line: choice, username, password, etc.)
+* **Runtime output:** `InCollege-Output.txt`
+  (mirrors every message shown to the screen)
+* **Persistent users:** `users.dat` (`username,password`)
+* **Optional tests:** `InCollege-Test.txt`
+
+---
+
+## Input Format
+
+### Create Account
+
+```
+2
+username
+Password1!
 ```
 
-## Troubleshooting
-- If VS Code doesn’t prompt to reopen in a container, run **Dev Containers: Reopen in Container** manually.
-- On Windows, make sure Docker Desktop is running with **WSL 2** enabled.
-- On Apple Silicon (M1/M2/M3), Docker will pull the correct multi-arch Ubuntu image automatically.
-- If you see permission issues on `bin/CreateAccountLogin` after pulling from a different OS, run: `sudo chmod -R a+rw bin` (inside the container).
+### Login
 
-## Folder Structure
 ```
-.devcontainer/         # Dev container config (Dockerfile, devcontainer.json)
-.vscode/               # VS Code tasks
-src/                   # Your COBOL source files
-bin/                   # Build outputs (gitignored)
+1
+username
+Password1!
 ```
+
+---
+
+## Example
+
+**`InCollege-Input.txt`**
+
+```
+2
+userA
+Abcd123!
+1
+userA
+Abcd123!
+```
+
+**`InCollege-Output.txt`**
+
+```
+You have successfully logged in.
+Welcome, userA!
+```
+
+---
+
+## Test Cases
+
+
+#1–#5 → Create users A–E successfully
+
+#6 → Invalid password (too short)
+
+#7 → Invalid password (no uppercase)
+
+#8 → Invalid password (no digit)
+
+#9 → Invalid password (no special character)
+
+#10 → Login wrong once, then right (userA)
+
+#11 → Login wrong, then EOF (stop run here to test EOF behavior)
+
+#12 → Account limit reached (userF, 6th attempt)
+
+#13 → Invalid initial choice (9)
+
+#14 → Case-insensitive login (login userA)
+
+#15 → Leading whitespace tolerated before 2 (create whiteA and login)
+
+#16 → Post-login valid choice: Learn a New Skill (3) then Exit (4)
+
+#17 → Post-login invalid choice: enter 5 (invalid menu) then Exit (4)
+
+---
 
 ## License
+
 MIT
+
