@@ -1,0 +1,41 @@
+1. Create/Edit my Profile
+2. View your profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Enter your choice:
+Profile Creation/Editing to be implemented
+1. Create/Edit my Profile
+2. View your profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Enter your choice:
+Profile viewing to be implemented
+1. Create/Edit my Profile
+2. View your profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Enter your choice:
+Job search/internship is under construction.
+1. Create/Edit my Profile
+2. View your profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Enter your choice:
+Find someone you know is under construction.
+1. Create/Edit my Profile
+2. View your profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Enter your choice:
+Skills not implemented in this test file
+1. Create/Edit my Profile
+2. View your profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+Enter your choice:
