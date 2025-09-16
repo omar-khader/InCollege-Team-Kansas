@@ -1,0 +1,9 @@
+Beginning creation of sample profile.
+Username: i.hate.cobol
+User First Name: John
+User Last Name: Bovi
+University: University of South Florida
+Major: Being bad at programming
+Grad Year: 2040
+About me: I'm really bad at programming. :)
+User Profile Successfully Saved (New File Created)
