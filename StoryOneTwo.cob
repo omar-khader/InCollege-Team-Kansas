@@ -28,6 +28,8 @@ IDENTIFICATION DIVISION.
        01  WS-EOF                  PIC X(1) VALUE 'N'.
            88  END-OF-FILE                VALUE 'Y'.
 
+      
+
 
 
        PROCEDURE DIVISION.

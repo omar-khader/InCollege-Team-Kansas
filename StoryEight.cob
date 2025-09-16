@@ -11,7 +11,7 @@ IDENTIFICATION DIVISION.
                ORGANIZATION IS LINE SEQUENTIAL
                ACCESS MODE IS SEQUENTIAL.
 
-           SELECT USER-FILE ASSIGN TO "USERPROF.DAT"
+           SELECT USER-FILE ASSIGN TO "userprof.dat"
            ORGANIZATION IS SEQUENTIAL
            ACCESS MODE IS SEQUENTIAL
            FILE STATUS IS WS-USERFILE-STATUS.
@@ -24,13 +24,13 @@ IDENTIFICATION DIVISION.
 
        FD USER-FILE.
        01 USER-RECORD.
-           05 USER-USERNAME        PIC X(32).
-           05 USER-FIRST-NAME      PIC X(50).
-           05 USER-LAST-NAME       PIC X(50).
-           05 USER-UNIVERSITY      PIC X(50).
-           05 USER-MAJOR           PIC X(30).
-           05 USER-GRAD-YEAR       PIC 9(4).
-           05 USER-ABOUT-ME        PIC X(200).
+           05 prof-username        PIC X(32).
+           05 prof-first-name      PIC X(50).
+           05 prof-last-name       PIC X(50).
+           05 prof-university      PIC X(50).
+           05 prof-major           PIC X(30).
+           05 prof-grad-year       PIC 9(4).
+           05 prof-about-me        PIC X(200).
 
            05  prof-exp-count      PIC 9.
            05  prof-experience     occurs 3 times.
@@ -73,33 +73,33 @@ IDENTIFICATION DIVISION.
 
            initialize USER-RECORD
 
-           move "Username: i.hate.cobol" to WS-DISPLAY
+           move "Username: Test.Username" to WS-DISPLAY
            perform say
-           move "i.hate.cobol" to USER-USERNAME
+           move "Test.Username" to prof-username
 
            move "User First Name: John" to WS-DISPLAY
            perform say
-           move "John" to USER-FIRST-NAME
+           move "John" to prof-first-name
 
            move "User Last Name: Bovi" to WS-DISPLAY
            perform say
-           move "Bovi" to USER-LAST-NAME
+           move "Bovi" to prof-last-name
 
            move "University: University of South Florida" to WS-DISPLAY
            perform say
-           move "University of South Florida" to USER-UNIVERSITY
+           move "University of South Florida" to prof-university
 
-           move "Major: Being bad at programming" to WS-DISPLAY
+           move "Major: Computer Science" to WS-DISPLAY
            perform say
-           move "Being bad at programming" to USER-MAJOR
+           move "Computer Science" to prof-major
 
-           move "Grad Year: 2040" to WS-DISPLAY
+           move "Grad Year: 2024" to WS-DISPLAY
            perform say
-           move 2040 to USER-GRAD-YEAR
+           move 2024 to prof-grad-year
 
-           move "About me: I'm really bad at programming. :)" to WS-DISPLAY
+           move "About me: I'm really bad at programming." to WS-DISPLAY
            perform say
-           move "I'm really bd at programming. :)" to USER-ABOUT-ME
+           move "I'm really bd at programming." to prof-about-me
 
            move "Setting prof-exp-count to 1." to WS-DISPLAY
            perform say
