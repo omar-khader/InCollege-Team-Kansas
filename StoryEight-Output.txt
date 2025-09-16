@@ -6,4 +6,15 @@ University: University of South Florida
 Major: Being bad at programming
 Grad Year: 2040
 About me: I'm really bad at programming. :)
-User Profile Successfully Saved (New File Created)
+Setting prof-exp-count to 1.
+Defining professional experience (1).
+Setting exp-title to: Programmer
+Setting exp-company to: Intel
+Setting exp-dates to: August 1st to Now
+Setting exp-description to: A job
+Setting prof-edu-count to 1
+Defining prof-edu-count (1)
+Setting edu-degree to: Bachelors of Science in Computer Science
+Setting edu-university to: University of South Florida
+Setting edu-years to: 2020 to 2024
+User Profile Successfully Saved (Appended)

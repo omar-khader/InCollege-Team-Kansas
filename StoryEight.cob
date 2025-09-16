@@ -19,9 +19,6 @@ IDENTIFICATION DIVISION.
        DATA DIVISION.
        FILE SECTION.
 
-       FD  InpFile.
-       01  Inp-Record-Area           PIC X(80).
-
        FD  OutFile.
        01  Out-Record-Area           PIC X(80).
 
@@ -35,40 +32,33 @@ IDENTIFICATION DIVISION.
            05 USER-GRAD-YEAR       PIC 9(4).
            05 USER-ABOUT-ME        PIC X(200).
 
+           05  prof-exp-count      PIC 9.
+           05  prof-experience     occurs 3 times.
+               10  exp-title       pic x(50).
+               10  exp-company     pic x(50).
+               10  exp-dates       pic x(30).
+               10  exp-description pic x(100).
+
+           05  prof-edu-count      PIC 9.
+           05  prof-education      occurs 3 times.
+               10  edu-degree      pic x(50).
+               10  edu-university  pic x(100).
+               10  edu-years       pic x(30).
+
        WORKING-STORAGE SECTION.
        01  WS-DISPLAY              PIC X(80).
        01 WS-USERFILE-STATUS          PIC XX.
-       01 WS-CHOICE               PIC 9.
-       01 WS-CONTINUE             PIC X VALUE 'Y'.
-       01 WS-RECORD-COUNT         PIC 9(3) VALUE 0.
 
-       01 WS-USER-DATA.
-           05 WS-USER-USERNAME     PIC X(32).
-           05 WS-USER-FIRST-NAME   PIC X(50).
-           05 WS-USER-LAST-NAME    PIC X(50).
-           05 WS-USER-UNIVERSITY   PIC X(50).
-           05 WS-USER-MAJOR        PIC X(30).
-           05 WS-GRAD-YEAR         PIC 9(4).
-           05 WS-ABOUT-ME          PIC X(200).
-
-       01 WS-DISPLAY-RECORD.
-           05 DISP-USER-USERNAME   PIC X(32).
-           05 DISP-USER-FIRST-NAME PIC X(50).
-           05 DISP-USER-LAST-NAME  PIC X(50).
-           05 DISP-USER-UNIVERSITY PIC X(50).
-           05 DISP-USER-MAJOR      PIC X(30).
-           05 DISP-GRAD-YEAR       PIC 9(4).
-           05 DISP-ABOUT-ME        PIC X(200).
 
 
        PROCEDURE DIVISION.
        MAIN.
-           OPEN INPUT InpFile, OUTPUT OutFile.
+           OPEN OUTPUT OutFile.
 
            perform sample-profile-creation.
            perform save-current-user-profile.
 
-           close InpFile, OutFile.
+           close OutFile.
            STOP RUN.
 
        say.
@@ -110,6 +100,49 @@ IDENTIFICATION DIVISION.
            move "About me: I'm really bad at programming. :)" to WS-DISPLAY
            perform say
            move "I'm really bd at programming. :)" to USER-ABOUT-ME
+
+           move "Setting prof-exp-count to 1." to WS-DISPLAY
+           perform say
+           move 1 to prof-exp-count
+
+           move "Defining professional experience (1)." to WS-DISPLAY
+           perform say
+
+           move "Setting exp-title to: Programmer" to WS-DISPLAY
+           perform say
+           move "Programmer" to exp-title(1)
+
+           move "Setting exp-company to: Intel" to WS-DISPLAY
+           perform say
+           move "Intel" to exp-company(1)
+
+           move "Setting exp-dates to: August 1st to Now" to WS-DISPLAY
+           perform say
+           move "August 1st to Now" to exp-dates(1)
+
+           move "Setting exp-description to: A job" to WS-DISPLAY
+           perform say
+           move "A job" to exp-description(1)
+
+           move "Setting prof-edu-count to 1" to WS-DISPLAY
+           perform say
+           move 1 to prof-edu-count
+
+           move "Defining prof-edu-count (1)" to WS-DISPLAY
+           perform say
+
+           move "Setting edu-degree to: Bachelors of Science in Computer Science"
+           to WS-DISPLAY
+           perform say
+           move "Bachelors of Science in Computer Science" to edu-degree(1)
+
+           move "Setting edu-university to: University of South Florida" to WS-DISPLAY
+           perform say
+           move "University of South FLorida" to edu-university(1)
+
+           move "Setting edu-years to: 2020 to 2024" to WS-DISPLAY
+           perform say
+           move "2020 to 2024" to edu-years(1)
            .
 
        save-current-user-profile.
