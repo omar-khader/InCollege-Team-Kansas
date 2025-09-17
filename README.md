@@ -1,6 +1,6 @@
 # InCollege — GNU COBOL Project
 
-A simple COBOL program that supports **account creation**, **login**, and a post-login menu with **Create/Edit Profile**, **View Profile**, **Search for User**, and **Learn a New Skill**. The app is file-driven (reads from an input file and mirrors all output to a file). Post-login menu options and profile prompts are confirmed by the current output transcript.&#x20;
+A simple COBOL program that supports **account creation**, **login**, and a post-login menu with **Create/Edit Profile**, **View Profile**, **Search for User**, and **Learn a New Skill**. The app is file-driven (reads from an input file and mirrors all output to a file). Post-login menu options and profile prompts are confirmed by the current output transcript.
 
 Runs in **Docker + VS Code Dev Containers** (cross-platform: Windows/macOS/Linux).
 
@@ -39,15 +39,15 @@ Runs in **Docker + VS Code Dev Containers** (cross-platform: Windows/macOS/Linux
 ## Files & I/O
 
 * **Runtime input:** `InCollege-Input.txt`
-  Plain text, **one token per line** (menu choice, username, password, profile fields, etc.). See the current example input below.&#x20;
+  Plain text, **one token per line** (menu choice, username, password, profile fields, etc.). See the current example input below.
 * **Runtime output:** `InCollege-Output.txt`
-  Mirrors all on-screen messages and menus (including the post-login menu and profile summary).&#x20;
+  Mirrors all on-screen messages and menus (including the post-login menu and profile summary).
 * **Persistent users:** `users.dat` (format: `username,password`)
 * **Optional batch tests:** `InCollege-Test.txt`
 
 ---
 
-## Features (as currently implemented)
+## Features ( currently implemented)
 
 After a successful login, the main menu offers:
 
@@ -55,11 +55,11 @@ After a successful login, the main menu offers:
 2. **View My Profile**
 3. **Search for User**
 4. **Learn a New Skill**
-   The menu and prompts are visible in the current output transcript.&#x20;
+   The menu and prompts are visible in the current output transcript.
 
-**Profile editor** collects (with optional sections): First/Last name, University, Major, Graduation Year, “About Me”, up to **3 Experience** entries, and up to **3 Education** entries. Use `'DONE'` to finish each optional list.&#x20;
+**Profile editor** collects (with optional sections): First/Last name, University, Major, Graduation Year, “About Me”, up to **3 Experience** entries, and up to **3 Education** entries. Use `'DONE'` to finish each optional list.
 
-**Profile viewer** prints a formatted summary including the fields you entered.&#x20;
+**Profile viewer** prints a formatted summary including the fields you entered.
 
 ---
 
@@ -105,7 +105,7 @@ Example University
 DONE
 ```
 
-This ordering matches the current profile prompts shown by the program.&#x20;
+This ordering matches the current profile prompts shown by the program.
 
 ---
 
@@ -204,7 +204,7 @@ DONE
 13. **#17** → Post-login **valid** choice: **Learn a New Skill (4)**
 14. **#18** → Post-login **invalid** choice: enter `5` (expect invalid-menu handling)
 
-> Note: There is **no “Exit (4)”** in the current post-login menu; `4` is **Learn a New Skill**, per the latest output. Adjust any older test descriptions accordingly.&#x20;
+> Note: There is **no “Exit (4)”** in the current post-login menu; `4` is **Learn a New Skill**, per the latest output. Adjust any older test descriptions accordingly.
 
 ---
 
