@@ -204,7 +204,7 @@ DONE
 13. **#17** → Post-login **valid** choice: **Learn a New Skill (4)**
 14. **#18** → Post-login **invalid** choice: enter `5` (expect invalid-menu handling)
 
-> Note: There is **no “Exit (4)”** in the current post-login menu; `4` is **Learn a New Skill**, per the latest output. Adjust any older test descriptions accordingly.
+> Note: There is **no “Exit (4)”** in the current post-login menu; `4` is **Learn a New Skill**, per the latest output. 
 
 ---
 
