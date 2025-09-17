@@ -7,7 +7,10 @@ identification division.
            select user-file assign to "users.dat"
                organization is line sequential
                file status is FILESTAT.
-           select InpFile assign to "InCollege-Test.txt"
+           select profile-file assign to "profiles.dat"
+               organization is line sequential
+               file status is FILESTAT-PROFILE.
+           select InpFile assign to "InCollege-Input.txt"
                organization is line sequential
                file status is FILESTAT.
            select OutFile assign to "InCollege-Output.txt"
@@ -19,14 +22,18 @@ identification division.
        fd  user-file.
        01  user-line                 pic x(120).
 
+       fd  profile-file.
+       01  profile-line              pic x(1500).
+
        fd  InpFile.
-       01  InpRecord                 pic x(80).
+       01  InpRecord                 pic x(200).
 
        fd  OutFile.
-       01  OutRecord                 pic x(120).
+       01  OutRecord                 pic x(80).
 
        working-storage section.
        01  FILESTAT                  pic xx.
+       01  FILESTAT-PROFILE          pic xx.
        01  FILESTAT-Out              pic xx.
 
        01  WS-EOF                    pic x value "N".
@@ -41,6 +48,7 @@ identification division.
        01  f-pass                    pic x(64).
 
        01  ws-i                      pic 9(03) value 0.
+       01  ws-j                      pic 9(03) value 0.
        01  ws-len-u                  pic 9(03) value 0.
        01  ws-len-p                  pic 9(03) value 0.
        01  ws-char                   pic x value space.
@@ -61,14 +69,60 @@ identification division.
        01  ws-user-count             pic 9(02) value 0.
        01  WS-DISPLAY                pic x(80).
 
+       01  current-user              pic x(32).
+       01  ws-profile-exists         pic x value "n".
+       
+       01  profile-data.
+           05  profile-username      pic x(32).
+           05  profile-firstname     pic x(50).
+           05  profile-lastname      pic x(50).
+           05  profile-university    pic x(100).
+           05  profile-major         pic x(50).
+           05  profile-gradyear      pic 9(4).
+           05  profile-aboutme       pic x(200).
+           05  profile-exp-count     pic 9.
+           05  profile-experiences   occurs 3 times.
+               10  exp-title         pic x(50).
+               10  exp-company       pic x(50).
+               10  exp-dates         pic x(30).
+               10  exp-description   pic x(100).
+           05  profile-edu-count     pic 9.
+           05  profile-educations    occurs 3 times.
+               10  edu-degree        pic x(50).
+               10  edu-university    pic x(100).
+               10  edu-years         pic x(30).
+
+       01  temp-input                pic x(200).
+       01  ws-year                   pic 9(4).
+       01  ws-year-valid             pic x value "n".
+       01  ws-exp-index              pic 9.
+       01  ws-edu-index              pic 9.
+       01  ws-entry-number           pic 9.
+       01  ws-login-successful       pic x value "n".
+
+       01  ws-parse-pos              pic 9(04).
+       01  ws-field-start            pic 9(04).
+       01  ws-field-len              pic 9(04).
+       01  ws-field-num              pic 9.
+       01  WS-FIELD-POS              pic 9(04).
+
+       01  PROFILES-TABLE.
+           05 PROFILE-TABLE-ENTRY occurs 100 times pic x(1500).
+       01  PROFILES-COUNT            pic 9(03) value 0.
+       01  TEMP-PROFILE-LINE         pic x(1500).
+       01  WS-LINE-LEN               pic 9(04) value 0.
+
+       01  PARSE-FIELDS.
+           05 PARSE-FIELD occurs 50 times pic x(200).
+
+       01  TEMP-EDU-COUNT-STR       pic x(200).
+
        procedure division.
        main.
-           *> Ensure users.dat exists
            open input user-file
            if FILESTAT = "35"  
               open output user-file
               close user-file
-              *> reoopen for input now that file exists
               open input user-file
            end-if
            if FILESTAT not = "00"
@@ -77,6 +131,12 @@ identification division.
            end-if
            close user-file
 
+           open input profile-file
+           if FILESTAT-PROFILE = "35"  
+              open output profile-file
+              close profile-file
+           end-if
+           close profile-file
            
            open input InpFile
            if FILESTAT not = "00"
@@ -92,7 +152,6 @@ identification division.
 
            perform until WS-EOF = "Y"
               perform show-menu
-              *> read next token which is the user's menu choice
               read InpFile into InpRecord
                  at end
                     move "Y" to WS-EOF
@@ -128,8 +187,6 @@ identification division.
            perform say
            move "2. Create New Account" to WS-DISPLAY
            perform say
-           move "3. Exit" to WS-DISPLAY
-           perform say
            move "Enter your choice:" to WS-DISPLAY
            perform say
            .
@@ -159,7 +216,8 @@ identification division.
            .
 
        interactive-login.
-           perform until WS-EOF = "Y"
+           move "n" to ws-login-successful
+           perform until WS-EOF = "Y" or ws-login-successful = "y"
               move spaces to WS-DISPLAY
               move "Please enter your username:" to WS-DISPLAY
               perform say
@@ -182,10 +240,8 @@ identification division.
 
               perform do-login
               if ws-found = "y"
-                 exit paragraph *> login successful
-              else
-                 *> allow unlimited login attempts
-                 next sentence
+                 move function trim(u) to current-user
+                 move "y" to ws-login-successful
               end-if
            end-perform
            .
@@ -205,8 +261,6 @@ identification division.
            exit paragraph
            end-if
 
-
-           *> Count existing users (up to 5 allowed)
            move 0 to ws-user-count
            open input user-file
            if FILESTAT = "00"
@@ -229,7 +283,6 @@ identification division.
               exit paragraph
            end-if
 
-           *> Check duplicates
            move "n" to ws-found
            open input user-file
            if FILESTAT = "00"
@@ -250,15 +303,13 @@ identification division.
 
            if ws-found = "y"
               move spaces to WS-DISPLAY
-              string "rejected_duplicate: " u delimited by size into WS-DISPLAY
+              string "Rejected: user already exists: " u delimited by size into WS-DISPLAY
               perform say
               exit paragraph
            end-if
 
-           *> new user to users.dat
            open extend user-file
            if FILESTAT not = "00"
-              *> failsafe create file
               open output user-file
               close user-file
               open extend user-file
@@ -303,12 +354,12 @@ identification division.
               string "You have successfully logged in." delimited by size into WS-DISPLAY
               perform say
               
-              *> Add welcome message
+              move function trim(u) to current-user
+              
               move spaces to WS-DISPLAY
               string "Welcome, " function trim(u) "!" delimited by size into WS-DISPLAY
               perform say
               
-              *> post-login navigation
               perform post-login-menu
            else
               move "Incorrect username/password, please try again" to WS-DISPLAY
@@ -317,42 +368,540 @@ identification division.
            .
 
        post-login-menu.
-        perform until WS-EOF = "Y"
-        move "1. Search for a job" to WS-DISPLAY
-        perform say
+           perform until WS-EOF = "Y"
+               move "1. Create/Edit My Profile" to WS-DISPLAY
+               perform say
 
-        move "2. Find someone you know" to WS-DISPLAY
-        perform say
+               move "2. View My Profile" to WS-DISPLAY
+               perform say
 
-        move "3. Learn a new skill" to WS-DISPLAY
-        perform say
+               move "3. Search for User" to WS-DISPLAY
+               perform say
 
-        move "Enter your choice:" to WS-DISPLAY
-        perform say
+               move "4. Learn a New Skill" to WS-DISPLAY
+               perform say
 
-        read InpFile into InpRecord
-            at end move "Y" to WS-EOF
-            not at end
-                move function numval(function trim(InpRecord)) 
-                    to WS-USER-CHOICE
-        end-read
+               move "Enter your choice:" to WS-DISPLAY
+               perform say
 
-        if WS-EOF = "N"
-            evaluate WS-USER-CHOICE
-                when 1
-                    move "Job search/internship is under construction."
-                        to WS-DISPLAY
-                    perform say
-                when 2
-                    move "Find someone you know is under construction."
-                        to WS-DISPLAY
-                    perform say
-                when 3
-                    perform show-skill-menu
-            end-evaluate
-        end-if
-    end-perform
-    .
+               read InpFile into InpRecord
+                   at end move "Y" to WS-EOF
+                   not at end
+                       move function numval(function trim(InpRecord)) 
+                           to WS-USER-CHOICE
+               end-read
+
+               if WS-EOF = "N"
+                   evaluate WS-USER-CHOICE
+                       when 1
+                           perform create-edit-profile
+                       when 2
+                           perform view-profile
+                       when 3
+                           move "Search for User is under construction."
+                               to WS-DISPLAY
+                           perform say
+                       when 4
+                           perform show-skill-menu
+                       when other
+                           exit perform
+                   end-evaluate
+               end-if
+           end-perform
+           .
+
+       create-edit-profile.
+           move "--- Create/Edit Profile ---" to WS-DISPLAY
+           perform say
+
+           perform load-profile
+
+           move "Enter First Name:" to WS-DISPLAY
+           perform say
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF
+               not at end move function trim(temp-input) to profile-firstname
+           end-read
+
+           move "Enter Last Name:" to WS-DISPLAY
+           perform say
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF
+               not at end move function trim(temp-input) to profile-lastname
+           end-read
+
+           move "Enter University/College Attended:" to WS-DISPLAY
+           perform say
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF
+               not at end move function trim(temp-input) to profile-university
+           end-read
+
+           move "Enter Major:" to WS-DISPLAY
+           perform say
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF
+               not at end move function trim(temp-input) to profile-major
+           end-read
+
+           perform get-graduation-year
+
+           move "Enter About Me (optional, max 200 chars, enter blank line to skip):" to WS-DISPLAY
+           perform say
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF
+               not at end 
+                   if function trim(temp-input) = spaces
+                       move spaces to profile-aboutme
+                   else
+                       move function trim(temp-input) to profile-aboutme
+                   end-if
+           end-read
+
+           perform get-experience-entries
+
+           perform get-education-entries
+
+           perform save-profile
+
+           move "Profile saved successfully!" to WS-DISPLAY
+           perform say
+           .
+
+       get-graduation-year.
+           move "n" to ws-year-valid
+           perform until ws-year-valid = "y" or WS-EOF = "Y"
+               move "Enter Graduation Year (YYYY):" to WS-DISPLAY
+               perform say
+               read InpFile into temp-input
+                   at end 
+                       move "Y" to WS-EOF
+                       exit perform
+               end-read
+               
+               move function numval(function trim(temp-input)) to ws-year
+               if ws-year >= 1950 and ws-year <= 2030
+                   move ws-year to profile-gradyear
+                   move "y" to ws-year-valid
+               else
+                   move "Invalid year. Please enter a year between 1950 and 2030." to WS-DISPLAY
+                   perform say
+               end-if
+           end-perform
+           .
+
+       get-experience-entries.
+           move 0 to profile-exp-count
+           perform varying ws-exp-index from 1 by 1 until ws-exp-index > 3
+               move spaces to exp-title(ws-exp-index)
+               move spaces to exp-company(ws-exp-index)
+               move spaces to exp-dates(ws-exp-index)
+               move spaces to exp-description(ws-exp-index)
+           end-perform
+
+           perform until profile-exp-count >= 3 or WS-EOF = "Y"
+               move "Add Experience (optional, max 3 entries. Enter 'DONE' to finish):" to WS-DISPLAY
+               perform say
+               
+               read InpFile into temp-input
+                   at end move "Y" to WS-EOF exit paragraph
+               end-read
+
+               if function upper-case(function trim(temp-input)) = "DONE"
+                   exit perform
+               end-if
+
+               add 1 to profile-exp-count
+               move profile-exp-count to ws-exp-index
+               move ws-exp-index to ws-entry-number
+               
+               move spaces to WS-DISPLAY
+               string "Experience #" ws-entry-number " - Title:" delimited by size into WS-DISPLAY
+               perform say
+
+               move function trim(temp-input) to exp-title(ws-exp-index)
+
+               move spaces to WS-DISPLAY
+               string "Experience #" ws-exp-index " - Company/Organization:" delimited by size into WS-DISPLAY
+               perform say
+               read InpFile into temp-input
+                   at end move "Y" to WS-EOF exit paragraph
+               end-read
+               move function trim(temp-input) to exp-company(ws-exp-index)
+
+               move spaces to WS-DISPLAY
+               string "Experience #" ws-exp-index " - Dates (e.g., Summer 2024):" delimited by size into WS-DISPLAY
+               perform say
+               read InpFile into temp-input
+                   at end move "Y" to WS-EOF exit paragraph
+               end-read
+               move function trim(temp-input) to exp-dates(ws-exp-index)
+
+               move spaces to WS-DISPLAY
+               string "Experience #" ws-exp-index " - Description (optional, max 100 chars, blank to skip):" delimited by size into WS-DISPLAY
+               perform say
+               
+               read InpFile into temp-input
+                   at end move "Y" to WS-EOF exit paragraph
+               end-read
+
+               if function length(function trim(temp-input)) > 0
+                   if function length(function trim(temp-input)) <= 100
+                       move function trim(temp-input) to exp-description(ws-exp-index)
+                   else
+                       move temp-input(1:100) to exp-description(ws-exp-index)
+                   end-if
+               else
+                   move spaces to exp-description(ws-exp-index)
+               end-if
+           end-perform
+           .
+
+       get-education-entries.
+           move 0 to profile-edu-count
+           perform varying ws-edu-index from 1 by 1 until ws-edu-index > 3
+               move spaces to edu-degree(ws-edu-index)
+               move spaces to edu-university(ws-edu-index)
+               move spaces to edu-years(ws-edu-index)
+           end-perform
+
+           perform until profile-edu-count >= 3 or WS-EOF = "Y"
+               move "Add Education (optional, max 3 entries. Enter 'DONE' to finish):" to WS-DISPLAY
+               perform say
+               
+               read InpFile into temp-input
+                   at end move "Y" to WS-EOF exit paragraph
+               end-read
+               
+               if function upper-case(function trim(temp-input)) = "DONE"
+                   exit perform
+               end-if
+
+               add 1 to profile-edu-count
+               move profile-edu-count to ws-edu-index
+               move ws-edu-index to ws-entry-number
+               
+               move spaces to WS-DISPLAY
+               string "Education #" ws-entry-number " - Degree:" delimited by size into WS-DISPLAY
+               perform say
+
+               move function trim(temp-input) to edu-degree(ws-edu-index)
+
+               move spaces to WS-DISPLAY
+               string "Education #" ws-edu-index " - University/College:" delimited by size into WS-DISPLAY
+               perform say
+               read InpFile into temp-input
+                   at end move "Y" to WS-EOF exit paragraph
+               end-read
+               move function trim(temp-input) to edu-university(ws-edu-index)
+
+               move spaces to WS-DISPLAY
+               string "Education #" ws-edu-index " - Years Attended (e.g., 2023-2025):" delimited by size into WS-DISPLAY
+               perform say
+               read InpFile into temp-input
+                   at end move "Y" to WS-EOF exit paragraph
+               end-read
+               move function trim(temp-input) to edu-years(ws-edu-index)
+           end-perform
+           .
+
+       load-profile.
+           move "n" to ws-profile-exists
+           move current-user to profile-username
+           
+           open input profile-file
+           if FILESTAT-PROFILE = "00"
+               perform until 1 = 2
+                   read profile-file into profile-line
+                       at end exit perform
+                   end-read
+                   
+                   if profile-line(1:function length(function trim(current-user))) = 
+                      function trim(current-user)
+                       and profile-line(function length(function trim(current-user)) + 1:1) = "|"
+                       move "y" to ws-profile-exists
+                       perform parse-profile-line-complete
+                       exit perform
+                   end-if
+               end-perform
+               close profile-file
+           end-if
+           
+           if ws-profile-exists = "n"
+               initialize profile-data
+               move current-user to profile-username
+           end-if
+           .
+
+       save-profile.
+           move 0 to PROFILES-COUNT
+           open input profile-file
+           if FILESTAT-PROFILE = "00"
+               perform until 1 = 2
+                   read profile-file into TEMP-PROFILE-LINE
+                      at end
+                          exit perform
+                   end-read
+                   if not ( TEMP-PROFILE-LINE(1:function length(function trim(current-user))) = function trim(current-user)
+                        and TEMP-PROFILE-LINE(function length(function trim(current-user)) + 1:1) = "|" )
+                       add 1 to PROFILES-COUNT
+                       move TEMP-PROFILE-LINE to PROFILE-TABLE-ENTRY(PROFILES-COUNT)
+                   end-if
+               end-perform
+               close profile-file
+           end-if
+
+           move spaces to profile-line
+           move 1 to ws-parse-pos
+           
+           string 
+               function trim(current-user) "|"
+               function trim(profile-firstname) "|"
+               function trim(profile-lastname) "|"
+               function trim(profile-university) "|"
+               function trim(profile-major) "|"
+               profile-gradyear "|"
+               function trim(profile-aboutme) "|"
+               profile-exp-count "|"
+               delimited by size 
+               into profile-line
+               with pointer ws-parse-pos
+           end-string
+
+           perform varying ws-i from 1 by 1 until ws-i > profile-exp-count
+               string 
+                   function trim(exp-title(ws-i)) "|"
+                   function trim(exp-company(ws-i)) "|"
+                   function trim(exp-dates(ws-i)) "|"
+                   function trim(exp-description(ws-i)) "|"
+                   delimited by size
+                   into profile-line
+                   with pointer ws-parse-pos
+               end-string
+           end-perform
+
+           string 
+               profile-edu-count "|"
+               delimited by size
+               into profile-line
+               with pointer ws-parse-pos
+           end-string
+           
+           perform varying ws-i from 1 by 1 until ws-i > profile-edu-count
+               string 
+                   function trim(edu-degree(ws-i)) "|"
+                   function trim(edu-university(ws-i)) "|"
+                   function trim(edu-years(ws-i)) "|"
+                   delimited by size
+                   into profile-line
+                   with pointer ws-parse-pos
+               end-string
+           end-perform
+
+           move profile-line to TEMP-PROFILE-LINE
+
+           open output profile-file
+           if FILESTAT-PROFILE not = "00"
+               display "Error saving profile"
+               close profile-file
+               exit paragraph
+           end-if
+
+           perform varying ws-i from 1 by 1 until ws-i > PROFILES-COUNT
+               move PROFILE-TABLE-ENTRY(ws-i) to profile-line
+               write profile-line
+           end-perform
+           
+           move TEMP-PROFILE-LINE to profile-line
+           write profile-line
+           close profile-file
+           .
+
+       view-profile.
+           move "--- Your Profile ---" to WS-DISPLAY
+           perform say
+
+           perform load-profile-for-view
+
+           if ws-profile-exists = "y"
+               move spaces to WS-DISPLAY
+               string "Name: " function trim(profile-firstname) " " 
+                      function trim(profile-lastname) delimited by size into WS-DISPLAY
+               perform say
+
+               move spaces to WS-DISPLAY
+               string "University: " function trim(profile-university) delimited by size into WS-DISPLAY
+               perform say
+
+               move spaces to WS-DISPLAY
+               string "Major: " function trim(profile-major) delimited by size into WS-DISPLAY
+               perform say
+
+               move spaces to WS-DISPLAY
+               string "Graduation Year: " profile-gradyear delimited by size into WS-DISPLAY
+               perform say
+
+               if function trim(profile-aboutme) not = spaces
+                   move spaces to WS-DISPLAY
+                   string "About Me: " function trim(profile-aboutme) delimited by size into WS-DISPLAY
+                   perform say
+               end-if
+
+               if profile-exp-count > 0
+                   move "Experience:" to WS-DISPLAY
+                   perform say
+                   perform varying ws-i from 1 by 1 until ws-i > profile-exp-count
+                       move spaces to WS-DISPLAY
+                       string "Title: " function trim(exp-title(ws-i)) delimited by size into WS-DISPLAY
+                       perform say
+                       move spaces to WS-DISPLAY
+                       string "Company: " function trim(exp-company(ws-i)) delimited by size into WS-DISPLAY
+                       perform say
+                       move spaces to WS-DISPLAY
+                       string "Dates: " function trim(exp-dates(ws-i)) delimited by size into WS-DISPLAY
+                       perform say
+                       if function trim(exp-description(ws-i)) not = spaces
+                           move spaces to WS-DISPLAY
+                           string "Description: " function trim(exp-description(ws-i)) delimited by size into WS-DISPLAY
+                           perform say
+                       end-if
+                   end-perform
+               end-if
+
+               if profile-edu-count > 0
+                   move "Education:" to WS-DISPLAY
+                   perform say
+                   perform varying ws-i from 1 by 1 until ws-i > profile-edu-count
+                       move spaces to WS-DISPLAY
+                       string "Degree: " function trim(edu-degree(ws-i)) delimited by size into WS-DISPLAY
+                       perform say
+                       move spaces to WS-DISPLAY
+                       string "University: " function trim(edu-university(ws-i)) delimited by size into WS-DISPLAY
+                       perform say
+                       move spaces to WS-DISPLAY
+                       string "Years: " function trim(edu-years(ws-i)) delimited by size into WS-DISPLAY
+                       perform say
+                   end-perform
+               end-if
+
+               move "--------------------" to WS-DISPLAY
+               perform say
+           else
+               move "No profile found. Please create your profile first." to WS-DISPLAY
+               perform say
+           end-if
+           .
+
+       load-profile-for-view.
+           move "n" to ws-profile-exists
+           initialize profile-data
+           
+           open input profile-file
+           if FILESTAT-PROFILE = "00"
+               perform until 1 = 2
+                   read profile-file into profile-line
+                       at end exit perform
+                   end-read
+                   
+                   if function length(function trim(current-user)) > 0
+                       if profile-line(1:function length(function trim(current-user))) = 
+                          function trim(current-user)
+                           and profile-line(function length(function trim(current-user)) + 1:1) = "|"
+                           move "y" to ws-profile-exists
+                           perform parse-profile-line-complete
+                           exit perform
+                       end-if
+                   end-if
+               end-perform
+               close profile-file
+           end-if
+           .
+
+parse-profile-line-complete.
+           move spaces to PARSE-FIELD(1)
+           move spaces to PARSE-FIELD(2) 
+           move spaces to PARSE-FIELD(3)
+           move spaces to PARSE-FIELD(4)
+           move spaces to PARSE-FIELD(5)
+           move spaces to PARSE-FIELD(6)
+           move spaces to PARSE-FIELD(7)
+           move spaces to PARSE-FIELD(8)
+           move spaces to PARSE-FIELD(9)
+           move spaces to PARSE-FIELD(10)
+           move spaces to PARSE-FIELD(11)
+           move spaces to PARSE-FIELD(12)
+           move spaces to PARSE-FIELD(13)
+           move spaces to PARSE-FIELD(14)
+           move spaces to PARSE-FIELD(15)
+           move spaces to PARSE-FIELD(16)
+           move spaces to PARSE-FIELD(17)
+           move spaces to PARSE-FIELD(18)
+           move spaces to PARSE-FIELD(19)
+           move spaces to PARSE-FIELD(20)
+
+           unstring profile-line delimited by "|" into
+               PARSE-FIELD(1)
+               PARSE-FIELD(2)
+               PARSE-FIELD(3)
+               PARSE-FIELD(4)
+               PARSE-FIELD(5)
+               PARSE-FIELD(6)
+               PARSE-FIELD(7)
+               PARSE-FIELD(8)
+               PARSE-FIELD(9)
+               PARSE-FIELD(10)
+               PARSE-FIELD(11)
+               PARSE-FIELD(12)
+               PARSE-FIELD(13)
+               PARSE-FIELD(14)
+               PARSE-FIELD(15)
+               PARSE-FIELD(16)
+           end-unstring
+
+           move function trim(PARSE-FIELD(2)) to profile-firstname
+           move function trim(PARSE-FIELD(3)) to profile-lastname
+           move function trim(PARSE-FIELD(4)) to profile-university
+           move function trim(PARSE-FIELD(5)) to profile-major
+           if function trim(PARSE-FIELD(6)) not = spaces
+               move function numval(function trim(PARSE-FIELD(6))) to profile-gradyear
+           else
+               move 0 to profile-gradyear
+           end-if
+           move function trim(PARSE-FIELD(7)) to profile-aboutme
+
+           if function trim(PARSE-FIELD(8)) not = spaces
+               move function numval(function trim(PARSE-FIELD(8))) to profile-exp-count
+           else
+               move 0 to profile-exp-count
+           end-if
+
+           if profile-exp-count < 0 move 0 to profile-exp-count end-if
+           if profile-exp-count > 3 move 3 to profile-exp-count end-if
+
+           if profile-exp-count >= 1
+               move function trim(PARSE-FIELD(9))  to exp-title(1)
+               move function trim(PARSE-FIELD(10)) to exp-company(1)
+               move function trim(PARSE-FIELD(11)) to exp-dates(1)
+               move function trim(PARSE-FIELD(12)) to exp-description(1)
+           end-if
+
+           if function trim(PARSE-FIELD(13)) not = spaces
+               move function numval(function trim(PARSE-FIELD(13))) to profile-edu-count
+           else
+               move 0 to profile-edu-count
+           end-if
+
+           if profile-edu-count < 0 move 0 to profile-edu-count end-if
+           if profile-edu-count > 3 move 3 to profile-edu-count end-if
+
+           if profile-edu-count >= 1
+               move function trim(PARSE-FIELD(14)) to edu-degree(1)
+               move function trim(PARSE-FIELD(15)) to edu-university(1)
+               move function trim(PARSE-FIELD(16)) to edu-years(1)
+           end-if
+
+           move "y" to ws-profile-exists
+           .
 
        show-skill-menu.
            perform until WS-USER-CHOICE = 6 or WS-EOF = "Y"
