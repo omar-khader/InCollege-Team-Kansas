@@ -118,9 +118,11 @@ identification division.
 
        01  TEMP-EDU-COUNT-STR       pic x(200).
        
+      *    Epic #3: Variables for search functionality
        01  search-firstname          pic x(50).
        01  search-lastname           pic x(50).
        01  search-results-count      pic 9(02) value 0.
+      *    Temporary profile data structure for search results
        01  temp-profile-data.
            05  temp-profile-username      pic x(32).
            05  temp-profile-firstname     pic x(50).
@@ -129,6 +131,13 @@ identification division.
            05  temp-profile-major         pic x(50).
 
        procedure division.
+      ******************************************************************
+      * Epic #3 Implementation Notes:
+      * 1. Enhanced profile viewing with formatted sections
+      * 2. Display of all optional fields (About Me, Experience, Education)
+      * 3. Search functionality by full name (case-insensitive)
+      * 4. Improved parsing to handle multiple experience/education entries
+      ******************************************************************
        main.
            open input user-file
            if FILESTAT = "35"  
@@ -409,6 +418,7 @@ identification division.
                        when 2
                            perform view-profile
                        when 3
+      *                    Epic #3: Search for users by full name
                            perform search-for-user
                        when 4
                            perform show-skill-menu
@@ -727,6 +737,8 @@ identification division.
            .
 
        view-profile.
+      *    Epic #3: Enhanced profile display with easy-to-read format
+      *    Shows all fields including optional ones in organized sections
            move "================================" to WS-DISPLAY
            perform say
            move "         YOUR PROFILE           " to WS-DISPLAY
@@ -757,6 +769,7 @@ identification division.
                string "Graduation Year: " profile-gradyear delimited by size into WS-DISPLAY
                perform say
 
+      *        Epic #3: Display optional About Me section if provided
                if function trim(profile-aboutme) not = spaces
                    move " " to WS-DISPLAY
                    perform say
@@ -766,6 +779,7 @@ identification division.
                    perform say
                end-if
 
+      *        Epic #3: Display all experience entries with proper formatting
                if profile-exp-count > 0
                    move " " to WS-DISPLAY
                    perform say
@@ -793,6 +807,7 @@ identification division.
                        end-if
                    end-perform
                else
+      *            Epic #3: Show message when no experience entries exist
                    move " " to WS-DISPLAY
                    perform say
                    move "--- Professional Experience ---" to WS-DISPLAY
@@ -801,6 +816,7 @@ identification division.
                    perform say
                end-if
 
+      *        Epic #3: Display all education entries with proper formatting
                if profile-edu-count > 0
                    move " " to WS-DISPLAY
                    perform say
@@ -876,6 +892,9 @@ identification division.
            .
 
        search-for-user.
+      *    Epic #3: New feature - Search for users by full name
+      *    Performs case-insensitive search across all profiles
+      *    Displays matching users with their basic information
            move "--- Search for User ---" to WS-DISPLAY
            perform say
            move "Enter the first name of the person you're looking for:" to WS-DISPLAY
@@ -939,6 +958,8 @@ identification division.
            .
            
        parse-search-profile.
+      *    Epic #3: Helper procedure to parse profile data for search
+      *    Extracts basic fields needed for search results display
            move spaces to PARSE-FIELD(1)
            move spaces to PARSE-FIELD(2)
            move spaces to PARSE-FIELD(3)
@@ -963,6 +984,8 @@ identification division.
            .
            
        display-search-result.
+      *    Epic #3: Display formatted search result for a matching user
+      *    Shows username, full name, university, and major
            move "================================" to WS-DISPLAY
            perform say
            move spaces to WS-DISPLAY
@@ -1042,6 +1065,7 @@ parse-profile-line-complete.
            if profile-exp-count < 0 move 0 to profile-exp-count end-if
            if profile-exp-count > 3 move 3 to profile-exp-count end-if
 
+      *    Epic #3 Fix: Corrected field indexing for proper data extraction
            move 9 to ws-field-num
            
            if profile-exp-count >= 1
