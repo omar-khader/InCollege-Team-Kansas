@@ -114,8 +114,19 @@ identification division.
 
        01  PARSE-FIELDS.
            05 PARSE-FIELD occurs 50 times pic x(200).
+       01  ws-parse-idx              pic 9(02) value 0.
 
        01  TEMP-EDU-COUNT-STR       pic x(200).
+       
+       01  search-firstname          pic x(50).
+       01  search-lastname           pic x(50).
+       01  search-results-count      pic 9(02) value 0.
+       01  temp-profile-data.
+           05  temp-profile-username      pic x(32).
+           05  temp-profile-firstname     pic x(50).
+           05  temp-profile-lastname      pic x(50).
+           05  temp-profile-university    pic x(100).
+           05  temp-profile-major         pic x(50).
 
        procedure division.
        main.
@@ -398,9 +409,7 @@ identification division.
                        when 2
                            perform view-profile
                        when 3
-                           move "Search for User is under construction."
-                               to WS-DISPLAY
-                           perform say
+                           perform search-for-user
                        when 4
                            perform show-skill-menu
                        when other
@@ -718,12 +727,19 @@ identification division.
            .
 
        view-profile.
-           move "--- Your Profile ---" to WS-DISPLAY
+           move "================================" to WS-DISPLAY
+           perform say
+           move "         YOUR PROFILE           " to WS-DISPLAY
+           perform say
+           move "================================" to WS-DISPLAY
            perform say
 
            perform load-profile-for-view
 
            if ws-profile-exists = "y"
+               move "--- Personal Information ---" to WS-DISPLAY
+               perform say
+               
                move spaces to WS-DISPLAY
                string "Name: " function trim(profile-firstname) " " 
                       function trim(profile-lastname) delimited by size into WS-DISPLAY
@@ -742,49 +758,82 @@ identification division.
                perform say
 
                if function trim(profile-aboutme) not = spaces
-                   move spaces to WS-DISPLAY
-                   string "About Me: " function trim(profile-aboutme) delimited by size into WS-DISPLAY
+                   move " " to WS-DISPLAY
+                   perform say
+                   move "--- About Me ---" to WS-DISPLAY
+                   perform say
+                   move function trim(profile-aboutme) to WS-DISPLAY
                    perform say
                end-if
 
                if profile-exp-count > 0
-                   move "Experience:" to WS-DISPLAY
+                   move " " to WS-DISPLAY
+                   perform say
+                   move "--- Professional Experience ---" to WS-DISPLAY
                    perform say
                    perform varying ws-i from 1 by 1 until ws-i > profile-exp-count
-                       move spaces to WS-DISPLAY
-                       string "Title: " function trim(exp-title(ws-i)) delimited by size into WS-DISPLAY
+                       move " " to WS-DISPLAY
                        perform say
                        move spaces to WS-DISPLAY
-                       string "Company: " function trim(exp-company(ws-i)) delimited by size into WS-DISPLAY
+                       string "Experience #" ws-i ":" delimited by size into WS-DISPLAY
                        perform say
                        move spaces to WS-DISPLAY
-                       string "Dates: " function trim(exp-dates(ws-i)) delimited by size into WS-DISPLAY
+                       string "  Title: " function trim(exp-title(ws-i)) delimited by size into WS-DISPLAY
+                       perform say
+                       move spaces to WS-DISPLAY
+                       string "  Company: " function trim(exp-company(ws-i)) delimited by size into WS-DISPLAY
+                       perform say
+                       move spaces to WS-DISPLAY
+                       string "  Dates: " function trim(exp-dates(ws-i)) delimited by size into WS-DISPLAY
                        perform say
                        if function trim(exp-description(ws-i)) not = spaces
                            move spaces to WS-DISPLAY
-                           string "Description: " function trim(exp-description(ws-i)) delimited by size into WS-DISPLAY
+                           string "  Description: " function trim(exp-description(ws-i)) delimited by size into WS-DISPLAY
                            perform say
                        end-if
                    end-perform
+               else
+                   move " " to WS-DISPLAY
+                   perform say
+                   move "--- Professional Experience ---" to WS-DISPLAY
+                   perform say
+                   move "  No experience entries added." to WS-DISPLAY
+                   perform say
                end-if
 
                if profile-edu-count > 0
-                   move "Education:" to WS-DISPLAY
+                   move " " to WS-DISPLAY
+                   perform say
+                   move "--- Education ---" to WS-DISPLAY
                    perform say
                    perform varying ws-i from 1 by 1 until ws-i > profile-edu-count
-                       move spaces to WS-DISPLAY
-                       string "Degree: " function trim(edu-degree(ws-i)) delimited by size into WS-DISPLAY
+                       move " " to WS-DISPLAY
                        perform say
                        move spaces to WS-DISPLAY
-                       string "University: " function trim(edu-university(ws-i)) delimited by size into WS-DISPLAY
+                       string "Education #" ws-i ":" delimited by size into WS-DISPLAY
                        perform say
                        move spaces to WS-DISPLAY
-                       string "Years: " function trim(edu-years(ws-i)) delimited by size into WS-DISPLAY
+                       string "  Degree: " function trim(edu-degree(ws-i)) delimited by size into WS-DISPLAY
+                       perform say
+                       move spaces to WS-DISPLAY
+                       string "  University: " function trim(edu-university(ws-i)) delimited by size into WS-DISPLAY
+                       perform say
+                       move spaces to WS-DISPLAY
+                       string "  Years: " function trim(edu-years(ws-i)) delimited by size into WS-DISPLAY
                        perform say
                    end-perform
+               else
+                   move " " to WS-DISPLAY
+                   perform say
+                   move "--- Education ---" to WS-DISPLAY
+                   perform say
+                   move "  No education entries added." to WS-DISPLAY
+                   perform say
                end-if
 
-               move "--------------------" to WS-DISPLAY
+               move " " to WS-DISPLAY
+               perform say
+               move "================================" to WS-DISPLAY
                perform say
            else
                move "No profile found. Please create your profile first." to WS-DISPLAY
@@ -795,6 +844,15 @@ identification division.
        load-profile-for-view.
            move "n" to ws-profile-exists
            initialize profile-data
+           perform varying ws-i from 1 by 1 until ws-i > 3
+               move spaces to exp-title(ws-i)
+               move spaces to exp-company(ws-i)
+               move spaces to exp-dates(ws-i)
+               move spaces to exp-description(ws-i)
+               move spaces to edu-degree(ws-i)
+               move spaces to edu-university(ws-i)
+               move spaces to edu-years(ws-i)
+           end-perform
            
            open input profile-file
            if FILESTAT-PROFILE = "00"
@@ -817,27 +875,117 @@ identification division.
            end-if
            .
 
-parse-profile-line-complete.
+       search-for-user.
+           move "--- Search for User ---" to WS-DISPLAY
+           perform say
+           move "Enter the first name of the person you're looking for:" to WS-DISPLAY
+           perform say
+           
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF exit paragraph
+           end-read
+           move function trim(temp-input) to search-firstname
+           
+           move "Enter the last name of the person you're looking for:" to WS-DISPLAY
+           perform say
+           
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF exit paragraph
+           end-read
+           move function trim(temp-input) to search-lastname
+           
+           move 0 to search-results-count
+           
+           move " " to WS-DISPLAY
+           perform say
+           move "Searching..." to WS-DISPLAY
+           perform say
+           move " " to WS-DISPLAY
+           perform say
+           
+           open input profile-file
+           if FILESTAT-PROFILE = "00"
+               perform until 1 = 2
+                   read profile-file into profile-line
+                       at end exit perform
+                   end-read
+                   
+                   perform parse-search-profile
+                   
+                   if function upper-case(function trim(temp-profile-firstname)) = 
+                      function upper-case(function trim(search-firstname))
+                      and function upper-case(function trim(temp-profile-lastname)) = 
+                          function upper-case(function trim(search-lastname))
+                       add 1 to search-results-count
+                       perform display-search-result
+                   end-if
+               end-perform
+               close profile-file
+           end-if
+           
+           if search-results-count = 0
+               move "No users found matching that name." to WS-DISPLAY
+               perform say
+           else
+               move " " to WS-DISPLAY
+               perform say
+               move spaces to WS-DISPLAY
+               string search-results-count " user(s) found." delimited by size into WS-DISPLAY
+               perform say
+           end-if
+           
+           move " " to WS-DISPLAY
+           perform say
+           .
+           
+       parse-search-profile.
            move spaces to PARSE-FIELD(1)
-           move spaces to PARSE-FIELD(2) 
+           move spaces to PARSE-FIELD(2)
            move spaces to PARSE-FIELD(3)
            move spaces to PARSE-FIELD(4)
            move spaces to PARSE-FIELD(5)
            move spaces to PARSE-FIELD(6)
-           move spaces to PARSE-FIELD(7)
-           move spaces to PARSE-FIELD(8)
-           move spaces to PARSE-FIELD(9)
-           move spaces to PARSE-FIELD(10)
-           move spaces to PARSE-FIELD(11)
-           move spaces to PARSE-FIELD(12)
-           move spaces to PARSE-FIELD(13)
-           move spaces to PARSE-FIELD(14)
-           move spaces to PARSE-FIELD(15)
-           move spaces to PARSE-FIELD(16)
-           move spaces to PARSE-FIELD(17)
-           move spaces to PARSE-FIELD(18)
-           move spaces to PARSE-FIELD(19)
-           move spaces to PARSE-FIELD(20)
+           
+           unstring profile-line delimited by "|" into
+               PARSE-FIELD(1)
+               PARSE-FIELD(2)
+               PARSE-FIELD(3)
+               PARSE-FIELD(4)
+               PARSE-FIELD(5)
+               PARSE-FIELD(6)
+           end-unstring
+           
+           move function trim(PARSE-FIELD(1)) to temp-profile-username
+           move function trim(PARSE-FIELD(2)) to temp-profile-firstname
+           move function trim(PARSE-FIELD(3)) to temp-profile-lastname
+           move function trim(PARSE-FIELD(4)) to temp-profile-university
+           move function trim(PARSE-FIELD(5)) to temp-profile-major
+           .
+           
+       display-search-result.
+           move "================================" to WS-DISPLAY
+           perform say
+           move spaces to WS-DISPLAY
+           string "Username: " function trim(temp-profile-username) delimited by size into WS-DISPLAY
+           perform say
+           move spaces to WS-DISPLAY
+           string "Name: " function trim(temp-profile-firstname) " " 
+                  function trim(temp-profile-lastname) delimited by size into WS-DISPLAY
+           perform say
+           move spaces to WS-DISPLAY
+           string "University: " function trim(temp-profile-university) delimited by size into WS-DISPLAY
+           perform say
+           move spaces to WS-DISPLAY
+           string "Major: " function trim(temp-profile-major) delimited by size into WS-DISPLAY
+           perform say
+           move "================================" to WS-DISPLAY
+           perform say
+           .
+
+parse-profile-line-complete.
+           perform varying ws-parse-idx from 1 by 1 until ws-parse-idx > 50
+               move spaces to PARSE-FIELD(ws-parse-idx)
+           end-perform
 
            unstring profile-line delimited by "|" into
                PARSE-FIELD(1)
@@ -856,6 +1004,22 @@ parse-profile-line-complete.
                PARSE-FIELD(14)
                PARSE-FIELD(15)
                PARSE-FIELD(16)
+               PARSE-FIELD(17)
+               PARSE-FIELD(18)
+               PARSE-FIELD(19)
+               PARSE-FIELD(20)
+               PARSE-FIELD(21)
+               PARSE-FIELD(22)
+               PARSE-FIELD(23)
+               PARSE-FIELD(24)
+               PARSE-FIELD(25)
+               PARSE-FIELD(26)
+               PARSE-FIELD(27)
+               PARSE-FIELD(28)
+               PARSE-FIELD(29)
+               PARSE-FIELD(30)
+               PARSE-FIELD(31)
+               PARSE-FIELD(32)
            end-unstring
 
            move function trim(PARSE-FIELD(2)) to profile-firstname
@@ -878,26 +1042,61 @@ parse-profile-line-complete.
            if profile-exp-count < 0 move 0 to profile-exp-count end-if
            if profile-exp-count > 3 move 3 to profile-exp-count end-if
 
+           move 9 to ws-field-num
+           
            if profile-exp-count >= 1
-               move function trim(PARSE-FIELD(9))  to exp-title(1)
-               move function trim(PARSE-FIELD(10)) to exp-company(1)
-               move function trim(PARSE-FIELD(11)) to exp-dates(1)
-               move function trim(PARSE-FIELD(12)) to exp-description(1)
+               move function trim(PARSE-FIELD(ws-field-num)) to exp-title(1)
+               move function trim(PARSE-FIELD(ws-field-num + 1)) to exp-company(1)
+               move function trim(PARSE-FIELD(ws-field-num + 2)) to exp-dates(1)
+               move function trim(PARSE-FIELD(ws-field-num + 3)) to exp-description(1)
+               add 4 to ws-field-num
+           end-if
+           
+           if profile-exp-count >= 2
+               move function trim(PARSE-FIELD(ws-field-num)) to exp-title(2)
+               move function trim(PARSE-FIELD(ws-field-num + 1)) to exp-company(2)
+               move function trim(PARSE-FIELD(ws-field-num + 2)) to exp-dates(2)
+               move function trim(PARSE-FIELD(ws-field-num + 3)) to exp-description(2)
+               add 4 to ws-field-num
+           end-if
+           
+           if profile-exp-count >= 3
+               move function trim(PARSE-FIELD(ws-field-num)) to exp-title(3)
+               move function trim(PARSE-FIELD(ws-field-num + 1)) to exp-company(3)
+               move function trim(PARSE-FIELD(ws-field-num + 2)) to exp-dates(3)
+               move function trim(PARSE-FIELD(ws-field-num + 3)) to exp-description(3)
+               add 4 to ws-field-num
            end-if
 
-           if function trim(PARSE-FIELD(13)) not = spaces
-               move function numval(function trim(PARSE-FIELD(13))) to profile-edu-count
+           if function trim(PARSE-FIELD(ws-field-num)) not = spaces
+               move function numval(function trim(PARSE-FIELD(ws-field-num))) to profile-edu-count
            else
                move 0 to profile-edu-count
            end-if
+           add 1 to ws-field-num
 
            if profile-edu-count < 0 move 0 to profile-edu-count end-if
            if profile-edu-count > 3 move 3 to profile-edu-count end-if
 
            if profile-edu-count >= 1
-               move function trim(PARSE-FIELD(14)) to edu-degree(1)
-               move function trim(PARSE-FIELD(15)) to edu-university(1)
-               move function trim(PARSE-FIELD(16)) to edu-years(1)
+               move function trim(PARSE-FIELD(ws-field-num)) to edu-degree(1)
+               move function trim(PARSE-FIELD(ws-field-num + 1)) to edu-university(1)
+               move function trim(PARSE-FIELD(ws-field-num + 2)) to edu-years(1)
+               add 3 to ws-field-num
+           end-if
+           
+           if profile-edu-count >= 2
+               move function trim(PARSE-FIELD(ws-field-num)) to edu-degree(2)
+               move function trim(PARSE-FIELD(ws-field-num + 1)) to edu-university(2)
+               move function trim(PARSE-FIELD(ws-field-num + 2)) to edu-years(2)
+               add 3 to ws-field-num
+           end-if
+           
+           if profile-edu-count >= 3
+               move function trim(PARSE-FIELD(ws-field-num)) to edu-degree(3)
+               move function trim(PARSE-FIELD(ws-field-num + 1)) to edu-university(3)
+               move function trim(PARSE-FIELD(ws-field-num + 2)) to edu-years(3)
+               add 3 to ws-field-num
            end-if
 
            move "y" to ws-profile-exists

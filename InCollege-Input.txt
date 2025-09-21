@@ -1,23 +1,37 @@
 2
-TestUser
-TestPass123!
+JohnDoe
+Pass123!@#
+2
+JaneSmith
+Pass456!@#
 1
-TestUser
-TestPass123!
+JohnDoe
+Pass123!@#
 1
 John
 Doe
-Example University
+State University
 Computer Science
 2025
-Enthusiastic developer always learning new things.
-Software Intern
+I am passionate about software development and creating innovative solutions.
+Software Engineering Intern
 Tech Corp
 Summer 2024
-Developed tools for internal testing.
+Developed backend services using COBOL and maintained legacy systems.
+Research Assistant
+University Lab
+Fall 2023
+Worked on data analysis projects and published research papers.
 DONE
 Bachelor of Science
-Example University
+State University
 2021-2025
+Master of Science
+Tech University
+2025-2027
 DONE
 2
+3
+Jane
+Smith
+7
