@@ -137,6 +137,9 @@ identification division.
       * 2. Display of all optional fields (About Me, Experience, Education)
       * 3. Search functionality by full name (case-insensitive)
       * 4. Improved parsing to handle multiple experience/education entries
+      * 
+      * TESTER NOTE: All screen output is automatically written to
+      * InCollege-Output.txt for easy verification of results
       ******************************************************************
        main.
            open input user-file
@@ -1246,6 +1249,8 @@ parse-profile-line-complete.
            .
 
        say.
+      *    Epic #3: All screen output is written to InCollege-Output.txt
+      *    This includes profile viewing and search results for easy verification
            display WS-DISPLAY
            move WS-DISPLAY to OutRecord
            write OutRecord
