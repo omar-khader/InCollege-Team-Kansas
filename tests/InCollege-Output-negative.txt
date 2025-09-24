@@ -1,0 +1,7 @@
+--- Search for User ---
+Enter the first name of the person you're looking for:
+Enter the last name of the person you're looking for:
+
+Searching...
+
+No one by that name could be found.
