@@ -1,23 +1,30 @@
 2
 TestUser
-TestPass123!
+Password123!
 1
 TestUser
-TestPass123!
+Password123!
 1
-John
-Doe
-Example University
+Test
+User
+State University
 Computer Science
 2025
-Enthusiastic developer always learning new things.
-Software Intern
-Tech Corp
+Passionate about software development.
+Intern
+Tech Solutions
 Summer 2024
-Developed tools for internal testing.
+Assisted with front-end development.
 DONE
-Bachelor of Science
-Example University
+Bachelor's
+State University
 2021-2025
 DONE
 2
+3
+4
+Test User
+4
+Another Student
+5
+1
