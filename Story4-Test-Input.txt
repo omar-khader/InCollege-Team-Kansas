@@ -21,7 +21,7 @@ Bachelor of Science
 University of Florida
 2021-2025
 DONE
-3
+0
 2
 bob
 BobPass1!
@@ -45,7 +45,7 @@ Bachelor of Science
 Florida State University
 2021-2025
 DONE
-3
+0
 2
 charlie
 CharlieP1!
@@ -69,7 +69,7 @@ Bachelor of Science
 University of Central Florida
 2021-2025
 DONE
-3
+0
 1
 alice
 AlicePass1!
@@ -80,4 +80,6 @@ bob
 1
 charlie
 2
+3
+0
 3
