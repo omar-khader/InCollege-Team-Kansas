@@ -11,7 +11,6 @@ University of Florida
 Computer Science
 2025
 I love coding and problem solving.
-
 Software Engineering Intern
 Tech Solutions Inc
 Summer 2024
@@ -35,7 +34,6 @@ Florida State University
 Information Technology
 2025
 Passionate about cybersecurity and network administration.
-
 IT Support Specialist
 Campus IT Services
 Fall 2023
@@ -59,7 +57,6 @@ University of Central Florida
 Software Engineering
 2025
 I enjoy building scalable applications and learning new technologies.
-
 Junior Developer
 StartupXYZ
 Spring 2024
