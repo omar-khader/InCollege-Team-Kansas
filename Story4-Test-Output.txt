@@ -26,8 +26,16 @@ Enter University/College Attended:
 Enter Major:
 Enter Graduation Year (YYYY):
 Enter About Me (optional, max 200 chars, enter blank line to skip):
-
 Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Experience #1 - Title:
+Experience #1 - Company/Organization:
+Experience #1 - Dates (e.g., Summer 2024):
+Experience #1 - Description (optional, max 100 chars, blank to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
+Education #1 - Degree:
+Education #1 - University/College:
+Education #1 - Years Attended (e.g., 2023-2025):
 Add Education (optional, max 3 entries. Enter 'DONE' to finish):
 Profile saved successfully!
 1. Create/Edit My Profile
@@ -64,8 +72,16 @@ Enter University/College Attended:
 Enter Major:
 Enter Graduation Year (YYYY):
 Enter About Me (optional, max 200 chars, enter blank line to skip):
-
 Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Experience #1 - Title:
+Experience #1 - Company/Organization:
+Experience #1 - Dates (e.g., Summer 2024):
+Experience #1 - Description (optional, max 100 chars, blank to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
+Education #1 - Degree:
+Education #1 - University/College:
+Education #1 - Years Attended (e.g., 2023-2025):
 Add Education (optional, max 3 entries. Enter 'DONE' to finish):
 Profile saved successfully!
 1. Create/Edit My Profile
@@ -102,8 +118,16 @@ Enter University/College Attended:
 Enter Major:
 Enter Graduation Year (YYYY):
 Enter About Me (optional, max 200 chars, enter blank line to skip):
-
 Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Experience #1 - Title:
+Experience #1 - Company/Organization:
+Experience #1 - Dates (e.g., Summer 2024):
+Experience #1 - Description (optional, max 100 chars, blank to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
+Education #1 - Degree:
+Education #1 - University/College:
+Education #1 - Years Attended (e.g., 2023-2025):
 Add Education (optional, max 3 entries. Enter 'DONE' to finish):
 Profile saved successfully!
 1. Create/Edit My Profile
@@ -139,6 +163,16 @@ Connection request sent successfully!
 2. View Pending Connection Requests
 3. Go Back
 Enter your choice:
+--- Pending Connection Requests ---
+No pending connection requests.
+ 
+Total pending requests: 0
+ 
+--- My Network ---
+1. Send Connection Request
+2. View Pending Connection Requests
+3. Go Back
+Enter your choice:
 --- Send Connection Request ---
 Enter username to send request to:
 Connection request sent successfully!
@@ -149,3 +183,11 @@ Connection request sent successfully!
 Enter your choice:
 --- Pending Connection Requests ---
 No pending connection requests.
+ 
+Total pending requests: 0
+ 
+--- My Network ---
+1. Send Connection Request
+2. View Pending Connection Requests
+3. Go Back
+Enter your choice:

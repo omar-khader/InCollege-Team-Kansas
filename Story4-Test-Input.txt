@@ -1,9 +1,9 @@
 2
 alice
-AlicePass123!
+AlicePass1!
 1
 alice
-AlicePass123!
+AlicePass1!
 1
 Alice
 Smith
@@ -24,10 +24,10 @@ DONE
 3
 2
 bob
-BobPass123!
+BobPass1!
 1
 bob
-BobPass123!
+BobPass1!
 1
 Bob
 Johnson
@@ -48,10 +48,10 @@ DONE
 3
 2
 charlie
-CharliePass123!
+CharlieP1!
 1
 charlie
-CharliePass123!
+CharlieP1!
 1
 Charlie
 Brown
@@ -72,7 +72,7 @@ DONE
 3
 1
 alice
-AlicePass123!
+AlicePass1!
 4
 1
 bob
