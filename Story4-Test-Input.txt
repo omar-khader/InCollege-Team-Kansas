@@ -1,0 +1,83 @@
+2
+alice
+AlicePass123!
+1
+alice
+AlicePass123!
+1
+Alice
+Smith
+University of Florida
+Computer Science
+2025
+I love coding and problem solving.
+
+Software Engineering Intern
+Tech Solutions Inc
+Summer 2024
+Developed web applications using modern frameworks.
+DONE
+Bachelor of Science
+University of Florida
+2021-2025
+DONE
+3
+2
+bob
+BobPass123!
+1
+bob
+BobPass123!
+1
+Bob
+Johnson
+Florida State University
+Information Technology
+2025
+Passionate about cybersecurity and network administration.
+
+IT Support Specialist
+Campus IT Services
+Fall 2023
+Provided technical support and maintained university systems.
+DONE
+Bachelor of Science
+Florida State University
+2021-2025
+DONE
+3
+2
+charlie
+CharliePass123!
+1
+charlie
+CharliePass123!
+1
+Charlie
+Brown
+University of Central Florida
+Software Engineering
+2025
+I enjoy building scalable applications and learning new technologies.
+
+Junior Developer
+StartupXYZ
+Spring 2024
+Worked on full-stack development projects.
+DONE
+Bachelor of Science
+University of Central Florida
+2021-2025
+DONE
+3
+1
+alice
+AlicePass123!
+4
+1
+bob
+2
+1
+charlie
+2
+3
