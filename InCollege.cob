@@ -10,6 +10,9 @@ identification division.
            select profile-file assign to "profiles.dat"
                organization is line sequential
                file status is FILESTAT-PROFILE.
+           select connection-file assign to "connections.dat"
+               organization is line sequential
+               file status is FILESTAT-CONN.
            select InpFile assign to "InCollege-Input.txt"
                organization is line sequential
                file status is FILESTAT.
@@ -25,6 +28,9 @@ identification division.
        fd  profile-file.
        01  profile-line              pic x(1500).
 
+       fd  connection-file.
+       01  connection-line           pic x(200).
+
        fd  InpFile.
        01  InpRecord                 pic x(200).
 
@@ -34,6 +40,7 @@ identification division.
        working-storage section.
        01  FILESTAT                  pic xx.
        01  FILESTAT-PROFILE          pic xx.
+       01  FILESTAT-CONN             pic xx.
        01  FILESTAT-Out              pic xx.
 
        01  WS-EOF                    pic x value "N".
@@ -130,6 +137,20 @@ identification division.
            05  temp-profile-university    pic x(100).
            05  temp-profile-major         pic x(50).
 
+      *    Connection request variables
+       01  connection-data.
+           05  conn-from-user         pic x(32).
+           05  conn-to-user           pic x(32).
+           05  conn-status            pic x(10).
+       01  ws-connection-exists      pic x value "n".
+       01  ws-reverse-conn-exists    pic x value "n".
+       01  connection-count          pic 9(03) value 0.
+       01  CONNECTIONS-TABLE.
+           05 CONNECTION-ENTRY occurs 100 times pic x(200).
+       01  CONNECTIONS-COUNT         pic 9(03) value 0.
+       01  target-username           pic x(32).
+       01  ws-conn-choice            pic 9 value 0.
+
        procedure division.
       ******************************************************************
       * Epic #3 Implementation Notes:
@@ -160,6 +181,13 @@ identification division.
               close profile-file
            end-if
            close profile-file
+           
+           open input connection-file
+           if FILESTAT-CONN = "35"  
+              open output connection-file
+              close connection-file
+           end-if
+           close connection-file
            
            open input InpFile
            if FILESTAT not = "00"
@@ -401,7 +429,10 @@ identification division.
                move "3. Search for User" to WS-DISPLAY
                perform say
 
-               move "4. Learn a New Skill" to WS-DISPLAY
+               move "4. View My Network" to WS-DISPLAY
+               perform say
+
+               move "5. Learn a New Skill" to WS-DISPLAY
                perform say
 
                move "Enter your choice:" to WS-DISPLAY
@@ -424,6 +455,8 @@ identification division.
       *                    Epic #3: Search for users by full name
                            perform search-for-user
                        when 4
+                           perform view-my-network
+                       when 5
                            perform show-skill-menu
                        when other
                            exit perform
@@ -1005,6 +1038,202 @@ identification division.
            string "Major: " function trim(temp-profile-major) delimited by size into WS-DISPLAY
            perform say
            move "================================" to WS-DISPLAY
+           perform say
+           .
+
+       view-my-network.
+           perform until ws-conn-choice = 3 or WS-EOF = "Y"
+               move "--- My Network ---" to WS-DISPLAY
+               perform say
+               move "1. Send Connection Request" to WS-DISPLAY
+               perform say
+               move "2. View Pending Connection Requests" to WS-DISPLAY
+               perform say
+               move "3. Go Back" to WS-DISPLAY
+               perform say
+               move "Enter your choice:" to WS-DISPLAY
+               perform say
+               
+               read InpFile into InpRecord
+                   at end move "Y" to WS-EOF
+                   not at end
+                       move function numval(function trim(InpRecord)) 
+                           to ws-conn-choice
+               end-read
+               
+               if WS-EOF = "N"
+                   evaluate ws-conn-choice
+                       when 1
+                           perform send-connection-request
+                       when 2
+                           perform view-pending-requests
+                       when 3
+                           continue
+                       when other
+                           move "Invalid choice. Please enter 1, 2, or 3." to WS-DISPLAY
+                           perform say
+                   end-evaluate
+               end-if
+           end-perform
+           .
+
+       send-connection-request.
+           move "--- Send Connection Request ---" to WS-DISPLAY
+           perform say
+           move "Enter username to send request to:" to WS-DISPLAY
+           perform say
+           
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF exit paragraph
+           end-read
+           move function trim(temp-input) to target-username
+           
+      *    Check if target user exists
+           move "n" to ws-found
+           open input user-file
+           if FILESTAT = "00"
+               perform until 1 = 2
+                   read user-file into user-line
+                       at end exit perform
+                   end-read
+                   unstring user-line delimited by "," into f-user f-pass
+                   end-unstring
+                   if function trim(f-user) = target-username
+                       move "y" to ws-found
+                       exit perform
+                   end-if
+               end-perform
+               close user-file
+           end-if
+           
+           if ws-found = "n"
+               move "User not found." to WS-DISPLAY
+               perform say
+               exit paragraph
+           end-if
+           
+           if target-username = current-user
+               move "You cannot send a connection request to yourself." to WS-DISPLAY
+               perform say
+               exit paragraph
+           end-if
+           
+      *    Check if connection already exists or reverse connection exists
+           perform check-existing-connections
+           
+           if ws-connection-exists = "y"
+               move "Connection request already sent to this user." to WS-DISPLAY
+               perform say
+               exit paragraph
+           end-if
+           
+           if ws-reverse-conn-exists = "y"
+               move "This user has already sent you a connection request." to WS-DISPLAY
+               perform say
+               move "Please check your pending requests." to WS-DISPLAY
+               perform say
+               exit paragraph
+           end-if
+           
+      *    Save the connection request
+           open extend connection-file
+           if FILESTAT-CONN not = "00"
+               open output connection-file
+               close connection-file
+               open extend connection-file
+           end-if
+           
+           move spaces to connection-line
+           string function trim(current-user) delimited by size
+                  "|" delimited by size
+                  function trim(target-username) delimited by size
+                  "|pending" delimited by size
+               into connection-line
+           end-string
+           write connection-line
+           close connection-file
+           
+           move "Connection request sent successfully!" to WS-DISPLAY
+           perform say
+           .
+
+       check-existing-connections.
+           move "n" to ws-connection-exists
+           move "n" to ws-reverse-conn-exists
+           
+           open input connection-file
+           if FILESTAT-CONN = "00"
+               perform until 1 = 2
+                   read connection-file into connection-line
+                       at end exit perform
+                   end-read
+                   
+                   unstring connection-line delimited by "|" into
+                       conn-from-user
+                       conn-to-user
+                       conn-status
+                   end-unstring
+                   
+      *            Check if current user already sent request to target
+                   if function trim(conn-from-user) = current-user
+                       and function trim(conn-to-user) = target-username
+                       move "y" to ws-connection-exists
+                   end-if
+                   
+      *            Check if target already sent request to current user
+                   if function trim(conn-from-user) = target-username
+                       and function trim(conn-to-user) = current-user
+                       and function trim(conn-status) = "pending"
+                       move "y" to ws-reverse-conn-exists
+                   end-if
+               end-perform
+               close connection-file
+           end-if
+           .
+
+       view-pending-requests.
+           move "--- Pending Connection Requests ---" to WS-DISPLAY
+           perform say
+           move 0 to connection-count
+           
+           open input connection-file
+           if FILESTAT-CONN = "00"
+               perform until 1 = 2
+                   read connection-file into connection-line
+                       at end exit perform
+                   end-read
+                   
+                   unstring connection-line delimited by "|" into
+                       conn-from-user
+                       conn-to-user
+                       conn-status
+                   end-unstring
+                   
+                   if function trim(conn-to-user) = current-user
+                       and function trim(conn-status) = "pending"
+                       add 1 to connection-count
+                       move spaces to WS-DISPLAY
+                       string "Request from: " function trim(conn-from-user) 
+                              delimited by size into WS-DISPLAY
+                       perform say
+                   end-if
+               end-perform
+               close connection-file
+           end-if
+           
+           if connection-count = 0
+               move "No pending connection requests." to WS-DISPLAY
+               perform say
+           else
+               move " " to WS-DISPLAY
+               perform say
+               move spaces to WS-DISPLAY
+               string "Total pending requests: " connection-count 
+                      delimited by size into WS-DISPLAY
+               perform say
+           end-if
+           
+           move " " to WS-DISPLAY
            perform say
            .
 
