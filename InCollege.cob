@@ -10,6 +10,9 @@ identification division.
            select profile-file assign to "profiles.dat"
                organization is line sequential
                file status is FILESTAT-PROFILE.
+           select connection-file assign to "connections.dat"
+               organization is line sequential
+               file status is FILESTAT-CONN.
            select InpFile assign to "InCollege-Input.txt"
                organization is line sequential
                file status is FILESTAT.
@@ -25,6 +28,9 @@ identification division.
        fd  profile-file.
        01  profile-line              pic x(1500).
 
+       fd  connection-file.
+       01  connection-line           pic x(200).
+
        fd  InpFile.
        01  InpRecord                 pic x(200).
 
@@ -34,6 +40,7 @@ identification division.
        working-storage section.
        01  FILESTAT                  pic xx.
        01  FILESTAT-PROFILE          pic xx.
+       01  FILESTAT-CONN             pic xx.
        01  FILESTAT-Out              pic xx.
 
        01  WS-EOF                    pic x value "N".
@@ -103,11 +110,8 @@ identification division.
        01  ws-parse-pos              pic 9(04).
        01  ws-field-start            pic 9(04).
        01  ws-field-len              pic 9(04).
-       01  ws-field-num              pic 99.
+       01  ws-field-num              pic 9.
        01  WS-FIELD-POS              pic 9(04).
-       
-       01  ws-display-num           pic x(3).
-       01  ws-display-count         pic x(3).
 
        01  PROFILES-TABLE.
            05 PROFILE-TABLE-ENTRY occurs 100 times pic x(1500).
@@ -120,11 +124,12 @@ identification division.
        01  ws-parse-idx              pic 9(02) value 0.
 
        01  TEMP-EDU-COUNT-STR       pic x(200).
-
+       
+      *>>    Epic #3: Variables for search functionality
        01  search-firstname          pic x(50).
        01  search-lastname           pic x(50).
        01  search-results-count      pic 9(02) value 0.
-
+      *>>    Temporary profile data structure for search results
        01  temp-profile-data.
            05  temp-profile-username      pic x(32).
            05  temp-profile-firstname     pic x(50).
@@ -132,7 +137,34 @@ identification division.
            05  temp-profile-university    pic x(100).
            05  temp-profile-major         pic x(50).
 
+      *>>    Connection request variables
+       01  connection-data.
+           05  conn-from-user         pic x(32).
+           05  conn-to-user           pic x(32).
+           05  conn-status            pic x(10).
+           01  conn-u1                  pic x(32).
+           01  conn-u2                  pic x(32).
+
+       01  ws-connection-exists      pic x value "n".
+       01  ws-reverse-conn-exists    pic x value "n".
+       01  connection-count          pic 9(03) value 0.
+       01  CONNECTIONS-TABLE.
+           05 CONNECTION-ENTRY occurs 100 times pic x(200).
+       01  CONNECTIONS-COUNT         pic 9(03) value 0.
+       01  target-username           pic x(32).
+       01  ws-conn-choice            pic 9 value 0.
+
        procedure division.
+      *>>******************************************************************
+      *> Epic #3 Implementation Notes:
+      *> 1. Enhanced profile viewing with formatted sections
+      *> 2. Display of all optional fields (About Me, Experience, Education)
+      *> 3. Search functionality by full name (case-insensitive)
+      *> 4. Improved parsing to handle multiple experience/education entries
+      *> 
+      *> TESTER NOTE: All screen output is automatically written to
+      *> InCollege-Output.txt for easy verification of results
+      *>>******************************************************************
        main.
            open input user-file
            if FILESTAT = "35"  
@@ -152,6 +184,13 @@ identification division.
               close profile-file
            end-if
            close profile-file
+           
+           open input connection-file
+           if FILESTAT-CONN = "35"  
+              open output connection-file
+              close connection-file
+           end-if
+           close connection-file
            
            open input InpFile
            if FILESTAT not = "00"
@@ -390,14 +429,18 @@ identification division.
                move "2. View My Profile" to WS-DISPLAY
                perform say
 
-               move "3. Search for a job" to WS-DISPLAY
+               move "3. Search for User" to WS-DISPLAY
                perform say
 
-               move "4. Find someone you know" to WS-DISPLAY
+               move "4. View My Network" to WS-DISPLAY
                perform say
 
                move "5. Learn a New Skill" to WS-DISPLAY
                perform say
+
+               move "6. View My Pending Connection Requests" to WS-DISPLAY
+               perform say
+
 
                move "Enter your choice:" to WS-DISPLAY
                perform say
@@ -416,21 +459,20 @@ identification division.
                        when 2
                            perform view-profile
                        when 3
-                           perform search-for-job
-                       when 4
+      *>>                    Epic #3: Search for users by full name
                            perform search-for-user
+                       when 4
+                           perform view-my-network
                        when 5
                            perform show-skill-menu
+                       when 6
+                           perform cr-view-pending-requests
+
                        when other
                            exit perform
                    end-evaluate
                end-if
            end-perform
-           .
-
-       search-for-job.
-           move "Search for Job is under construction." to WS-DISPLAY
-           perform say
            .
 
        create-edit-profile.
@@ -470,17 +512,16 @@ identification division.
            perform get-graduation-year
 
            move "Enter About Me (optional, max 200 chars, enter blank line to skip):" to WS-DISPLAY
-	   perform say
-	   read InpFile into temp-input
-    		at end move "Y" to WS-EOF
-    		not at end 
-        	    if function trim(temp-input) = spaces or 
-           		function upper-case(function trim(temp-input)) = "DONE"
-            		move spaces to profile-aboutme
-        	    else
-            		move function trim(temp-input) to profile-aboutme
-        	    end-if
-	   end-read
+           perform say
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF
+               not at end 
+                   if function trim(temp-input) = spaces
+                       move spaces to profile-aboutme
+                   else
+                       move function trim(temp-input) to profile-aboutme
+                   end-if
+           end-read
 
            perform get-experience-entries
 
@@ -523,18 +564,18 @@ identification division.
                move spaces to exp-description(ws-exp-index)
            end-perform
 
-           move "Add Experience (optional, max 3 entries. Enter 'DONE' to finish):" to WS-DISPLAY
-           perform say
-           
-           read InpFile into temp-input
-               at end move "Y" to WS-EOF exit paragraph
-           end-read
-
-           if function upper-case(function trim(temp-input)) = "DONE"
-               exit paragraph
-           end-if
-
            perform until profile-exp-count >= 3 or WS-EOF = "Y"
+               move "Add Experience (optional, max 3 entries. Enter 'DONE' to finish):" to WS-DISPLAY
+               perform say
+               
+               read InpFile into temp-input
+                   at end move "Y" to WS-EOF exit paragraph
+               end-read
+
+               if function upper-case(function trim(temp-input)) = "DONE"
+                   exit perform
+               end-if
+
                add 1 to profile-exp-count
                move profile-exp-count to ws-exp-index
                move ws-exp-index to ws-entry-number
@@ -578,17 +619,6 @@ identification division.
                else
                    move spaces to exp-description(ws-exp-index)
                end-if
-
-               move "Add Experience (optional, max 3 entries. Enter 'DONE' to finish):" to WS-DISPLAY
-               perform say
-               
-               read InpFile into temp-input
-                   at end move "Y" to WS-EOF exit paragraph
-               end-read
-
-               if function upper-case(function trim(temp-input)) = "DONE"
-                   exit perform
-               end-if
            end-perform
            .
 
@@ -600,18 +630,18 @@ identification division.
                move spaces to edu-years(ws-edu-index)
            end-perform
 
-           move "Add Education (optional, max 3 entries. Enter 'DONE' to finish):" to WS-DISPLAY
-           perform say
-           
-           read InpFile into temp-input
-               at end move "Y" to WS-EOF exit paragraph
-           end-read
-               
-           if function upper-case(function trim(temp-input)) = "DONE"
-               exit paragraph
-           end-if
-
            perform until profile-edu-count >= 3 or WS-EOF = "Y"
+               move "Add Education (optional, max 3 entries. Enter 'DONE' to finish):" to WS-DISPLAY
+               perform say
+               
+               read InpFile into temp-input
+                   at end move "Y" to WS-EOF exit paragraph
+               end-read
+               
+               if function upper-case(function trim(temp-input)) = "DONE"
+                   exit perform
+               end-if
+
                add 1 to profile-edu-count
                move profile-edu-count to ws-edu-index
                move ws-edu-index to ws-entry-number
@@ -637,17 +667,6 @@ identification division.
                    at end move "Y" to WS-EOF exit paragraph
                end-read
                move function trim(temp-input) to edu-years(ws-edu-index)
-
-               move "Add Education (optional, max 3 entries. Enter 'DONE' to finish):" to WS-DISPLAY
-               perform say
-               
-               read InpFile into temp-input
-                   at end move "Y" to WS-EOF exit paragraph
-               end-read
-               
-               if function upper-case(function trim(temp-input)) = "DONE"
-                   exit perform
-               end-if
            end-perform
            .
 
@@ -764,6 +783,8 @@ identification division.
            .
 
        view-profile.
+      *>>    Epic #3: Enhanced profile display with easy-to-read format
+      *>>    Shows all fields including optional ones in organized sections
            move "================================" to WS-DISPLAY
            perform say
            move "         YOUR PROFILE           " to WS-DISPLAY
@@ -794,6 +815,7 @@ identification division.
                string "Graduation Year: " profile-gradyear delimited by size into WS-DISPLAY
                perform say
 
+      *>>        Epic #3: Display optional About Me section if provided
                if function trim(profile-aboutme) not = spaces
                    move " " to WS-DISPLAY
                    perform say
@@ -803,6 +825,7 @@ identification division.
                    perform say
                end-if
 
+      *>>        Epic #3: Display all experience entries with proper formatting
                if profile-exp-count > 0
                    move " " to WS-DISPLAY
                    perform say
@@ -811,10 +834,9 @@ identification division.
                    perform varying ws-i from 1 by 1 until ws-i > profile-exp-count
                        move " " to WS-DISPLAY
                        perform say
-                       move ws-i to ws-display-num
-		       move spaces to WS-DISPLAY
-		       string "Experience #" function trim(ws-display-num) ":" delimited by size into WS-DISPLAY
-		       perform say
+                       move spaces to WS-DISPLAY
+                       string "Experience #" ws-i ":" delimited by size into WS-DISPLAY
+                       perform say
                        move spaces to WS-DISPLAY
                        string "  Title: " function trim(exp-title(ws-i)) delimited by size into WS-DISPLAY
                        perform say
@@ -831,6 +853,7 @@ identification division.
                        end-if
                    end-perform
                else
+      *>>            Epic #3: Show message when no experience entries exist
                    move " " to WS-DISPLAY
                    perform say
                    move "--- Professional Experience ---" to WS-DISPLAY
@@ -839,6 +862,7 @@ identification division.
                    perform say
                end-if
 
+      *>>        Epic #3: Display all education entries with proper formatting
                if profile-edu-count > 0
                    move " " to WS-DISPLAY
                    perform say
@@ -847,10 +871,9 @@ identification division.
                    perform varying ws-i from 1 by 1 until ws-i > profile-edu-count
                        move " " to WS-DISPLAY
                        perform say
-                       move ws-i to ws-display-num
-		       move spaces to WS-DISPLAY
-		       string "Education #" function trim(ws-display-num) ":" delimited by size into WS-DISPLAY
-		       perform say
+                       move spaces to WS-DISPLAY
+                       string "Education #" ws-i ":" delimited by size into WS-DISPLAY
+                       perform say
                        move spaces to WS-DISPLAY
                        string "  Degree: " function trim(edu-degree(ws-i)) delimited by size into WS-DISPLAY
                        perform say
@@ -915,34 +938,35 @@ identification division.
            .
 
        search-for-user.
+      *>>    Epic #3: New feature - Search for users by full name
+      *>>    Performs case-insensitive search across all profiles
+      *>>    Displays matching users with their basic information
            move "--- Search for User ---" to WS-DISPLAY
            perform say
-           move "Enter the full name of the person you are looking for:" to WS-DISPLAY
+           move "Enter the first name of the person you're looking for:" to WS-DISPLAY
            perform say
-
-           read InpFile into temp-input
-              at end move "Y" to WS-EOF exit paragraph
-           end-read
-
-           move spaces to search-firstname
-           move spaces to search-lastname
-
-           move 0 to ws-spaces
-           inspect function trim(temp-input) tallying ws-spaces for all " "
            
-           if ws-spaces > 0
-               *> Multiple words - split into first and last name
-               unstring function trim(temp-input) delimited by " " 
-                  into search-firstname search-lastname
-               end-unstring
-           else
-               *> Single word - use as both first and last name for searching
-               move function trim(temp-input) to search-firstname
-               move function trim(temp-input) to search-lastname
-           end-if
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF exit paragraph
+           end-read
+           move function trim(temp-input) to search-firstname
+           
+           move "Enter the last name of the person you're looking for:" to WS-DISPLAY
+           perform say
+           
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF exit paragraph
+           end-read
+           move function trim(temp-input) to search-lastname
            
            move 0 to search-results-count
-          
+           
+           move " " to WS-DISPLAY
+           perform say
+           move "Searching..." to WS-DISPLAY
+           perform say
+           move " " to WS-DISPLAY
+           perform say
            
            open input profile-file
            if FILESTAT-PROFILE = "00"
@@ -952,38 +976,27 @@ identification division.
                    end-read
                    
                    perform parse-search-profile
-
-                   if ws-spaces > 0
-                       if function upper-case(function trim(temp-profile-firstname)) = 
-                          function upper-case(function trim(search-firstname))
-                          and function upper-case(function trim(temp-profile-lastname)) = 
-                              function upper-case(function trim(search-lastname))
-                           add 1 to search-results-count
-                           perform display-search-result
-                       end-if
-                   else
-                       if function upper-case(function trim(temp-profile-firstname)) = 
-                          function upper-case(function trim(temp-input))
-                          or function upper-case(function trim(temp-profile-lastname)) = 
-                             function upper-case(function trim(temp-input))
-                           add 1 to search-results-count
-                           perform display-search-result
-                       end-if
+                   
+                   if function upper-case(function trim(temp-profile-firstname)) = 
+                      function upper-case(function trim(search-firstname))
+                      and function upper-case(function trim(temp-profile-lastname)) = 
+                          function upper-case(function trim(search-lastname))
+                       add 1 to search-results-count
+                       perform display-search-result
                    end-if
                end-perform
                close profile-file
            end-if
            
            if search-results-count = 0
-               move "No one by that name could be found." to WS-DISPLAY
+               move "No users found matching that name." to WS-DISPLAY
                perform say
            else
                move " " to WS-DISPLAY
                perform say
-               move search-results-count to ws-display-count
-	       move spaces to WS-DISPLAY
-	       string function trim(ws-display-count) " user(s) found." delimited by size into WS-DISPLAY
-	       perform say
+               move spaces to WS-DISPLAY
+               string search-results-count " user(s) found." delimited by size into WS-DISPLAY
+               perform say
            end-if
            
            move " " to WS-DISPLAY
@@ -991,6 +1004,8 @@ identification division.
            .
            
        parse-search-profile.
+      *>>    Epic #3: Helper procedure to parse profile data for search
+      *>>    Extracts basic fields needed for search results display
            move spaces to PARSE-FIELD(1)
            move spaces to PARSE-FIELD(2)
            move spaces to PARSE-FIELD(3)
@@ -1015,6 +1030,8 @@ identification division.
            .
            
        display-search-result.
+      *>>    Epic #3: Display formatted search result for a matching user
+      *>>    Shows username, full name, university, and major
            move "================================" to WS-DISPLAY
            perform say
            move spaces to WS-DISPLAY
@@ -1031,6 +1048,168 @@ identification division.
            string "Major: " function trim(temp-profile-major) delimited by size into WS-DISPLAY
            perform say
            move "================================" to WS-DISPLAY
+           perform cr-offer-send-menu
+           .
+
+       view-my-network.
+           perform until ws-conn-choice = 3 or WS-EOF = "Y"
+               move "--- My Network ---" to WS-DISPLAY
+               perform say
+               move "1. Send Connection Request" to WS-DISPLAY
+               perform say
+               move "2. View Pending Connection Requests" to WS-DISPLAY
+               perform say
+               move "3. Go Back" to WS-DISPLAY
+               perform say
+               move "Enter your choice:" to WS-DISPLAY
+               perform say
+               
+               read InpFile into InpRecord
+                   at end move "Y" to WS-EOF
+                   not at end
+                       move function numval(function trim(InpRecord)) 
+                           to ws-conn-choice
+               end-read
+               
+               if WS-EOF = "N"
+                   evaluate ws-conn-choice
+                       when 1
+                           perform send-connection-request
+                       when 2
+                           perform view-pending-requests
+                       when 3
+                           continue
+                       when other
+                           move "Invalid choice. Please enter 1, 2, or 3." to WS-DISPLAY
+                           perform say
+                   end-evaluate
+               end-if
+           end-perform
+           .
+
+       send-connection-request.
+           move "--- Send Connection Request ---" to WS-DISPLAY
+           perform say
+           move "Enter username to send request to:" to WS-DISPLAY
+           perform say
+           
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF exit paragraph
+           end-read
+           move function trim(temp-input) to target-username
+           
+      *>>    Check if target user exists
+           move "n" to ws-found
+           open input user-file
+           if FILESTAT = "00"
+               perform until 1 = 2
+                   read user-file into user-line
+                       at end exit perform
+                   end-read
+                   unstring user-line delimited by "," into f-user f-pass
+                   end-unstring
+                   if function trim(f-user) = target-username
+                       move "y" to ws-found
+                       exit perform
+                   end-if
+               end-perform
+               close user-file
+           end-if
+           
+           if ws-found = "n"
+               move "User not found." to WS-DISPLAY
+               perform say
+               exit paragraph
+           end-if
+           
+           if target-username = current-user
+               move "You cannot send a connection request to yourself." to WS-DISPLAY
+               perform say
+               exit paragraph
+           end-if
+           
+      *>>    Check if connection already exists or reverse connection exists
+           perform check-existing-connections
+           
+           if ws-connection-exists = "y"
+               move "Connection request already sent to this user." to WS-DISPLAY
+               perform say
+               exit paragraph
+           end-if
+           
+           if ws-reverse-conn-exists = "y"
+               move "This user has already sent you a connection request." to WS-DISPLAY
+               perform say
+               move "Please check your pending requests." to WS-DISPLAY
+               perform say
+               exit paragraph
+           end-if
+           
+      *>>    Save the connection request
+           open extend connection-file
+           if FILESTAT-CONN not = "00"
+               open output connection-file
+               close connection-file
+               open extend connection-file
+           end-if
+           
+           move spaces to connection-line
+           string function trim(current-user) delimited by size
+                  "|" delimited by size
+                  function trim(target-username) delimited by size
+                  "|pending" delimited by size
+               into connection-line
+           end-string
+           write connection-line
+           close connection-file
+           
+           move "Connection request sent successfully!" to WS-DISPLAY
+           perform say
+           .
+
+       view-pending-requests.
+           move "--- Pending Connection Requests ---" to WS-DISPLAY
+           perform say
+           move 0 to connection-count
+           
+           open input connection-file
+           if FILESTAT-CONN = "00"
+               perform until 1 = 2
+                   read connection-file into connection-line
+                       at end exit perform
+                   end-read
+                   
+                   unstring connection-line delimited by "|" into
+                       conn-from-user
+                       conn-to-user
+                       conn-status
+                   end-unstring
+                   
+                   if function trim(conn-to-user) = current-user
+                       and function trim(conn-status) = "pending"
+                       add 1 to connection-count
+                       move spaces to WS-DISPLAY
+                       string "Request from: " function trim(conn-from-user) 
+                              delimited by size into WS-DISPLAY
+                       perform say
+                   end-if
+               end-perform
+               close connection-file
+           end-if
+           
+           if connection-count = 0
+               move "No pending connection requests." to WS-DISPLAY
+               perform say
+           else
+               move " " to WS-DISPLAY
+               perform say
+               move spaces to WS-DISPLAY
+               string "Total pending requests: " connection-count 
+                      delimited by size into WS-DISPLAY
+               perform say
+           end-if
+           
+           move " " to WS-DISPLAY
            perform say
            .
 
@@ -1094,6 +1273,7 @@ parse-profile-line-complete.
            if profile-exp-count < 0 move 0 to profile-exp-count end-if
            if profile-exp-count > 3 move 3 to profile-exp-count end-if
 
+      *>>    Epic #3 Fix: Corrected field indexing for proper data extraction
            move 9 to ws-field-num
            
            if profile-exp-count >= 1
@@ -1274,7 +1454,191 @@ parse-profile-line-complete.
            .
 
        say.
+      *>>    Epic #3: All screen output is written to InCollege-Output.txt
+      *>>    This includes profile viewing and search results for easy verification
            display WS-DISPLAY
            move WS-DISPLAY to OutRecord
            write OutRecord
+           .
+
+*> Integration: call 'perform cr-offer-send-menu' at the end of display-search-result.
+
+       cr-offer-send-menu.
+           move "1. Send Connection Request" to WS-DISPLAY
+           perform say
+           move "2. Back to Main Menu" to WS-DISPLAY
+           perform say
+           move "Enter your choice:" to WS-DISPLAY
+           perform say
+
+           read InpFile into InpRecord
+               at end exit paragraph
+               not at end
+                   move function numval(function trim(InpRecord))
+                     to WS-USER-CHOICE
+           end-read
+
+           if WS-USER-CHOICE = 1
+              perform send-connection-request-from-profile
+           end-if
+           .
+
+       send-connection-request-from-profile.
+           *> Target is the user whose card we just displayed
+           move function trim(temp-profile-username) to target-username
+
+           *> Self-guard
+           if function upper-case(function trim(target-username)) =
+              function upper-case(function trim(current-user))
+              move "You cannot send a connection request to yourself." to WS-DISPLAY
+              perform say
+              exit paragraph
+           end-if
+
+           *> Reuse existing validation (sets ws-connection-exists / ws-reverse-conn-exists)
+           perform check-existing-connections
+
+           if ws-connection-exists = "y"
+              move "You are already connected with this user." to WS-DISPLAY
+              perform say
+              exit paragraph
+           end-if
+
+           if ws-reverse-conn-exists = "y"
+              move "This user has already sent you a connection request." to WS-DISPLAY
+              perform say
+              move "Please check your pending requests." to WS-DISPLAY
+              perform say
+              exit paragraph
+           end-if
+
+           *> Append current-user|target-username|pending to connections.dat
+           open extend connection-file
+           if FILESTAT-CONN not = "00"
+              open output connection-file
+              close connection-file
+              open extend connection-file
+           end-if
+
+           move spaces to connection-line
+           string function trim(current-user) delimited by size
+                  "|"                     delimited by size
+                  function trim(target-username) delimited by size
+                  "|pending"              delimited by size
+                  into connection-line
+           end-string
+           write connection-line
+           close connection-file
+
+           perform cr-notify-request-sent
+           .
+
+*> Called by send-connection-request-from-profile (ITK-79).
+
+       cr-notify-request-sent.
+           move spaces to WS-DISPLAY
+           string "Connection request sent to "
+                  function trim(temp-profile-firstname) " "
+                  function trim(temp-profile-lastname) "."
+                  delimited by size
+                  into WS-DISPLAY
+           perform say
+           .
+
+*> Sets ws-connection-exists = "y" if already connected (either direction)
+*> Sets ws-reverse-conn-exists = "y" if target has a pending request to current-user
+*> Expects:
+*>   target-username, current-user
+*>   connection-file, connection-line, FILESTAT-CONN
+*>   ws-connection-exists, ws-reverse-conn-exists, conn-u1, conn-u2, conn-status
+
+       check-existing-connections.
+           move "n" to ws-connection-exists
+           move "n" to ws-reverse-conn-exists
+
+           open input connection-file
+           if FILESTAT-CONN = "00"
+              perform until 1 = 2
+                 read connection-file into connection-line
+                    at end exit perform
+                 end-read
+
+                 move spaces to conn-u1
+                 move spaces to conn-u2
+                 move spaces to conn-status
+                 unstring connection-line delimited by "|"
+                     into conn-u1 conn-u2 conn-status
+                 end-unstring
+
+                 *> already connected?
+                 if function upper-case(function trim(conn-status)) = "CONNECTED"
+                    and (
+                        (function upper-case(function trim(conn-u1)) =
+                          function upper-case(function trim(current-user)) and
+                         function upper-case(function trim(conn-u2)) =
+                          function upper-case(function trim(target-username)))
+                        or
+                        (function upper-case(function trim(conn-u2)) =
+                          function upper-case(function trim(current-user)) and
+                         function upper-case(function trim(conn-u1)) =
+                          function upper-case(function trim(target-username)))
+                       )
+                    move "y" to ws-connection-exists
+                 end-if
+
+                 *> reverse pending (they already sent to me)
+                 if function upper-case(function trim(conn-status)) = "PENDING"
+                    and function upper-case(function trim(conn-u1)) =
+                        function upper-case(function trim(target-username))
+                    and function upper-case(function trim(conn-u2)) =
+                        function upper-case(function trim(current-user))
+                    move "y" to ws-reverse-conn-exists
+                 end-if
+              end-perform
+           end-if
+           close connection-file
+           .
+
+*> Lists all entries in connections.dat where conn-u2 = current-user and status=pending.
+       cr-view-pending-requests.
+           move "--- Pending Connection Requests ---" to WS-DISPLAY
+           perform say
+
+           move 0 to search-results-count
+
+           open input connection-file
+           if FILESTAT-CONN = "00"
+              perform until 1 = 2
+                 read connection-file into connection-line
+                    at end exit perform
+                 end-read
+
+                 move spaces to conn-u1
+                 move spaces to conn-u2
+                 move spaces to conn-status
+                 unstring connection-line delimited by "|"
+                     into conn-u1 conn-u2 conn-status
+                 end-unstring
+
+                 if function upper-case(function trim(conn-status)) = "PENDING"
+                    and function upper-case(function trim(conn-u2)) =
+                        function upper-case(function trim(current-user))
+                    add 1 to search-results-count
+                    move spaces to WS-DISPLAY
+                    string "- " function trim(conn-u1)
+                           " has sent you a connection request."
+                           delimited by size into WS-DISPLAY
+                    perform say
+                 end-if
+              end-perform
+           end-if
+           close connection-file
+
+           if search-results-count = 0
+              move "You have no pending connection requests at this time." to WS-DISPLAY
+              perform say
+           end-if
+
+           move "-----------------------------------" to WS-DISPLAY
+           perform say
            .
