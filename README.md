@@ -43,6 +43,7 @@ Runs in **Docker + VS Code Dev Containers** (cross-platform: Windows/macOS/Linux
 * **Runtime output:** `InCollege-Output.txt`
   Mirrors all on-screen messages and menus (including the post-login menu and profile summary).
 * **Persistent users:** `users.dat` (format: `username,password`)
+* **Persistent connections:** `connections.dat` (format: `requester_username|target_username|status`) -- used to store pending connection requests and accepted connections.
 * **Optional batch tests:** `InCollege-Test.txt`
 
 ---
@@ -55,11 +56,15 @@ After a successful login, the main menu offers:
 2. **View My Profile**
 3. **Search for User**
 4. **Learn a New Skill**
+5. **View My Pending Connection Requests**
    The menu and prompts are visible in the current output transcript.
 
-**Profile editor** collects (with optional sections): First/Last name, University, Major, Graduation Year, “About Me”, up to **3 Experience** entries, and up to **3 Education** entries. Use `'DONE'` to finish each optional list.
+Connection requests (new):
 
-**Profile viewer** prints a formatted summary including the fields you entered.
+- From the search result view you can send a connection request to the displayed user. The program will validate and persist requests (no duplicate requests, and you cannot send a request to yourself).
+- Use the "View My Pending Connection Requests" menu item to list requests you've received. Requests are saved in `connections.dat` so they persist between runs.
+- Example output messages include: "Connection request sent to <Name>.", "Connection request already sent to this user.", and "You have no pending connection requests at this time."
+
 
 ---
 
