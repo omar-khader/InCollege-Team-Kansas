@@ -19,6 +19,10 @@ identification division.
            select OutFile assign to "InCollege-Output.txt"
                organization is line sequential
                file status is FILESTAT-Out.
+           select ConnOutFile assign to "Connections-Output.txt"
+               organization is line sequential
+               file status is FILESTAT-ConnOut.
+
 
        data division.
        file section.
@@ -37,11 +41,17 @@ identification division.
        fd  OutFile.
        01  OutRecord                 pic x(80).
 
+       fd  ConnOutFile.
+       01  ConnOutRecord            pic x(80).
+
+
        working-storage section.
        01  FILESTAT                  pic xx.
        01  FILESTAT-PROFILE          pic xx.
        01  FILESTAT-CONN             pic xx.
        01  FILESTAT-Out              pic xx.
+       01  FILESTAT-ConnOut          pic xx.
+
 
        01  WS-EOF                    pic x value "N".
        01  WS-USER-CHOICE            pic 9 value 0.
@@ -106,6 +116,8 @@ identification division.
        01  ws-edu-index              pic 9.
        01  ws-entry-number           pic 9.
        01  ws-login-successful       pic x value "n".
+       01  WS-CR-LOGGING             pic x value "N".
+       
 
        01  ws-parse-pos              pic 9(04).
        01  ws-field-start            pic 9(04).
@@ -1088,6 +1100,7 @@ identification division.
            .
 
        send-connection-request.
+           perform cr-begin-log
            move "--- Send Connection Request ---" to WS-DISPLAY
            perform say
            move "Enter username to send request to:" to WS-DISPLAY
@@ -1165,9 +1178,11 @@ identification division.
            
            move "Connection request sent successfully!" to WS-DISPLAY
            perform say
+           perform cr-end-log
            .
 
        view-pending-requests.
+           perform cr-begin-log
            move "--- Pending Connection Requests ---" to WS-DISPLAY
            perform say
            move 0 to connection-count
@@ -1211,6 +1226,7 @@ identification division.
            
            move " " to WS-DISPLAY
            perform say
+           perform cr-end-log
            .
 
 parse-profile-line-complete.
@@ -1456,14 +1472,42 @@ parse-profile-line-complete.
        say.
       *>>    Epic #3: All screen output is written to InCollege-Output.txt
       *>>    This includes profile viewing and search results for easy verification
+           
            display WS-DISPLAY
            move WS-DISPLAY to OutRecord
            write OutRecord
+
+           *> ITK-87: while in connection-requests context, also mirror to Connections-Output.txt
+           if WS-CR-LOGGING = "Y"
+              open extend ConnOutFile
+              if FILESTAT-ConnOut not = "00"
+                 open output ConnOutFile
+                 close ConnOutFile
+                 open extend ConnOutFile
+              end-if
+              move WS-DISPLAY to ConnOutRecord
+              write ConnOutRecord
+              close ConnOutFile
+           end-if
            .
+
+*>================ ITK-87 helpers: turn CR logging on/off ================
+           cr-begin-log.
+               move "Y" to WS-CR-LOGGING
+               .
+
+           cr-end-log.
+               move "N" to WS-CR-LOGGING
+           .
+
+
+
 
 *> Integration: call 'perform cr-offer-send-menu' at the end of display-search-result.
 
        cr-offer-send-menu.
+           perform cr-begin-log
+       
            move "1. Send Connection Request" to WS-DISPLAY
            perform say
            move "2. Back to Main Menu" to WS-DISPLAY
@@ -1481,9 +1525,15 @@ parse-profile-line-complete.
            if WS-USER-CHOICE = 1
               perform send-connection-request-from-profile
            end-if
+           perform cr-end-log
+           
            .
 
        send-connection-request-from-profile.
+       
+           *> Begins to print ouput to a separate file
+           perform cr-begin-log
+           
            *> Target is the user whose card we just displayed
            move function trim(temp-profile-username) to target-username
 
@@ -1531,6 +1581,7 @@ parse-profile-line-complete.
            close connection-file
 
            perform cr-notify-request-sent
+           perform cr-end-log
            .
 
 *> Called by send-connection-request-from-profile (ITK-79).
@@ -1601,6 +1652,7 @@ parse-profile-line-complete.
 
 *> Lists all entries in connections.dat where conn-u2 = current-user and status=pending.
        cr-view-pending-requests.
+           perform cr-begin-log
            move "--- Pending Connection Requests ---" to WS-DISPLAY
            perform say
 
@@ -1641,4 +1693,5 @@ parse-profile-line-complete.
 
            move "-----------------------------------" to WS-DISPLAY
            perform say
+           perform cr-end-log
            .
