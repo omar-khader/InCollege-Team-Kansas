@@ -4,7 +4,7 @@ Welcome to InCollege!
 Enter your choice:
 Please enter your username:
 Please enter your password:
-created: TestUser
+created: alice
 Welcome to InCollege!
 1. Log In
 2. Create New Account
@@ -12,11 +12,12 @@ Enter your choice:
 Please enter your username:
 Please enter your password:
 You have successfully logged in.
-Welcome, TestUser!
+Welcome, alice!
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for User
-4. Learn a New Skill
+4. View My Network
+5. Learn a New Skill
 Enter your choice:
 --- Create/Edit Profile ---
 Enter First Name:
@@ -40,26 +41,160 @@ Profile saved successfully!
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for User
-4. Learn a New Skill
+4. View My Network
+5. Learn a New Skill
 Enter your choice:
---- Your Profile ---
-Name: John Doe
-University: Example University
-Major: Computer Science
-Graduation Year: 2025
-About Me: Enthusiastic developer always learning new things.
-Experience:
-Title: Software Intern
-Company: Tech Corp
-Dates: Summer 2024
-Description: Developed tools for internal testing.
-Education:
-Degree: Bachelor of Science
-University: Example University
-Years: 2021-2025
---------------------
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+created: bob
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, bob!
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for User
-4. Learn a New Skill
+4. View My Network
+5. Learn a New Skill
 Enter your choice:
+--- Create/Edit Profile ---
+Enter First Name:
+Enter Last Name:
+Enter University/College Attended:
+Enter Major:
+Enter Graduation Year (YYYY):
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Experience #1 - Title:
+Experience #1 - Company/Organization:
+Experience #1 - Dates (e.g., Summer 2024):
+Experience #1 - Description (optional, max 100 chars, blank to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
+Education #1 - Degree:
+Education #1 - University/College:
+Education #1 - Years Attended (e.g., 2023-2025):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+Enter your choice:
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+created: charlie
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, charlie!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+Enter your choice:
+--- Create/Edit Profile ---
+Enter First Name:
+Enter Last Name:
+Enter University/College Attended:
+Enter Major:
+Enter Graduation Year (YYYY):
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Experience #1 - Title:
+Experience #1 - Company/Organization:
+Experience #1 - Dates (e.g., Summer 2024):
+Experience #1 - Description (optional, max 100 chars, blank to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
+Education #1 - Degree:
+Education #1 - University/College:
+Education #1 - Years Attended (e.g., 2023-2025):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+Enter your choice:
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, alice!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+Enter your choice:
+--- My Network ---
+1. Send Connection Request
+2. View Pending Connection Requests
+3. Go Back
+Enter your choice:
+--- Send Connection Request ---
+Enter username to send request to:
+Connection request sent successfully!
+--- My Network ---
+1. Send Connection Request
+2. View Pending Connection Requests
+3. Go Back
+Enter your choice:
+--- Pending Connection Requests ---
+No pending connection requests.
+
+--- My Network ---
+1. Send Connection Request
+2. View Pending Connection Requests
+3. Go Back
+Enter your choice:
+--- Send Connection Request ---
+Enter username to send request to:
+Connection request sent successfully!
+--- My Network ---
+1. Send Connection Request
+2. View Pending Connection Requests
+3. Go Back
+Enter your choice:
+--- Pending Connection Requests ---
+No pending connection requests.
+
+--- My Network ---
+1. Send Connection Request
+2. View Pending Connection Requests
+3. Go Back
+Enter your choice:
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+Enter your choice:
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+goodbye
