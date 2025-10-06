@@ -17,7 +17,7 @@ Request from: OtherUser
 1. Accept
 2. Reject
 Enter your choice for OtherUser:
-Connection request from OtherUser accepted!
+Connection request from OtherUser rejected!
 -----------------------------------
 1. View My Profile
 2. Search for User
@@ -26,7 +26,6 @@ Connection request from OtherUser accepted!
 5. View My Network
 Enter your choice:
 --- Your Network ---
-Connected with: OtherUser (University: Another U, Major: Marketing)
 Connected with: FriendB (University: Big State, Major: Engineering)
 --------------------
 1. View My Profile
