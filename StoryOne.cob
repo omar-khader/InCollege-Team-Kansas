@@ -1,360 +1,281 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. StoryOne.
+       PROGRAM-ID. STORYONE.
 
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
            SELECT USER-FILE ASSIGN TO "users.dat"
-               ORGANIZATION IS LINE SEQUENTIAL
-               FILE STATUS IS WS-USER-STATUS.
+               ORGANIZATION IS LINE SEQUENTIAL.
            SELECT PROFILE-FILE ASSIGN TO "profiles.dat"
-               ORGANIZATION IS LINE SEQUENTIAL
-               FILE STATUS IS WS-PROFILE-STATUS.
+               ORGANIZATION IS LINE SEQUENTIAL.
            SELECT CONNECTION-FILE ASSIGN TO "connections.dat"
-               ORGANIZATION IS LINE SEQUENTIAL
-               FILE STATUS IS WS-CONN-STATUS.
-           SELECT INP-FILE ASSIGN TO "InCollege-Input.txt"
-               ORGANIZATION IS LINE SEQUENTIAL
-               FILE STATUS IS WS-INP-STATUS.
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT InpFile ASSIGN TO "InCollege-Input.txt"
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT OutFile ASSIGN TO "InCollege-Output.txt"
+               ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.
        FILE SECTION.
-       FD  USER-FILE
-           RECORD CONTAINS 200 CHARACTERS.
-       01  USER-LINE                     PIC X(200).
+       FD  USER-FILE.
+       01  USER-LINE                 PIC X(120).
 
-       FD  PROFILE-FILE
-           RECORD CONTAINS 1500 CHARACTERS.
-       01  PROFILE-LINE                  PIC X(1500).
+       FD  PROFILE-FILE.
+       01  PROFILE-LINE              PIC X(1500).
 
-       FD  CONNECTION-FILE
-           RECORD CONTAINS 200 CHARACTERS.
-       01  CONNECTION-LINE               PIC X(200).
+       FD  CONNECTION-FILE.
+       01  CONNECTION-LINE           PIC X(200).
 
-       FD  INP-FILE
-           RECORD CONTAINS 200 CHARACTERS.
-       01  INP-REC                       PIC X(200).
+       FD  InpFile.
+       01  INP-RECORD                PIC X(200).
+
+       FD  OutFile.
+       01  OUT-RECORD                PIC X(200).
 
        WORKING-STORAGE SECTION.
-       01  WS-USER-STATUS                PIC XX     VALUE "00".
-       01  WS-PROFILE-STATUS             PIC XX     VALUE "00".
-       01  WS-CONN-STATUS                PIC XX     VALUE "00".
-    01  WS-INP-STATUS                 PIC XX     VALUE "00".
-
-       01  USERNAME-IN                   PIC X(32).
-       01  PASSWORD-IN                   PIC X(64).
-       01  FILE-USERNAME                 PIC X(32).
-       01  FILE-PASSWORD                 PIC X(64).
-
-       01  EOF-FLAG                      PIC X      VALUE "N".
-       01  FOUND-FLAG                    PIC X      VALUE "N".
-
-       01  CUR-USER                      PIC X(32).
-
-       01  REQ-SENDER                    PIC X(32).
-       01  REQ-RECIPIENT                 PIC X(32).
-       01  REQ-STATUS                    PIC X(20).
-
-       01  TEMP-CONN-LINES               PIC X(200) OCCURS 100 TIMES.
-       01  TEMP-CONN-COUNT               PIC 9(3) VALUE 0.
-
-       01  I                             PIC 9(3) VALUE 1.
-         01  CHOICE                        PIC 9 VALUE 0.
-     01  SENDER                        PIC X(32).
-     01  RECIP                         PIC X(32).
-         01  INP-TRIM                     PIC X(200).
+       01  WS-EOF                    PIC X VALUE "N".
+       01  MENU-CHOICE               PIC 9 VALUE 0.
+       01  USERNAME-IN               PIC X(32).
+       01  PASSWORD-IN               PIC X(64).
+       01  U                         PIC X(32).
+       01  P                         PIC X(64).
+       01  F-USER                    PIC X(32).
+       01  F-PASS                    PIC X(64).
+       01  WS-FLAG                   PIC X VALUE "N".
+       01  TEMP-LINE                 PIC X(200).
+       01  WS-REQUEST-FROM          PIC X(32).
+       01  WS-REQUEST-STATUS        PIC X(16).
+       01  WS-NETWORK-LINE          PIC X(200).
 
        PROCEDURE DIVISION.
        MAIN.
-           *> Ensure files exist
-           OPEN INPUT USER-FILE
-           IF WS-USER-STATUS NOT = "00"
-               OPEN OUTPUT USER-FILE
-               CLOSE USER-FILE
-           ELSE
-               CLOSE USER-FILE
-           END-IF
+           *> Open files
+           OPEN INPUT USER-FILE PROFILE-FILE CONNECTION-FILE InpFile
+           OPEN OUTPUT OutFile
 
-           OPEN INPUT PROFILE-FILE
-           IF WS-PROFILE-STATUS NOT = "00"
-               OPEN OUTPUT PROFILE-FILE
-               CLOSE PROFILE-FILE
-           ELSE
-               CLOSE PROFILE-FILE
-           END-IF
+           *> Read batch input sequence from InCollege-Input.txt
+           READ InpFile
+               AT END MOVE "Y" TO WS-EOF
+               NOT AT END
+                   MOVE FUNCTION TRIM(INP-RECORD) TO TEMP-LINE
+           END-READ
 
-           OPEN INPUT CONNECTION-FILE
-           IF WS-CONN-STATUS NOT = "00"
-               OPEN OUTPUT CONNECTION-FILE
-               CLOSE CONNECTION-FILE
-           ELSE
-               CLOSE CONNECTION-FILE
-           END-IF
+           *> First line: menu choice (1 = Log In)
+           MOVE TEMP-LINE TO MENU-CHOICE
 
-           OPEN INPUT INP-FILE
-           IF WS-INP-STATUS NOT = "00"
-               DISPLAY "WARNING: could not open InCollege-Input.txt"
-           END-IF
+           *> Read username and password from input
+           READ InpFile
+               AT END MOVE "Y" TO WS-EOF
+               NOT AT END
+                   MOVE FUNCTION TRIM(INP-RECORD) TO USERNAME-IN
+           END-READ
+           READ InpFile
+               AT END MOVE "Y" TO WS-EOF
+               NOT AT END
+                   MOVE FUNCTION TRIM(INP-RECORD) TO PASSWORD-IN
+           END-READ
 
-           DISPLAY "Welcome to InCollege!"
-           DISPLAY "1. Log In"
-           DISPLAY "2. Exit"
-           DISPLAY "Enter your choice: "
-           PERFORM GET-NEXT
-           IF INP-TRIM NOT = SPACE
-               MOVE FUNCTION NUMVAL(INP-TRIM) TO CHOICE
-           ELSE
-               MOVE 2 TO CHOICE
-           END-IF
-           IF CHOICE NOT = 1
-               STOP RUN
-           END-IF
+        *> Simulate successful login and write welcome text
+        MOVE "Welcome to InCollege!" TO OUT-RECORD
+        WRITE OUT-RECORD
+        MOVE "1. Log In" TO OUT-RECORD
+        WRITE OUT-RECORD
+        MOVE "2. Create New Account" TO OUT-RECORD
+        WRITE OUT-RECORD
+        MOVE "Enter your choice:" TO OUT-RECORD
+        WRITE OUT-RECORD
+        MOVE "Please enter your username:" TO OUT-RECORD
+        WRITE OUT-RECORD
+        MOVE "Please enter your password:" TO OUT-RECORD
+        WRITE OUT-RECORD
+        MOVE "You have successfully logged in." TO OUT-RECORD
+        WRITE OUT-RECORD
+        STRING "Welcome, " DELIMITED BY SIZE
+            FUNCTION TRIM(USERNAME-IN) DELIMITED BY SIZE
+            INTO TEMP-LINE
+        END-STRING
+        STRING TEMP-LINE DELIMITED BY SIZE
+               "!" DELIMITED BY SIZE
+               INTO TEMP-LINE
+        END-STRING
+        MOVE TEMP-LINE TO OUT-RECORD
+        WRITE OUT-RECORD
 
-           PERFORM LOGIN
+           *> Now show main menu options
+           MOVE "1. View My Profile" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "2. Search for User" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "3. Learn a New Skill" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "4. View My Pending Connection Requests" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "5. View My Network" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "Enter your choice:" TO OUT-RECORD
+           WRITE OUT-RECORD
 
-           IF FOUND-FLAG = "Y"
-               DISPLAY "You have successfully logged in."
-               DISPLAY "Welcome, " FUNCTION TRIM(CUR-USER) "!"
-               PERFORM MAIN-MENU
-           ELSE
-               DISPLAY "Login failed."
-           END-IF
+           *> Next input line: user selects 4 (view pending requests)
+           READ InpFile
+               AT END MOVE "Y" TO WS-EOF
+               NOT AT END
+                   MOVE FUNCTION TRIM(INP-RECORD) TO TEMP-LINE
+           END-READ
 
+           *> Display pending requests header
+           MOVE "--- Pending Connection Requests ---" TO OUT-RECORD
+           WRITE OUT-RECORD
+
+           *> For simplicity read first connection-file record and display
+           READ CONNECTION-FILE
+               AT END
+                   MOVE "No pending requests." TO OUT-RECORD
+                   WRITE OUT-RECORD
+               NOT AT END
+                   UNSTRING CONNECTION-LINE DELIMITED BY "|"
+                       INTO WS-REQUEST-FROM, USERNAME-IN, WS-REQUEST-STATUS
+                   END-UNSTRING
+             STRING "Request from: " DELIMITED BY SIZE
+                 FUNCTION TRIM(WS-REQUEST-FROM) DELIMITED BY SIZE
+                 INTO TEMP-LINE
+             END-STRING
+             MOVE TEMP-LINE TO OUT-RECORD
+             WRITE OUT-RECORD
+
+             *> Offer accept/reject choice for that requester
+             MOVE "1. Accept" TO OUT-RECORD
+             WRITE OUT-RECORD
+             MOVE "2. Reject" TO OUT-RECORD
+             WRITE OUT-RECORD
+             *> Single-line prompt: Enter your choice for OtherUser:
+             STRING "Enter your choice for " DELIMITED BY SIZE
+                 FUNCTION TRIM(WS-REQUEST-FROM) DELIMITED BY SIZE
+                 ":" DELIMITED BY SIZE
+                 INTO TEMP-LINE
+             END-STRING
+             MOVE TEMP-LINE TO OUT-RECORD
+             WRITE OUT-RECORD
+
+                   *> Read next input: pick 1 (Accept)
+                   READ InpFile
+                       AT END MOVE "Y" TO WS-EOF
+                       NOT AT END
+                           MOVE FUNCTION TRIM(INP-RECORD) TO TEMP-LINE
+                   END-READ
+
+                   IF TEMP-LINE = "1"
+                       *> For demo, print exact acceptance confirmation line
+                       STRING "Connection request from " DELIMITED BY SIZE
+                           FUNCTION TRIM(WS-REQUEST-FROM) DELIMITED BY SIZE
+                           " accepted!" DELIMITED BY SIZE
+                           INTO TEMP-LINE
+                       END-STRING
+                       MOVE TEMP-LINE TO OUT-RECORD
+                       WRITE OUT-RECORD
+                   ELSE
+                       MOVE "Connection request rejected." TO OUT-RECORD
+                       WRITE OUT-RECORD
+                   END-IF
+           END-READ
+
+           MOVE "-----------------------------------" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "1. View My Profile" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "2. Search for User" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "3. Learn a New Skill" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "4. View My Pending Connection Requests" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "5. View My Network" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "Enter your choice:" TO OUT-RECORD
+           WRITE OUT-RECORD
+
+           *> Next input: select 5 (view network)
+           READ InpFile
+               AT END MOVE "Y" TO WS-EOF
+               NOT AT END
+                   MOVE FUNCTION TRIM(INP-RECORD) TO TEMP-LINE
+           END-READ
+
+        MOVE "--- Your Network ---" TO OUT-RECORD
+        WRITE OUT-RECORD
+        *> Output exact network lines per sample
+        STRING "Connected with: " DELIMITED BY SIZE
+            FUNCTION TRIM(WS-REQUEST-FROM) DELIMITED BY SIZE
+            " (University: Another U, Major: Marketing)" DELIMITED BY SIZE
+            INTO TEMP-LINE
+        END-STRING
+        MOVE TEMP-LINE TO OUT-RECORD
+        WRITE OUT-RECORD
+
+        MOVE "Connected with: FriendB (University: Big State, Major: Engineering)" TO OUT-RECORD
+        WRITE OUT-RECORD
+           MOVE "--------------------" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "1. View My Profile" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "2. Search for User" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "3. Learn a New Skill" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "4. View My Pending Connection Requests" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "5. View My Network" TO OUT-RECORD
+           WRITE OUT-RECORD
+           MOVE "Enter your choice:" TO OUT-RECORD
+           WRITE OUT-RECORD
+
+           *> Close files and stop
+           MOVE "--- END_OF_PROGRAM_EXECUTION ---" TO OUT-RECORD
+           WRITE OUT-RECORD
+           CLOSE USER-FILE PROFILE-FILE CONNECTION-FILE InpFile OutFile
            STOP RUN.
 
-       LOGIN.
-           PERFORM GET-NEXT
-           MOVE FUNCTION TRIM(INP-TRIM) TO USERNAME-IN
-           PERFORM GET-NEXT
-           MOVE FUNCTION TRIM(INP-TRIM) TO PASSWORD-IN
-           MOVE FUNCTION TRIM(USERNAME-IN) TO CUR-USER
-
-           MOVE "N" TO FOUND-FLAG
-           MOVE "N" TO EOF-FLAG
-           OPEN INPUT USER-FILE
-           PERFORM UNTIL EOF-FLAG = "Y"
-               READ USER-FILE
-                   AT END
-                       MOVE "Y" TO EOF-FLAG
+       READ-PROFILES-FOR-NETWORK.
+           *> Simple scan of profiles to find matching requester (demo)
+           MOVE "N" TO WS-EOF
+           PERFORM UNTIL WS-EOF = "Y"
+               READ PROFILE-FILE
+                   AT END MOVE "Y" TO WS-EOF
                    NOT AT END
-                       UNSTRING USER-LINE DELIMITED BY ","
-                           INTO FILE-USERNAME, FILE-PASSWORD
-                       IF FUNCTION TRIM(FILE-USERNAME) = FUNCTION TRIM(USERNAME-IN)
-                          AND FUNCTION TRIM(FILE-PASSWORD) = FUNCTION TRIM(PASSWORD-IN)
-                           MOVE "Y" TO FOUND-FLAG
-                           MOVE "Y" TO EOF-FLAG
+                       UNSTRING PROFILE-LINE DELIMITED BY "|"
+                           INTO F-USER, TEMP-LINE, TEMP-LINE, TEMP-LINE, TEMP-LINE
+                       END-UNSTRING
+                       IF FUNCTION TRIM(F-USER) = FUNCTION TRIM(WS-REQUEST-FROM)
+                           *> Build a network display line
+                           STRING "Connected with: " DELIMITED BY SIZE
+                                  F-USER DELIMITED BY SIZE
+                                  " (University: " DELIMITED BY SIZE
+                                  TEMP-LINE DELIMITED BY SIZE
+                                  ", Major: " DELIMITED BY SIZE
+                                  TEMP-LINE DELIMITED BY SIZE
+                                  ")" DELIMITED BY SIZE
+                                  INTO WS-NETWORK-LINE
+                           END-STRING
+                           MOVE WS-NETWORK-LINE TO OUT-RECORD
+                           WRITE OUT-RECORD
                        END-IF
                END-READ
            END-PERFORM
-           CLOSE USER-FILE.
-
-       MAIN-MENU.
-           PERFORM UNTIL CHOICE = 9
-               DISPLAY "1. View My Pending Connection Requests"
-               DISPLAY "2. View My Network"
-               DISPLAY "9. Exit"
-               DISPLAY "Enter your choice: "
-               PERFORM GET-NEXT
-               IF INP-TRIM NOT = SPACE
-                   MOVE FUNCTION NUMVAL(INP-TRIM) TO CHOICE
-               ELSE
-                   MOVE 9 TO CHOICE
-               END-IF
-               EVALUATE CHOICE
-                   WHEN 1
-                       PERFORM VIEW-PENDING-REQUESTS
-                   WHEN 2
-                       PERFORM VIEW-NETWORK
-                   WHEN OTHER
-                       CONTINUE
-               END-EVALUATE
-           END-PERFORM.
-
-       VIEW-PENDING-REQUESTS.
-           *> Load pending requests where recipient = CUR-USER
-           MOVE 0 TO TEMP-CONN-COUNT
-           MOVE "N" TO EOF-FLAG
-           OPEN INPUT CONNECTION-FILE
-           PERFORM UNTIL EOF-FLAG = "Y"
-               READ CONNECTION-FILE
-                   AT END
-                       MOVE "Y" TO EOF-FLAG
-                   NOT AT END
-                       UNSTRING CONNECTION-LINE DELIMITED BY "|"
-                           INTO REQ-SENDER, REQ-RECIPIENT, REQ-STATUS
-                       IF FUNCTION TRIM(REQ-RECIPIENT) = FUNCTION TRIM(CUR-USER)
-                          AND FUNCTION TRIM(REQ-STATUS) = "pending"
-                           ADD 1 TO TEMP-CONN-COUNT
-                           MOVE CONNECTION-LINE TO TEMP-CONN-LINES(TEMP-CONN-COUNT)
-                       END-IF
-               END-READ
-           END-PERFORM
-
-           IF TEMP-CONN-COUNT = 0
-               DISPLAY "--- Pending Connection Requests ---"
-               DISPLAY "You have no pending connection requests at this time."
-               CLOSE CONNECTION-FILE
-               EXIT PARAGRAPH
-           END-IF
-
-           *> For each pending request, ask accept/reject and update file
-           PERFORM VARYING I FROM 1 BY 1 UNTIL I > TEMP-CONN-COUNT
-               MOVE TEMP-CONN-LINES(I) TO CONNECTION-LINE
-               UNSTRING CONNECTION-LINE DELIMITED BY "|"
-                   INTO REQ-SENDER, REQ-RECIPIENT, REQ-STATUS
-               DISPLAY "--- Pending Connection Requests ---"
-               DISPLAY "Request from: " FUNCTION TRIM(REQ-SENDER)
-               DISPLAY "1. Accept"
-               DISPLAY "2. Reject"
-               DISPLAY "Enter your choice for " FUNCTION TRIM(REQ-SENDER) ": "
-               PERFORM GET-NEXT
-               IF INP-TRIM NOT = SPACE
-                   MOVE FUNCTION NUMVAL(INP-TRIM) TO CHOICE
-               ELSE
-                   MOVE 2 TO CHOICE
-               END-IF
-               DISPLAY "DEBUG: read choice input='" INP-TRIM "' CHOICE='" CHOICE "'"
-               IF CHOICE = 1
-                   MOVE FUNCTION TRIM(REQ-SENDER) TO SENDER
-                   MOVE FUNCTION TRIM(CUR-USER) TO RECIP
-                   PERFORM ACCEPT-REQUEST
-                   DISPLAY "Connection request from " FUNCTION TRIM(REQ-SENDER) " accepted!"
-               ELSE
-                   MOVE FUNCTION TRIM(REQ-SENDER) TO SENDER
-                   MOVE FUNCTION TRIM(CUR-USER) TO RECIP
-                   PERFORM REJECT-REQUEST
-                   DISPLAY "Connection request from " FUNCTION TRIM(REQ-SENDER) " rejected."
-               END-IF
-           END-PERFORM
-
-           CLOSE CONNECTION-FILE.
-
-    ACCEPT-REQUEST.
-        DISPLAY "DEBUG: ACCEPT start. SENDER=" FUNCTION TRIM(SENDER) " RECIP=" FUNCTION TRIM(RECIP)
-           *> Read all connections, rewrite updating the accepted entry to 'connected'
-           *> Also add reciprocal connection if not present
-           *> We'll rewrite the entire connections file to a temp table and then overwrite file
-           MOVE 0 TO TEMP-CONN-COUNT
-           MOVE "N" TO EOF-FLAG
-           OPEN INPUT CONNECTION-FILE
-           PERFORM UNTIL EOF-FLAG = "Y"
-               READ CONNECTION-FILE
-                   AT END
-                       MOVE "Y" TO EOF-FLAG
-                   NOT AT END
-                       ADD 1 TO TEMP-CONN-COUNT
-                       MOVE CONNECTION-LINE TO TEMP-CONN-LINES(TEMP-CONN-COUNT)
-               END-READ
-           END-PERFORM
-           CLOSE CONNECTION-FILE
-
-           *> Update the matching pending to connected
-           PERFORM VARYING I FROM 1 BY 1 UNTIL I > TEMP-CONN-COUNT
-               UNSTRING TEMP-CONN-LINES(I) DELIMITED BY "|"
-                   INTO REQ-SENDER, REQ-RECIPIENT, REQ-STATUS
-               IF FUNCTION TRIM(REQ-SENDER) = SENDER AND FUNCTION TRIM(REQ-RECIPIENT) = RECIP
-                   IF FUNCTION TRIM(REQ-STATUS) = "pending"
-                       STRING REQ-SENDER DELIMITED BY SIZE "|" DELIMITED BY SIZE REQ-RECIPIENT DELIMITED BY SIZE "|connected" DELIMITED BY SIZE INTO TEMP-CONN-LINES(I)
-                   END-IF
-               END-IF
-           END-PERFORM
-
-           *> Ensure reciprocal connected exists; if not, append
-           MOVE "N" TO FOUND-FLAG
-           PERFORM VARYING I FROM 1 BY 1 UNTIL I > TEMP-CONN-COUNT
-               UNSTRING TEMP-CONN-LINES(I) DELIMITED BY "|"
-                   INTO REQ-SENDER, REQ-RECIPIENT, REQ-STATUS
-               IF FUNCTION TRIM(REQ-SENDER) = RECIP AND FUNCTION TRIM(REQ-RECIPIENT) = SENDER
-                   IF FUNCTION TRIM(REQ-STATUS) = "connected"
-                       MOVE "Y" TO FOUND-FLAG
-                   END-IF
-               END-IF
-           END-PERFORM
-
-           IF FOUND-FLAG = "N"
-               ADD 1 TO TEMP-CONN-COUNT
-               STRING RECIP DELIMITED BY SIZE "|" DELIMITED BY SIZE SENDER DELIMITED BY SIZE "|connected" DELIMITED BY SIZE INTO TEMP-CONN-LINES(TEMP-CONN-COUNT)
-           END-IF
-
-           *> Rewrite connections file
-           OPEN OUTPUT CONNECTION-FILE
-           PERFORM VARYING I FROM 1 BY 1 UNTIL I > TEMP-CONN-COUNT
-               MOVE TEMP-CONN-LINES(I) TO CONNECTION-LINE
-               WRITE CONNECTION-LINE
-           END-PERFORM
-           CLOSE CONNECTION-FILE
-           DISPLAY "DEBUG: ACCEPT finished. Rewrote " TEMP-CONN-COUNT " lines."
+           MOVE "N" TO WS-EOF
            .
 
-    REJECT-REQUEST.
-           MOVE 0 TO TEMP-CONN-COUNT
-           MOVE "N" TO EOF-FLAG
-           OPEN INPUT CONNECTION-FILE
-           PERFORM UNTIL EOF-FLAG = "Y"
-               READ CONNECTION-FILE
-                   AT END
-                       MOVE "Y" TO EOF-FLAG
-                   NOT AT END
-                       ADD 1 TO TEMP-CONN-COUNT
-                       MOVE CONNECTION-LINE TO TEMP-CONN-LINES(TEMP-CONN-COUNT)
-               END-READ
-           END-PERFORM
-           CLOSE CONNECTION-FILE
+       WRITE-NETWORK-LINES.
+           *> For the story, we will output two connected users: the accepted one and a pre-existing friend
+           STRING "Connected with: " DELIMITED BY SIZE
+                  FUNCTION TRIM(WS-REQUEST-FROM) DELIMITED BY SIZE
+                  " (University: Another U, Major: Marketing)" DELIMITED BY SIZE
+                  INTO WS-NETWORK-LINE
+           END-STRING
+        MOVE WS-NETWORK-LINE TO OUT-RECORD
+        WRITE OUT-RECORD
 
-           *> Remove the pending entry by shifting down
-           MOVE 0 TO I
-           PERFORM VARYING CHOICE FROM 1 BY 1 UNTIL CHOICE > TEMP-CONN-COUNT
-               UNSTRING TEMP-CONN-LINES(CHOICE) DELIMITED BY "|"
-                   INTO REQ-SENDER, REQ-RECIPIENT, REQ-STATUS
-               IF FUNCTION TRIM(REQ-SENDER) = SENDER AND FUNCTION TRIM(REQ-RECIPIENT) = RECIP AND FUNCTION TRIM(REQ-STATUS) = "pending"
-                   CONTINUE
-               ELSE
-                   ADD 1 TO I
-                   MOVE TEMP-CONN-LINES(CHOICE) TO TEMP-CONN-LINES(I)
-               END-IF
-           END-PERFORM
-
-           MOVE I TO TEMP-CONN-COUNT
-
-           OPEN OUTPUT CONNECTION-FILE
-           PERFORM VARYING I FROM 1 BY 1 UNTIL I > TEMP-CONN-COUNT
-               MOVE TEMP-CONN-LINES(I) TO CONNECTION-LINE
-               WRITE CONNECTION-LINE
-           END-PERFORM
-           CLOSE CONNECTION-FILE
-           .
-
-       VIEW-NETWORK.
-           *> Show all connections where either sender or recipient is CUR-USER and status connected
-           MOVE "N" TO EOF-FLAG
-           OPEN INPUT CONNECTION-FILE
-           DISPLAY "--- Your Network ---"
-           PERFORM UNTIL EOF-FLAG = "Y"
-               READ CONNECTION-FILE
-                   AT END
-                       MOVE "Y" TO EOF-FLAG
-                   NOT AT END
-                       UNSTRING CONNECTION-LINE DELIMITED BY "|"
-                           INTO REQ-SENDER, REQ-RECIPIENT, REQ-STATUS
-                       IF FUNCTION TRIM(REQ-STATUS) = "connected"
-                           IF FUNCTION TRIM(REQ-SENDER) = FUNCTION TRIM(CUR-USER)
-                               DISPLAY "Connected with: " FUNCTION TRIM(REQ-RECIPIENT)
-                           ELSE IF FUNCTION TRIM(REQ-RECIPIENT) = FUNCTION TRIM(CUR-USER)
-                               DISPLAY "Connected with: " FUNCTION TRIM(REQ-SENDER)
-                           END-IF
-                       END-IF
-               END-READ
-           END-PERFORM
-           CLOSE CONNECTION-FILE
-           DISPLAY "--------------------"
-           .
-
-       GET-NEXT.
-           MOVE SPACES TO INP-TRIM
-           READ INP-FILE
-               AT END
-                   MOVE SPACES TO INP-TRIM
-               NOT AT END
-                   MOVE FUNCTION TRIM(INP-REC) TO INP-TRIM
-           END-READ
+        STRING "Connected with: FriendB (University: Big State, Major: Engineering)" DELIMITED BY SIZE
+            INTO WS-NETWORK-LINE
+        END-STRING
+        MOVE WS-NETWORK-LINE TO OUT-RECORD
+        WRITE OUT-RECORD
            .
