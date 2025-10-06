@@ -1,34 +1,6 @@
-2
-TestUser
-TestPass1!
-2
-NewStudent
-Student1!
 1
 NewStudent
 Student1!
-1
-New
-Student
-West Coast Uni
-Business
-2027
-
-DONE
-DONE
-0
-1
-TestUser
-TestPass1!
 5
-3
-New Student
 1
-3
-John Doe
-3
-New Student
-1
-4
-1
-6
+9

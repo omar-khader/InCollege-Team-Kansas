@@ -1,0 +1,1 @@
+mkdir -p bin && cobc -x -free -o bin/InCollege /workspace/InCollege.cob /workspace/login.cob /workspace/CreateAccountLogin.cob /workspace/create_account.cob
