@@ -1,71 +1,34 @@
-create
-userA
-Abcd123!
-userA
-Abcd123!
+2
+TestUser
+TestPass1!
+2
+NewStudent
+Student1!
+1
+NewStudent
+Student1!
+1
+New
+Student
+West Coast Uni
+Business
+2027
 
-create
-userB
-Abcd123@
-userB
-Abcd123@
-
-create
-userC
-Abcd123#
-userC
-Abcd123#
-
-create
-userD
-Abcd123$
-userD
-Abcd123$
-
-create
-userE
-Abcd123%
-userE
-Abcd123%
-
-create
-userShort
-Ab1!
-
-create
-userNoUpper
-abcd123!
-
-create
-userNoDigit
-Abcdefg!
-
-create
-userNoSpecial
-Abcd1234
-
-login
-userA
-Wrong123!
-userA
-Abcd123!
-
-login
-userA
-Wrong123!
-
-create
-userF
-Abcd123&
-
-blargh
-
-LOGIN
-userA
-Abcd123!
-
-   create
-   userG
-   Abcd123?
-   userG
-   Abcd123?
+DONE
+DONE
+0
+1
+TestUser
+TestPass1!
+5
+3
+New Student
+1
+3
+John Doe
+3
+New Student
+1
+4
+1
+6

@@ -1,80 +1,143 @@
-2                                                                               
-john123                                                                         
-Valid@123                                                                       
-6                                                                               
-2                                                                               
-Alice2025                                                                       
-Valid@123                                                                       
-6                                                                               
-2                                                                               
-TestUser9                                                                       
-Valid@123                                                                       
-6                                                                               
-2                                                                               
-omar99                                                                          
-Valid@123                                                                       
-6                                                                               
-2                                                                               
-USF2020                                                                         
-Valid@123                                                                       
-6                                                                               
-2                                                                               
-john doe                                                                        
-Valid@123                                                                       
-6                                                                               
-2                                                                               
-@omar                                                                           
-Valid@123                                                                       
-6                                                                               
-2                                                                               
-toolongusername                                                                 
-Valid@123                                                                       
-6                                                                               
-2                                                                               
-!!!                                                                             
-Valid@123                                                                       
-6                                                                               
-2                                                                               
-abc def                                                                         
-Valid@123                                                                       
-6                                                                               
-2                                                                               
-caseuserP1                                                                      
-Passw0rd!                                                                       
-6                                                                               
-2                                                                               
-caseuserP2                                                                      
-Cen4020@USF                                                                     
-6                                                                               
-2                                                                               
-caseuserP3                                                                      
-Hello123$                                                                       
-6                                                                               
-2                                                                               
-caseuserP4                                                                      
-Test1234!                                                                       
-6                                                                               
-2                                                                               
-caseuserP5                                                                      
-USF2025@                                                                        
-6                                                                               
-2                                                                               
-caseuserP6                                                                      
-password                                                                        
-6                                                                               
-2                                                                               
-caseuserP7                                                                      
-ABC12345                                                                        
-6                                                                               
-2                                                                               
-caseuserP8                                                                      
-hello!                                                                          
-6                                                                               
-2                                                                               
-caseuserP9                                                                      
-toolongPassword123!                                                             
-6                                                                               
-2                                                                               
-caseuserP10                                                                     
-12345678                                                                        
-6                                                                               
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+created: TestUser
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+created: NewStudent
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, NewStudent!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+Enter your choice:
+--- Create/Edit Profile ---
+Enter First Name:
+Enter Last Name:
+Enter University/College Attended:
+Enter Major:
+Enter Graduation Year (YYYY):
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+Enter your choice:
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, TestUser!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+Enter your choice:
+--- Pending Connection Requests ---
+You have no pending connection requests at this time.
+
+-----------------------------------
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+Enter your choice:
+--- Search for User ---
+Enter the full name of the person you are looking for:
+================================
+Username: NewStudent
+Name: New Student
+University: West Coast Uni
+Major: Business
+================================
+1. Send Connection Request
+2. Back to Main Menu
+Enter your choice:
+Connection request sent to New Student.
+
+1 user(s) found.
+
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+Enter your choice:
+--- Search for User ---
+Enter the full name of the person you are looking for:
+No one by that name could be found.
+
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+Enter your choice:
+--- Search for User ---
+Enter the full name of the person you are looking for:
+================================
+Username: NewStudent
+Name: New Student
+University: West Coast Uni
+Major: Business
+================================
+1. Send Connection Request
+2. Back to Main Menu
+Enter your choice:
+Connection request already sent to this user.
+
+1 user(s) found.
+
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+Enter your choice:
+Learn a New Skill:
+1. Learn COBOL!
+2. Learn Jira!
+3. Learn Git!
+4. Learn Github!
+5. Learn Software Engineering!
+6. Go Back
+Enter your choice:
+This skill is under construction.
+Learn a New Skill:
+1. Learn COBOL!
+2. Learn Jira!
+3. Learn Git!
+4. Learn Github!
+5. Learn Software Engineering!
+6. Go Back
+Enter your choice:
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. Learn a New Skill
+5. View My Pending Connection Requests
+Enter your choice:
