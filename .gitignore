@@ -8,10 +8,6 @@ profiles.dat
 connections.dat
 Connections-Output.txt
 
-# Test runtime files
-InCollege-Input.txt
-InCollege-Output.txt
-
 # Editor/IDE files
 .vscode/
 .idea/
