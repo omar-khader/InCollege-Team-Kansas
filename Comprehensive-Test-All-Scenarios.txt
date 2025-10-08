@@ -1,0 +1,80 @@
+# This file documents all comprehensive tests
+# Each test will be run separately with specific setup
+
+# TEST 1.1: Accept Single Request (bob)
+# Input: Login, Network, Pending, Accept
+1
+alice
+AlicePass1!
+4
+2
+1
+4
+0
+3
+
+# TEST 1.2: Accept Multiple Requests (bob, charlie, david)
+# Input: Login, Network, Pending, Accept x3
+1
+alice
+AlicePass1!
+4
+2
+1
+1
+1
+4
+0
+3
+
+# TEST 2.1: Reject Single Request (bob)
+# Input: Login, Network, Pending, Reject
+1
+alice
+AlicePass1!
+4
+2
+2
+4
+0
+3
+
+# TEST 2.2: Reject Multiple Requests (bob, charlie, david)
+# Input: Login, Network, Pending, Reject x3
+1
+alice
+AlicePass1!
+4
+2
+2
+2
+2
+4
+0
+3
+
+# TEST 3.1: Mixed Accept/Reject (Accept bob/david, Reject charlie/emily)
+# Input: Login, Network, Pending, 1,2,1,2
+1
+alice
+AlicePass1!
+4
+2
+1
+2
+1
+2
+4
+0
+3
+
+# TEST 4.3: View Network with Multiple Connections
+# Input: Login, Network, View Connections
+1
+alice
+AlicePass1!
+4
+3
+4
+0
+3
