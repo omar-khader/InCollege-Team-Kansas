@@ -54,8 +54,7 @@ After a successful login, the main menu offers:
 1. **Create/Edit My Profile**
 2. **View My Profile**
 3. **Search for User**
-4. **View My Network** (Send/View Connection Requests)
-5. **Learn a New Skill**
+4. **Learn a New Skill**
    The menu and prompts are visible in the current output transcript.
 
 **Profile editor** collects (with optional sections): First/Last name, University, Major, Graduation Year, “About Me”, up to **3 Experience** entries, and up to **3 Education** entries. Use `'DONE'` to finish each optional list.
@@ -159,8 +158,7 @@ DONE
   1. Create/Edit My Profile
   2. View My Profile
   3. Search for User
-  4. View My Network
-  5. Learn a New Skill
+  4. Learn a New Skill
   ```
 
 
@@ -189,26 +187,6 @@ DONE
 
 ---
 
-## Test Cases (suggested)
-
-1. **#1–#5** → Create users A–E successfully
-2. **#6** → Invalid password (too short)
-3. **#7** → Invalid password (no uppercase)
-4. **#8** → Invalid password (no digit)
-5. **#9** → Invalid password (no special character)
-6. **#10** → Login wrong once, then right (userA)
-7. **#11** → Login wrong, then EOF (test EOF behavior)
-8. **#12** → Account limit reached (e.g., attempt to create a 6th user)
-9. **#13** → Invalid initial choice (e.g., `9`)
-10. **#14** → Case-insensitive login (login `userA`)
-11. **#15** → Leading whitespace tolerated before `2` (create `whiteA` and login)
-12. **#16** → Post-login **valid** choice: **View My Profile (2)**
-13. **#17** → Post-login **valid** choice: **Learn a New Skill (5)**
-14. **#18** → Post-login **invalid** choice: enter `6` (expect invalid-menu handling)
-
-> Note: There is **no "Exit (4)"** in the current post-login menu; `4` is **View My Network**, per the latest output. 
-
----
 
 ## License
 

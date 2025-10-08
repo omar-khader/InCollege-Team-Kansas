@@ -19,6 +19,10 @@ identification division.
            select OutFile assign to "InCollege-Output.txt"
                organization is line sequential
                file status is FILESTAT-Out.
+           select ConnOutFile assign to "Connections-Output.txt"
+               organization is line sequential
+               file status is FILESTAT-ConnOut.
+
 
        data division.
        file section.
@@ -37,11 +41,17 @@ identification division.
        fd  OutFile.
        01  OutRecord                 pic x(80).
 
+       fd  ConnOutFile.
+       01  ConnOutRecord            pic x(80).
+
+
        working-storage section.
        01  FILESTAT                  pic xx.
        01  FILESTAT-PROFILE          pic xx.
        01  FILESTAT-CONN             pic xx.
        01  FILESTAT-Out              pic xx.
+       01  FILESTAT-ConnOut          pic xx.
+
 
        01  WS-EOF                    pic x value "N".
        01  WS-USER-CHOICE            pic 9 value 0.
@@ -106,6 +116,8 @@ identification division.
        01  ws-edu-index              pic 9.
        01  ws-entry-number           pic 9.
        01  ws-login-successful       pic x value "n".
+       01  WS-CR-LOGGING             pic x value "N".
+       
 
        01  ws-parse-pos              pic 9(04).
        01  ws-field-start            pic 9(04).
@@ -142,6 +154,9 @@ identification division.
            05  conn-from-user         pic x(32).
            05  conn-to-user           pic x(32).
            05  conn-status            pic x(10).
+           01  conn-u1                  pic x(32).
+           01  conn-u2                  pic x(32).
+
        01  ws-connection-exists      pic x value "n".
        01  ws-reverse-conn-exists    pic x value "n".
        01  connection-count          pic 9(03) value 0.
@@ -435,6 +450,10 @@ identification division.
                move "5. Learn a New Skill" to WS-DISPLAY
                perform say
 
+               move "6. View My Pending Connection Requests" to WS-DISPLAY
+               perform say
+
+
                move "Enter your choice:" to WS-DISPLAY
                perform say
 
@@ -458,6 +477,9 @@ identification division.
                            perform view-my-network
                        when 5
                            perform show-skill-menu
+                       when 6
+                           perform cr-view-pending-requests
+
                        when other
                            exit perform
                    end-evaluate
@@ -1038,7 +1060,7 @@ identification division.
            string "Major: " function trim(temp-profile-major) delimited by size into WS-DISPLAY
            perform say
            move "================================" to WS-DISPLAY
-           perform say
+           perform cr-offer-send-menu
            .
 
        view-my-network.
@@ -1078,6 +1100,7 @@ identification division.
            .
 
        send-connection-request.
+           perform cr-begin-log
            move "--- Send Connection Request ---" to WS-DISPLAY
            perform say
            move "Enter username to send request to:" to WS-DISPLAY
@@ -1155,43 +1178,11 @@ identification division.
            
            move "Connection request sent successfully!" to WS-DISPLAY
            perform say
-           .
-
-       check-existing-connections.
-           move "n" to ws-connection-exists
-           move "n" to ws-reverse-conn-exists
-           
-           open input connection-file
-           if FILESTAT-CONN = "00"
-               perform until 1 = 2
-                   read connection-file into connection-line
-                       at end exit perform
-                   end-read
-                   
-                   unstring connection-line delimited by "|" into
-                       conn-from-user
-                       conn-to-user
-                       conn-status
-                   end-unstring
-                   
-      *>>            Check if current user already sent request to target
-                   if function trim(conn-from-user) = current-user
-                       and function trim(conn-to-user) = target-username
-                       move "y" to ws-connection-exists
-                   end-if
-                   
-      *>>            Check if target already sent request to current user
-                   if function trim(conn-from-user) = target-username
-                       and function trim(conn-to-user) = current-user
-                       and function trim(conn-status) = "pending"
-                       move "y" to ws-reverse-conn-exists
-                   end-if
-               end-perform
-               close connection-file
-           end-if
+           perform cr-end-log
            .
 
        view-pending-requests.
+           perform cr-begin-log
            move "--- Pending Connection Requests ---" to WS-DISPLAY
            perform say
            move 0 to connection-count
@@ -1235,6 +1226,7 @@ identification division.
            
            move " " to WS-DISPLAY
            perform say
+           perform cr-end-log
            .
 
 parse-profile-line-complete.
@@ -1480,7 +1472,226 @@ parse-profile-line-complete.
        say.
       *>>    Epic #3: All screen output is written to InCollege-Output.txt
       *>>    This includes profile viewing and search results for easy verification
+           
            display WS-DISPLAY
            move WS-DISPLAY to OutRecord
            write OutRecord
+
+           *> ITK-87: while in connection-requests context, also mirror to Connections-Output.txt
+           if WS-CR-LOGGING = "Y"
+              open extend ConnOutFile
+              if FILESTAT-ConnOut not = "00"
+                 open output ConnOutFile
+                 close ConnOutFile
+                 open extend ConnOutFile
+              end-if
+              move WS-DISPLAY to ConnOutRecord
+              write ConnOutRecord
+              close ConnOutFile
+           end-if
+           .
+
+*>================ ITK-87 helpers: turn CR logging on/off ================
+           cr-begin-log.
+               move "Y" to WS-CR-LOGGING
+               .
+
+           cr-end-log.
+               move "N" to WS-CR-LOGGING
+           .
+
+
+
+
+*> Integration: call 'perform cr-offer-send-menu' at the end of display-search-result.
+
+       cr-offer-send-menu.
+           perform cr-begin-log
+       
+           move "1. Send Connection Request" to WS-DISPLAY
+           perform say
+           move "2. Back to Main Menu" to WS-DISPLAY
+           perform say
+           move "Enter your choice:" to WS-DISPLAY
+           perform say
+
+           read InpFile into InpRecord
+               at end exit paragraph
+               not at end
+                   move function numval(function trim(InpRecord))
+                     to WS-USER-CHOICE
+           end-read
+
+           if WS-USER-CHOICE = 1
+              perform send-connection-request-from-profile
+           end-if
+           perform cr-end-log
+           
+           .
+
+       send-connection-request-from-profile.
+       
+           *> Begins to print ouput to a separate file
+           perform cr-begin-log
+           
+           *> Target is the user whose card we just displayed
+           move function trim(temp-profile-username) to target-username
+
+           *> Self-guard
+           if function upper-case(function trim(target-username)) =
+              function upper-case(function trim(current-user))
+              move "You cannot send a connection request to yourself." to WS-DISPLAY
+              perform say
+              exit paragraph
+           end-if
+
+           *> Reuse existing validation (sets ws-connection-exists / ws-reverse-conn-exists)
+           perform check-existing-connections
+
+           if ws-connection-exists = "y"
+              move "You are already connected with this user." to WS-DISPLAY
+              perform say
+              exit paragraph
+           end-if
+
+           if ws-reverse-conn-exists = "y"
+              move "This user has already sent you a connection request." to WS-DISPLAY
+              perform say
+              move "Please check your pending requests." to WS-DISPLAY
+              perform say
+              exit paragraph
+           end-if
+
+           *> Append current-user|target-username|pending to connections.dat
+           open extend connection-file
+           if FILESTAT-CONN not = "00"
+              open output connection-file
+              close connection-file
+              open extend connection-file
+           end-if
+
+           move spaces to connection-line
+           string function trim(current-user) delimited by size
+                  "|"                     delimited by size
+                  function trim(target-username) delimited by size
+                  "|pending"              delimited by size
+                  into connection-line
+           end-string
+           write connection-line
+           close connection-file
+
+           perform cr-notify-request-sent
+           perform cr-end-log
+           .
+
+*> Called by send-connection-request-from-profile (ITK-79).
+
+       cr-notify-request-sent.
+           move spaces to WS-DISPLAY
+           string "Connection request sent to "
+                  function trim(temp-profile-firstname) " "
+                  function trim(temp-profile-lastname) "."
+                  delimited by size
+                  into WS-DISPLAY
+           perform say
+           .
+
+*> Sets ws-connection-exists = "y" if already connected (either direction)
+*> Sets ws-reverse-conn-exists = "y" if target has a pending request to current-user
+*> Expects:
+*>   target-username, current-user
+*>   connection-file, connection-line, FILESTAT-CONN
+*>   ws-connection-exists, ws-reverse-conn-exists, conn-u1, conn-u2, conn-status
+
+       check-existing-connections.
+           move "n" to ws-connection-exists
+           move "n" to ws-reverse-conn-exists
+
+           open input connection-file
+           if FILESTAT-CONN = "00"
+              perform until 1 = 2
+                 read connection-file into connection-line
+                    at end exit perform
+                 end-read
+
+                 move spaces to conn-u1
+                 move spaces to conn-u2
+                 move spaces to conn-status
+                 unstring connection-line delimited by "|"
+                     into conn-u1 conn-u2 conn-status
+                 end-unstring
+
+                 *> already connected?
+                 if function upper-case(function trim(conn-status)) = "CONNECTED"
+                    and (
+                        (function upper-case(function trim(conn-u1)) =
+                          function upper-case(function trim(current-user)) and
+                         function upper-case(function trim(conn-u2)) =
+                          function upper-case(function trim(target-username)))
+                        or
+                        (function upper-case(function trim(conn-u2)) =
+                          function upper-case(function trim(current-user)) and
+                         function upper-case(function trim(conn-u1)) =
+                          function upper-case(function trim(target-username)))
+                       )
+                    move "y" to ws-connection-exists
+                 end-if
+
+                 *> reverse pending (they already sent to me)
+                 if function upper-case(function trim(conn-status)) = "PENDING"
+                    and function upper-case(function trim(conn-u1)) =
+                        function upper-case(function trim(target-username))
+                    and function upper-case(function trim(conn-u2)) =
+                        function upper-case(function trim(current-user))
+                    move "y" to ws-reverse-conn-exists
+                 end-if
+              end-perform
+           end-if
+           close connection-file
+           .
+
+*> Lists all entries in connections.dat where conn-u2 = current-user and status=pending.
+       cr-view-pending-requests.
+           perform cr-begin-log
+           move "--- Pending Connection Requests ---" to WS-DISPLAY
+           perform say
+
+           move 0 to search-results-count
+
+           open input connection-file
+           if FILESTAT-CONN = "00"
+              perform until 1 = 2
+                 read connection-file into connection-line
+                    at end exit perform
+                 end-read
+
+                 move spaces to conn-u1
+                 move spaces to conn-u2
+                 move spaces to conn-status
+                 unstring connection-line delimited by "|"
+                     into conn-u1 conn-u2 conn-status
+                 end-unstring
+
+                 if function upper-case(function trim(conn-status)) = "PENDING"
+                    and function upper-case(function trim(conn-u2)) =
+                        function upper-case(function trim(current-user))
+                    add 1 to search-results-count
+                    move spaces to WS-DISPLAY
+                    string "- " function trim(conn-u1)
+                           " has sent you a connection request."
+                           delimited by size into WS-DISPLAY
+                    perform say
+                 end-if
+              end-perform
+           end-if
+           close connection-file
+
+           if search-results-count = 0
+              move "You have no pending connection requests at this time." to WS-DISPLAY
+              perform say
+           end-if
+
+           move "-----------------------------------" to WS-DISPLAY
+           perform say
+           perform cr-end-log
            .
