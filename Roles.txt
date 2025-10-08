@@ -3,14 +3,14 @@
 
 
 
-Epic #3
- 
-Scrum Master: Adesh Kessani
+Epic #5
 
-Coder #1: Omar Khader
+Scrum Master: Vivekanandhan Kathirvel
 
-Coder #2: Kathirvel Andrew Kang
+Coder #1: Nicholas Keenan
 
-Tester #1: Vivekanandhan Kathirvel
+Coder #2: Adesh Kessani
 
-Tester #2:  Nicholas Keenan  
+Tester #1: Omar Khader
+
+Tester #2: Andrew Kang
