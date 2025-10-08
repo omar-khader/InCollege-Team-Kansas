@@ -1,6 +1,6 @@
 # InCollege — GNU COBOL Project
 
-A simple COBOL program that supports **account creation**, **login**, and a post-login menu with **Create/Edit Profile**, **View Profile**, **Search for User**, and **Learn a New Skill**. The app is file-driven (reads from an input file and mirrors all output to a file). Post-login menu options and profile prompts are confirmed by the current output transcript.
+A simple COBOL program that supports **account creation**, **login**, and a post-login menu with **Create/Edit Profile**, **View Profile**, **Search for User**, **Learn a New Skill**, **View My Pending Connection Requests**, and **View My Network**. The app is file-driven (reads from an input file and mirrors all output to a file). Post-login menu options, connection management, and profile prompts are confirmed by the current output transcript.
 
 Runs in **Docker + VS Code Dev Containers** (cross-platform: Windows/macOS/Linux).
 
@@ -39,16 +39,16 @@ Runs in **Docker + VS Code Dev Containers** (cross-platform: Windows/macOS/Linux
 ## Files & I/O
 
 * **Runtime input:** `InCollege-Input.txt`
-  Plain text, **one token per line** (menu choice, username, password, profile fields, etc.). See the current example input below.
+  Plain text, **one token per line** (menu choice, username, password, profile fields, accept/reject decisions, etc.). See the current example input below.
 * **Runtime output:** `InCollege-Output.txt`
-  Mirrors all on-screen messages and menus (including the post-login menu and profile summary).
+  Mirrors all on-screen messages and menus (including the post-login menu, connection management prompts, and network display).
 * **Persistent users:** `users.dat` (format: `username,password`)
-* **Persistent connections:** `connections.dat` (format: `requester_username|target_username|status`) -- used to store pending connection requests and accepted connections.
+* **Persistent connections:** `connections.dat` (format: `requester_username|target_username|status`) -- used to store pending connection requests and accepted connections. Status values: `pending` for requests awaiting action, `accepted` for established connections.
 * **Optional batch tests:** `InCollege-Test.txt`
 
 ---
 
-## Features ( currently implemented)
+## Features (currently implemented)
 
 After a successful login, the main menu offers:
 
@@ -57,14 +57,19 @@ After a successful login, the main menu offers:
 3. **Search for User**
 4. **Learn a New Skill**
 5. **View My Pending Connection Requests**
-   The menu and prompts are visible in the current output transcript.
+6. **View My Network**
 
-Connection requests (new):
+The menu and prompts are visible in the current output transcript.
 
-- From the search result view you can send a connection request to the displayed user. The program will validate and persist requests (no duplicate requests, and you cannot send a request to yourself).
-- Use the "View My Pending Connection Requests" menu item to list requests you've received. Requests are saved in `connections.dat` so they persist between runs.
-- Example output messages include: "Connection request sent to <Name>.", "Connection request already sent to this user.", and "You have no pending connection requests at this time."
+### Connection Management (Epic #5):
 
+- **Sending connection requests:** From the search result view you can send a connection request to the displayed user. The program will validate and persist requests (no duplicate requests, and you cannot send a request to yourself).
+- **Managing pending requests:** Use the "View My Pending Connection Requests" menu item to list requests you've received. For each pending request, you can choose to accept or reject it.
+  - **Accepting:** Establishes a permanent connection between both users and removes the request from pending status.
+  - **Rejecting:** Removes the request from pending status without establishing a connection.
+- **Viewing your network:** Use the "View My Network" menu item to see a list of all users you are connected with, including their name, university, and major.
+- **Persistence:** All connection requests (pending and accepted) persist between program runs via `connections.dat`.
+- Example output messages include: "Connection request sent to <n>.", "Connection request from <n> accepted!", "Connection request from <n> rejected.", and "You have no pending connection requests at this time."
 
 ---
 
@@ -112,6 +117,22 @@ DONE
 
 This ordering matches the current profile prompts shown by the program.
 
+### Accept/Reject Connection Requests
+
+When viewing pending connection requests (menu option `5`), for each request you'll be prompted to accept or reject:
+
+```
+1    (to accept)
+```
+
+or
+
+```
+2    (to reject)
+```
+
+One choice per pending request.
+
 ---
 
 ## End-to-End Example
@@ -141,7 +162,10 @@ Bachelor of Science
 Example University
 2021-2025
 DONE
-2
+5
+1
+6
+7
 ```
 
 
@@ -164,11 +188,13 @@ DONE
   2. View My Profile
   3. Search for User
   4. Learn a New Skill
+  5. View My Pending Connection Requests
+  6. View My Network
   ```
 
 
 
-* Profile summary (after creating a profile and choosing “View My Profile”):
+* Profile summary (after creating a profile and choosing "View My Profile"):
 
   ```
   --- Your Profile ---
@@ -186,6 +212,32 @@ DONE
   Degree: Bachelor of Science
   University: Example University
   Years: 2021-2025
+  ```
+
+
+
+* Managing pending requests:
+
+  ```
+  --- Pending Connection Requests ---
+  Request from: OtherUser
+  
+  1. Accept
+  2. Reject
+  Enter your choice for OtherUser:
+  Connection request from OtherUser accepted!
+  -----------------------------------
+  ```
+
+
+
+* Viewing network:
+
+  ```
+  --- Your Network ---
+  Connected with: OtherUser (University: Another U, Major: Marketing)
+  Connected with: FriendB (University: Big State, Major: Engineering)
+  --------------------
   ```
 
 
