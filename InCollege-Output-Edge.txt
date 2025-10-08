@@ -1,0 +1,86 @@
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, alice!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
+Enter your choice:
+--- My Network ---
+1. Send Connection Request
+2. View Pending Connection Requests
+3. View My Connections
+4. Go Back
+Enter your choice:
+--- My Connections ---
+You have no established connections yet.
+
+-----------------------------------
+--- My Network ---
+1. Send Connection Request
+2. View Pending Connection Requests
+3. View My Connections
+4. Go Back
+Enter your choice:
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
+Enter your choice:
+================================
+         YOUR PROFILE
+================================
+--- Personal Information ---
+Name: nonexistent 4
+University: 1
+Major: alice
+Graduation Year: 0000
+
+--- Professional Experience ---
+  No experience entries added.
+
+--- Education ---
+  No education entries added.
+
+================================
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
+Enter your choice:
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
+Enter your choice:
+--- Create/Edit Profile ---
+Enter First Name:
+Enter Last Name:
+Enter University/College Attended:
+Enter Major:
+Enter Graduation Year (YYYY):
+Invalid year. Please enter a year between 1950 and 2030.
+Enter Graduation Year (YYYY):
+Invalid year. Please enter a year between 1950 and 2030.
+Enter Graduation Year (YYYY):
+Invalid year. Please enter a year between 1950 and 2030.
+Enter Graduation Year (YYYY):
+Invalid year. Please enter a year between 1950 and 2030.
+Enter Graduation Year (YYYY):
+Invalid year. Please enter a year between 1950 and 2030.
+Enter Graduation Year (YYYY):
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Profile saved successfully!
