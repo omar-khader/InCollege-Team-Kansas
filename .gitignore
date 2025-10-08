@@ -6,6 +6,8 @@ InCollege
 users.dat
 profiles.dat
 connections.dat
+
+# Runtime output files
 Connections-Output.txt
 
 # Editor/IDE files
