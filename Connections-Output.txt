@@ -1,0 +1,30 @@
+--- Send Connection Request ---
+Enter username to send request to:
+Connection request sent successfully!
+--- Pending Connection Requests ---
+Request from: bob
+1. Accept
+2. Reject
+Enter your choice for bob:
+Connection request from bob accepted!
+Request from: charlie
+1. Accept
+2. Reject
+Enter your choice for charlie:
+Connection request from charlie rejected!
+Request from: david
+1. Accept
+2. Reject
+Enter your choice for david:
+Connection request from david accepted!
+Request from: emily
+1. Accept
+2. Reject
+Enter your choice for emily:
+Connection request from emily rejected!
+Request from:
+1. Accept
+2. Reject
+Enter your choice for :
+Connection request from  rejected!
+
