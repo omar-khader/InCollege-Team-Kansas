@@ -84,6 +84,7 @@ BobPass1!
 4
 1
 alice
+4
 0
 1
 charlie
@@ -91,6 +92,7 @@ CharlieP1!
 4
 1
 alice
+4
 0
 1
 david
@@ -98,6 +100,7 @@ DavidPass1!
 4
 1
 alice
+4
 0
 1
 emily
@@ -105,16 +108,18 @@ EmilyPass1!
 4
 1
 alice
+4
 0
 1
 alice
 AlicePass1!
 4
-1
 2
 1
 2
-4
-5
+1
+2
 3
-
+4
+0
+3

@@ -1063,41 +1063,45 @@ identification division.
            perform cr-offer-send-menu
            .
 
-       view-my-network.
-           perform until ws-conn-choice = 3 or WS-EOF = "Y"
-               move "--- My Network ---" to WS-DISPLAY
-               perform say
-               move "1. Send Connection Request" to WS-DISPLAY
-               perform say
-               move "2. View Pending Connection Requests" to WS-DISPLAY
-               perform say
-               move "3. Go Back" to WS-DISPLAY
-               perform say
-               move "Enter your choice:" to WS-DISPLAY
-               perform say
-               
-               read InpFile into InpRecord
-                   at end move "Y" to WS-EOF
-                   not at end
-                       move function numval(function trim(InpRecord)) 
-                           to ws-conn-choice
-               end-read
-               
-               if WS-EOF = "N"
-                   evaluate ws-conn-choice
-                       when 1
-                           perform send-connection-request
-                       when 2
-                           perform view-pending-requests
-                       when 3
-                           continue
-                       when other
-                           move "Invalid choice. Please enter 1, 2, or 3." to WS-DISPLAY
-                           perform say
-                   end-evaluate
-               end-if
-           end-perform
-           .
+      view-my-network.
+          perform until ws-conn-choice = 4 or WS-EOF = "Y"
+              move "--- My Network ---" to WS-DISPLAY
+              perform say
+              move "1. Send Connection Request" to WS-DISPLAY
+              perform say
+              move "2. View Pending Connection Requests" to WS-DISPLAY
+              perform say
+              move "3. View My Connections" to WS-DISPLAY
+              perform say
+              move "4. Go Back" to WS-DISPLAY
+              perform say
+              move "Enter your choice:" to WS-DISPLAY
+              perform say
+              
+              read InpFile into InpRecord
+                  at end move "Y" to WS-EOF
+                  not at end
+                      move function numval(function trim(InpRecord)) 
+                          to ws-conn-choice
+              end-read
+              
+              if WS-EOF = "N"
+                  evaluate ws-conn-choice
+                      when 1
+                          perform send-connection-request
+                      when 2
+                          perform view-pending-requests
+                      when 3
+                          perform view-my-connections
+                      when 4
+                          continue
+                      when other
+                          move "Invalid choice. Please enter 1, 2, 3, or 4." to WS-DISPLAY
+                          perform say
+                  end-evaluate
+              end-if
+          end-perform
+          .
 
        send-connection-request.
            perform cr-begin-log
@@ -1181,53 +1185,170 @@ identification division.
            perform cr-end-log
            .
 
-       view-pending-requests.
-           perform cr-begin-log
-           move "--- Pending Connection Requests ---" to WS-DISPLAY
-           perform say
-           move 0 to connection-count
-           
-           open input connection-file
-           if FILESTAT-CONN = "00"
-               perform until 1 = 2
-                   read connection-file into connection-line
-                       at end exit perform
-                   end-read
-                   
-                   unstring connection-line delimited by "|" into
-                       conn-from-user
-                       conn-to-user
-                       conn-status
-                   end-unstring
-                   
-                   if function trim(conn-to-user) = current-user
-                       and function trim(conn-status) = "pending"
-                       add 1 to connection-count
-                       move spaces to WS-DISPLAY
-                       string "Request from: " function trim(conn-from-user) 
-                              delimited by size into WS-DISPLAY
-                       perform say
-                   end-if
-               end-perform
-               close connection-file
-           end-if
-           
-           if connection-count = 0
-               move "No pending connection requests." to WS-DISPLAY
-               perform say
-           else
-               move " " to WS-DISPLAY
-               perform say
-               move spaces to WS-DISPLAY
-               string "Total pending requests: " connection-count 
-                      delimited by size into WS-DISPLAY
-               perform say
-           end-if
-           
-           move " " to WS-DISPLAY
-           perform say
-           perform cr-end-log
-           .
+      view-pending-requests.
+          perform cr-begin-log
+          move "--- Pending Connection Requests ---" to WS-DISPLAY
+          perform say
+          
+          move 0 to CONNECTIONS-COUNT
+          move 0 to connection-count
+          
+          open input connection-file
+          if FILESTAT-CONN = "00"
+              perform until 1 = 2
+                  read connection-file into connection-line
+                      at end exit perform
+                  end-read
+                  add 1 to CONNECTIONS-COUNT
+                  move connection-line to CONNECTION-ENTRY(CONNECTIONS-COUNT)
+              end-perform
+              close connection-file
+          end-if
+          
+          perform varying ws-i from 1 by 1 until ws-i > CONNECTIONS-COUNT
+              move CONNECTION-ENTRY(ws-i) to connection-line
+              unstring connection-line delimited by "|" into
+                  conn-from-user
+                  conn-to-user
+                  conn-status
+              end-unstring
+              
+              if function trim(conn-to-user) = current-user
+                  and function trim(conn-status) = "pending"
+                  add 1 to connection-count
+                  
+                  move spaces to WS-DISPLAY
+                  string "Request from: " function trim(conn-from-user) 
+                         delimited by size into WS-DISPLAY
+                  perform say
+                  move "1. Accept" to WS-DISPLAY
+                  perform say
+                  move "2. Reject" to WS-DISPLAY
+                  perform say
+                  
+                  move spaces to WS-DISPLAY
+                  string "Enter your choice for " 
+                         function trim(conn-from-user) ":" 
+                         delimited by size into WS-DISPLAY
+                  perform say
+                  
+                  read InpFile into temp-input
+                      at end move "Y" to WS-EOF exit paragraph
+                  end-read
+                  move function numval(function trim(temp-input)) to ws-conn-choice
+                  
+                  if ws-conn-choice = 1
+                      move spaces to WS-DISPLAY
+                      string "Connection request from " 
+                             function trim(conn-from-user) 
+                             " accepted!" 
+                             delimited by size into WS-DISPLAY
+                      perform say
+                      
+                      move spaces to connection-line
+                      string function trim(conn-from-user) delimited by size
+                             "|" delimited by size
+                             function trim(conn-to-user) delimited by size
+                             "|connected" delimited by size
+                          into connection-line
+                      end-string
+                      move connection-line to CONNECTION-ENTRY(ws-i)
+                  else
+                      move spaces to WS-DISPLAY
+                      string "Connection request from " 
+                             function trim(conn-from-user) 
+                             " rejected!" 
+                             delimited by size into WS-DISPLAY
+                      perform say
+                      
+                      move spaces to connection-line
+                      string function trim(conn-from-user) delimited by size
+                             "|" delimited by size
+                             function trim(conn-to-user) delimited by size
+                             "|rejected" delimited by size
+                          into connection-line
+                      end-string
+                      move connection-line to CONNECTION-ENTRY(ws-i)
+                  end-if
+              end-if
+          end-perform
+          
+          open output connection-file
+          if FILESTAT-CONN = "00"
+              perform varying ws-i from 1 by 1 until ws-i > CONNECTIONS-COUNT
+                  move CONNECTION-ENTRY(ws-i) to connection-line
+                  write connection-line
+              end-perform
+              close connection-file
+          end-if
+          
+          if connection-count = 0
+              move "No pending connection requests." to WS-DISPLAY
+              perform say
+          end-if
+          
+          move " " to WS-DISPLAY
+          perform say
+          perform cr-end-log
+          .
+
+      view-my-connections.
+          move "--- My Connections ---" to WS-DISPLAY
+          perform say
+          move 0 to connection-count
+          
+          open input connection-file
+          if FILESTAT-CONN = "00"
+              perform until 1 = 2
+                  read connection-file into connection-line
+                      at end exit perform
+                  end-read
+                  
+                  unstring connection-line delimited by "|" into
+                      conn-from-user
+                      conn-to-user
+                      conn-status
+                  end-unstring
+                  
+                  if function trim(conn-status) = "connected"
+                      if function trim(conn-from-user) = current-user
+                          add 1 to connection-count
+                          move spaces to WS-DISPLAY
+                          string connection-count ". " 
+                                 function trim(conn-to-user)
+                                 delimited by size into WS-DISPLAY
+                          perform say
+                      end-if
+                      if function trim(conn-to-user) = current-user
+                          add 1 to connection-count
+                          move spaces to WS-DISPLAY
+                          string connection-count ". " 
+                                 function trim(conn-from-user)
+                                 delimited by size into WS-DISPLAY
+                          perform say
+                      end-if
+                  end-if
+              end-perform
+              close connection-file
+          end-if
+          
+          if connection-count = 0
+              move "You have no established connections yet." to WS-DISPLAY
+              perform say
+          else
+              move " " to WS-DISPLAY
+              perform say
+              move spaces to WS-DISPLAY
+              string "Total connections: " connection-count 
+                     delimited by size into WS-DISPLAY
+              perform say
+          end-if
+          
+          move " " to WS-DISPLAY
+          perform say
+          move "-----------------------------------" to WS-DISPLAY
+          perform say
+          .
 
 parse-profile-line-complete.
            perform varying ws-parse-idx from 1 by 1 until ws-parse-idx > 50
