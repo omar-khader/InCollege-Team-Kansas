@@ -1,10 +1,11 @@
+
 # InCollege — GNU COBOL Project
 
-A simple COBOL program that supports **account creation**, **login**, and a post-login menu with **Create/Edit Profile**, **View Profile**, **Search for User**, and **Learn a New Skill**. The app is file-driven (reads from an input file and mirrors all output to a file). Post-login menu options and profile prompts are confirmed by the current output transcript.
+A simple COBOL program that supports **account creation**, **login**, and a post-login menu with **Create/Edit Profile**, **View Profile**, **Search for User**, **Learn a New Skill**, **View My Pending Connection Requests**, and **View My Network**. The app is file-driven (reads from an input file and mirrors all output to a file). Post-login menu options, and job posting prompts are confirmed by the current output transcript.
 
 Runs in **Docker + VS Code Dev Containers** (cross-platform: Windows/macOS/Linux).
 
----
+
 
 ## Quick Start
 
@@ -23,7 +24,7 @@ Runs in **Docker + VS Code Dev Containers** (cross-platform: Windows/macOS/Linux
    ```bash
    cobc -x -free InCollege.cob -o InCollege
    ./InCollege
-   ```
+
 
 > The program reads from `InCollege-Input.txt` and mirrors all console output to `InCollege-Output.txt`. A successful login looks like:
 >
@@ -31,165 +32,92 @@ Runs in **Docker + VS Code Dev Containers** (cross-platform: Windows/macOS/Linux
 > You have successfully logged in.
 > Welcome, TestUser!
 > ```
->
->
 
----
+
 
 ## Files & I/O
 
-* **Runtime input:** `InCollege-Input.txt`
-  Plain text, **one token per line** (menu choice, username, password, profile fields, etc.). See the current example input below.
-* **Runtime output:** `InCollege-Output.txt`
-  Mirrors all on-screen messages and menus (including the post-login menu and profile summary).
-* **Persistent users:** `users.dat` (format: `username,password`)
-* **Optional batch tests:** `InCollege-Test.txt`
+  * **Runtime input:** `InCollege-Input.txt`
+    Plain text, **one token per line** (menu choice, username, password, profile fields, job details, etc.). See the current example input below.
+  * **Runtime output:** `InCollege-Output.txt`
+    Mirrors all on-screen messages and menus (including the post-login menu, connection management prompts, network display, and **job posting prompts**).
+  * **Persistent users:** `users.dat` (format: `username,password`)
+  * **Persistent connections:** `connections.dat` (format: `requester_username|target_username|status`) -- used to store pending connection requests and accepted connections. Status values: `pending` for requests awaiting action, `accepted` for established connections.
+  * **Persistent jobs/internships:** `jobs.dat` (format: `poster_username|title|description|employer|location|salary`) -- used to store all job listings.
+  * **Optional batch tests:** `InCollege-Test.txt`
 
----
+-----
 
-## Features ( currently implemented)
+## Features (currently implemented)
 
 After a successful login, the main menu offers:
 
-1. **Create/Edit My Profile**
-2. **View My Profile**
-3. **Search for User**
-4. **Learn a New Skill**
-   The menu and prompts are visible in the current output transcript.
+1.  **Create/Edit My Profile**
+2.  **Search for a job** (leads to Job Search/Internship Menu)
+3.  **View My Profile**
+4.  **Find someone you know**
+5.  **View My Network**
+6.  **Learn a New Skill**
+7.  **View My Pending Connection Requests**
 
-**Profile editor** collects (with optional sections): First/Last name, University, Major, Graduation Year, “About Me”, up to **3 Experience** entries, and up to **3 Education** entries. Use `'DONE'` to finish each optional list.
+### Job Board Functionality (Epic \#6):
 
-**Profile viewer** prints a formatted summary including the fields you entered.
+  * The **"Search for a job"** option now leads to a **"Job Search/Internship Menu"**.
+  * From this sub-menu, the user can choose to **"Post a Job/Internship"**.
+      * The system prompts for **Job Title, Description, Employer, and Location** (all required).
+      * **Salary** is an **optional** field.
+      * All valid job listings are saved persistently in `jobs.dat`.
+  * The **"Browse Jobs/Internships"** option remains **"under construction"**.
 
----
+-----
 
 ## Input Format
 
 > **Important:** The program consumes inputs line-by-line from `InCollege-Input.txt`. Keep exactly one value per line.
 
-### Create Account
+### Post a Job/Internship (sample sequence)
+
+After logging in, choose the menu options to navigate to the job posting feature (usually `2` then `1`), then provide the job details in order.
 
 ```
 2
-username
-Password1!
-```
-
-### Log In
-
-```
 1
-username
-Password1!
-```
-
-### Create/Edit Profile (sample sequence)
-
-Below is a minimal example of profile data (after logging in, choose `1` for Create/Edit Profile, then provide fields; use `DONE` to finish optional lists):
-
-```
-John
-Doe
-Example University
-Computer Science
-2025
-Enthusiastic developer always learning new things.
 Software Intern
-Tech Corp
-Summer 2024
-Developed tools for internal testing.
-DONE
-Bachelor of Science
-Example University
-2021-2025
-DONE
+Exciting opportunity to work with cutting-edge technologies
+Tech Solutions Inc
+Tampa, FL
+$20/hour
 ```
 
-This ordering matches the current profile prompts shown by the program.
+*The salary field is optional; you must enter `NONE` to skip it.*
 
----
+### Create Account, Log In, Create/Edit Profile, Accept/Reject Connection Requests
 
-## End-to-End Example
-
-**`InCollege-Input.txt` (current sample)**
-
-```
-2
-TestUser
-TestPass123!
-1
-TestUser
-TestPass123!
-1
-John
-Doe
-Example University
-Computer Science
-2025
-Enthusiastic developer always learning new things.
-Software Intern
-Tech Corp
-Summer 2024
-Developed tools for internal testing.
-DONE
-Bachelor of Science
-Example University
-2021-2025
-DONE
-2
-```
+(Input format for these previous features remains unchanged.)
 
 
 
-**`InCollege-Output.txt` (key excerpts you should see)**
+## Current Test Flow: InCollege-Input.txt
 
-* Login success:
+The current sample input file executes the following sequence:
 
-  ```
-  You have successfully logged in.
-  Welcome, TestUser!
-  ```
+1.  **Create New Account** (`2`) for user **MyUser** with password **MyPass@1**.
+2.  **Log In** (`1`) with the newly created credentials, resulting in a successful login.
+3.  Navigate to the **Job Search/Internship Menu** (`2` from the post-login menu).
+4.  Select **Post a Job/Internship** (`1`).
+5.  Provide all required and optional fields for a new job posting:
+      * **Job Title**: `Software Intern`
+      * **Description**: `Exciting opportunity to work with cutting-edge technologies`
+      * **Employer**: `Tech Solutions Inc`
+      * **Location**: `Tampa, FL`
+      * **Salary**: `$20/hour`
+6.  Verify the **"Job posted successfully\!"** confirmation message.
+7.  Select **Browse Jobs/Internships** (`2` from the job search menu) and verify the **"under construction"** message.
+8.  Select **Back to Main Menu** (`3`).
 
-
-
-* Post-login menu:
-
-  ```
-  1. Create/Edit My Profile
-  2. View My Profile
-  3. Search for User
-  4. Learn a New Skill
-  ```
-
-
-
-* Profile summary (after creating a profile and choosing “View My Profile”):
-
-  ```
-  --- Your Profile ---
-  Name: John Doe
-  University: Example University
-  Major: Computer Science
-  Graduation Year: 2025
-  About Me: Enthusiastic developer always learning new things.
-  Experience:
-  Title: Software Intern
-  Company: Tech Corp
-  Dates: Summer 2024
-  Description: Developed tools for internal testing.
-  Education:
-  Degree: Bachelor of Science
-  University: Example University
-  Years: 2021-2025
-  ```
-
-
-
----
-
+This flow successfully tests the basic required functionality for Week 6's Job Posting feature.
 
 ## License
 
 MIT
 
----
