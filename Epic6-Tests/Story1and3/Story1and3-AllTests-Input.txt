@@ -1,0 +1,41 @@
+Software Engineer Intern
+Develop and maintain web applications using modern frameworks
+Tech Corp Inc
+San Francisco, CA
+$50,000/year
+Data Analyst
+Analyze business data and create insightful reports
+DataViz Company
+Remote
+NONE
+
+Work on exciting AI projects
+AI Research Lab
+Boston, MA
+$75,000/year
+Marketing Manager
+
+Digital Marketing Inc
+New York, NY
+$60,000/year
+UX Designer
+Create intuitive user interfaces for mobile apps
+
+Austin, TX
+$55,000/year
+Backend Developer
+Build scalable microservices architecture
+Cloud Solutions Ltd
+
+$70,000/year
+Project Manager
+This is a very long description that exceeds 200 characters. The system should handle this by truncating the description to exactly 200 characters. We are looking for an experienced project manager who can lead teams and deliver projects on time and within budget while maintaining high quality standards.
+GlobalTech Corporation
+Chicago, IL
+$80,000/year
+C++ Developer (Senior)
+Work with C++ & Python to build high-performance systems
+Tech@Innovation LLC
+Seattle, WA | Hybrid
+$90k-$120k
+
