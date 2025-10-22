@@ -1,14 +1,4 @@
-1
-Database Administrator
-Manage and optimize database systems
-DataCorp Solutions
-Atlanta, GA
-$78,000/year
-3
 2
-3
-3
-5
 3
 1
 Network Engineer
@@ -22,12 +12,5 @@ Analyze business requirements and design solutions
 TechConsult Group
 Houston, TX
 $68,000/year
-3
-1
-
-Build REST APIs
-API Solutions Ltd
-Los Angeles, CA
-$65,000/year
 3
 

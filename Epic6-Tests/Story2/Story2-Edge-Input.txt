@@ -1,29 +1,5 @@
-Full Stack Developer
-Build modern web applications with React and Node.js
-StartUp Innovations
-Denver, CO
-
-Design user-friendly interfaces
-Design Studio Pro
-Portland, OR
-Quality Assurance Engineer
-
-TestTech Solutions
-Miami, FL
-DevOps Engineer
-Manage cloud infrastructure and CI/CD pipelines
-
-Philadelphia, PA
-Mobile App Developer
-Create cross-platform mobile applications
-AppBuilder Inc
-
 Senior Software Architect
 We are seeking a highly skilled Senior Software Architect with at least 10 years of experience in designing and implementing large-scale distributed systems. The ideal candidate will have expertise in microservices architecture, cloud computing, database design, and API development. You will lead technical discussions, mentor junior developers, and make critical architectural decisions.
 Enterprise Solutions Group
 Washington, DC
-Intern
-Learn
-X
-Y
 
