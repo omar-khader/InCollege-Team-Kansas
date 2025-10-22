@@ -13,6 +13,9 @@ identification division.
            select connection-file assign to "connections.dat"
                organization is line sequential
                file status is FILESTAT-CONN.
+           select job-file assign to "jobs.dat"
+    	       organization is line sequential
+    	       file status is FILESTAT-JOB.
            select InpFile assign to "InCollege-Input.txt"
                organization is line sequential
                file status is FILESTAT.
@@ -43,6 +46,9 @@ identification division.
 
        fd  ConnOutFile.
        01  ConnOutRecord            pic x(80).
+       
+       fd  job-file.
+       01  job-line                  pic x(500).
 
 
        working-storage section.
@@ -51,6 +57,7 @@ identification division.
        01  FILESTAT-CONN             pic xx.
        01  FILESTAT-Out              pic xx.
        01  FILESTAT-ConnOut          pic xx.
+       01  FILESTAT-JOB              pic xx.
 
 
        01  WS-EOF                    pic x value "N".
@@ -165,18 +172,18 @@ identification division.
        01  CONNECTIONS-COUNT         pic 9(03) value 0.
        01  target-username           pic x(32).
        01  ws-conn-choice            pic 9 value 0.
+       
+       01  job-data.
+           05  job-poster-username    pic x(32).
+           05  job-title              pic x(50).
+           05  job-description        pic x(200).
+           05  job-employer           pic x(100).
+           05  job-location           pic x(50).
+           05  job-salary             pic x(30).
+
+       01  ws-job-choice              pic 9 value 0.
 
        procedure division.
-      *>>******************************************************************
-      *> Epic #3 Implementation Notes:
-      *> 1. Enhanced profile viewing with formatted sections
-      *> 2. Display of all optional fields (About Me, Experience, Education)
-      *> 3. Search functionality by full name (case-insensitive)
-      *> 4. Improved parsing to handle multiple experience/education entries
-      *> 
-      *> TESTER NOTE: All screen output is automatically written to
-      *> InCollege-Output.txt for easy verification of results
-      *>>******************************************************************
        main.
            open input user-file
            if FILESTAT = "35"  
@@ -203,6 +210,13 @@ identification division.
               close connection-file
            end-if
            close connection-file
+           
+           open input job-file
+	   if FILESTAT-JOB = "35"  
+              open output job-file
+              close job-file
+           end-if
+           close job-file
            
            open input InpFile
            if FILESTAT not = "00"
@@ -433,59 +447,61 @@ identification division.
            end-if
            .
 
-       post-login-menu.
-           perform until WS-EOF = "Y"
-               move "1. Create/Edit My Profile" to WS-DISPLAY
-               perform say
+post-login-menu.
+    perform until WS-EOF = "Y"
+        move "1. Create/Edit My Profile" to WS-DISPLAY
+        perform say
 
-               move "2. View My Profile" to WS-DISPLAY
-               perform say
+        move "2. Search for a job" to WS-DISPLAY
+        perform say
 
-               move "3. Search for User" to WS-DISPLAY
-               perform say
+        move "3. View My Profile" to WS-DISPLAY
+        perform say
 
-               move "4. View My Network" to WS-DISPLAY
-               perform say
+        move "4. Find someone you know" to WS-DISPLAY
+        perform say
 
-               move "5. Learn a New Skill" to WS-DISPLAY
-               perform say
+        move "5. View My Network" to WS-DISPLAY
+        perform say
 
-               move "6. View My Pending Connection Requests" to WS-DISPLAY
-               perform say
+        move "6. Learn a new skill" to WS-DISPLAY
+        perform say
 
+        move "7. View My Pending Connection Requests" to WS-DISPLAY
+        perform say
 
-               move "Enter your choice:" to WS-DISPLAY
-               perform say
+        move "Enter your choice:" to WS-DISPLAY
+        perform say
 
-               read InpFile into InpRecord
-                   at end move "Y" to WS-EOF
-                   not at end
-                       move function numval(function trim(InpRecord)) 
-                           to WS-USER-CHOICE
-               end-read
+        read InpFile into InpRecord
+            at end move "Y" to WS-EOF
+            not at end
+                move function numval(function trim(InpRecord)) 
+                    to WS-USER-CHOICE
+        end-read
 
-               if WS-EOF = "N"
-                   evaluate WS-USER-CHOICE
-                       when 1
-                           perform create-edit-profile
-                       when 2
-                           perform view-profile
-                       when 3
-      *>>                    Epic #3: Search for users by full name
-                           perform search-for-user
-                       when 4
-                           perform view-my-network
-                       when 5
-                           perform show-skill-menu
-                       when 6
-                           perform cr-view-pending-requests
-
-                       when other
-                           exit perform
-                   end-evaluate
-               end-if
-           end-perform
-           .
+        if WS-EOF = "N"
+            evaluate WS-USER-CHOICE
+                when 1
+                    perform create-edit-profile
+                when 2
+                    perform job-search-menu
+                when 3
+                    perform view-profile
+                when 4
+                    perform search-for-user
+                when 5
+                    perform view-my-network
+                when 6
+                    perform show-skill-menu
+                when 7
+                    perform cr-view-pending-requests
+                when other
+                    exit perform
+            end-evaluate
+        end-if
+    end-perform
+    .
 
        create-edit-profile.
            move "--- Create/Edit Profile ---" to WS-DISPLAY
@@ -1816,3 +1832,175 @@ parse-profile-line-complete.
            perform say
            perform cr-end-log
            .
+
+job-search-menu.
+    perform until ws-job-choice = 3 or WS-EOF = "Y"
+        move "--- Job Search/Internship Menu ---" to WS-DISPLAY
+        perform say
+        
+        move "1. Post a Job/Internship" to WS-DISPLAY
+        perform say
+        
+        move "2. Browse Jobs/Internships" to WS-DISPLAY
+        perform say
+        
+        move "3. Back to Main Menu" to WS-DISPLAY
+        perform say
+        
+        move "Enter your choice:" to WS-DISPLAY
+        perform say
+        
+        read InpFile into InpRecord
+            at end move "Y" to WS-EOF
+            not at end
+                move function numval(function trim(InpRecord)) 
+                    to ws-job-choice
+        end-read
+        
+        if WS-EOF = "N"
+            evaluate ws-job-choice
+                when 1
+                    perform post-job-internship
+                when 2
+                    move "Browse Jobs/Internships is under construction." 
+                        to WS-DISPLAY
+                    perform say
+                when 3
+                    continue
+                when other
+                    move "Invalid choice. Please enter 1, 2, or 3." 
+                        to WS-DISPLAY
+                    perform say
+            end-evaluate
+        end-if
+    end-perform
+    
+    *> Reset choice for next time
+    move 0 to ws-job-choice
+    .
+
+post-job-internship.
+    move "--- Post a New Job/Internship ---" to WS-DISPLAY
+    perform say
+    
+    *> Initialize job data
+    initialize job-data
+    move function trim(current-user) to job-poster-username
+    
+    *> Capture job title (required)
+    move "Enter Job Title:" to WS-DISPLAY
+    perform say
+    read InpFile into temp-input
+        at end move "Y" to WS-EOF exit paragraph
+    end-read
+    move function trim(temp-input) to job-title
+    
+    *> Validate required field
+    if function length(function trim(job-title)) = 0
+        move "Job title is required." to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+    
+    *> Capture description (required)
+    move "Enter Description (max 200 chars):" to WS-DISPLAY
+    perform say
+    read InpFile into temp-input
+        at end move "Y" to WS-EOF exit paragraph
+    end-read
+    
+    if function length(function trim(temp-input)) > 200
+        move temp-input(1:200) to job-description
+    else
+        move function trim(temp-input) to job-description
+    end-if
+    
+    *> Validate required field
+    if function length(function trim(job-description)) = 0
+        move "Job description is required." to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+    
+    *> Capture employer (required)
+    move "Enter Employer Name:" to WS-DISPLAY
+    perform say
+    read InpFile into temp-input
+        at end move "Y" to WS-EOF exit paragraph
+    end-read
+    move function trim(temp-input) to job-employer
+    
+    *> Validate required field
+    if function length(function trim(job-employer)) = 0
+        move "Employer name is required." to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+    
+    *> Capture location (required)
+    move "Enter Location:" to WS-DISPLAY
+    perform say
+    read InpFile into temp-input
+        at end move "Y" to WS-EOF exit paragraph
+    end-read
+    move function trim(temp-input) to job-location
+    
+    *> Validate required field
+    if function length(function trim(job-location)) = 0
+        move "Location is required." to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+    
+    *> Capture salary (optional)
+    move "Enter Salary (optional, enter 'NONE' to skip):" to WS-DISPLAY
+    perform say
+    read InpFile into temp-input
+        at end move "Y" to WS-EOF exit paragraph
+    end-read
+    
+    if function upper-case(function trim(temp-input)) = "NONE"
+        move spaces to job-salary
+    else
+        move function trim(temp-input) to job-salary
+    end-if
+    
+    *> Save the job posting
+    perform save-job-posting
+    
+    move "Job posted successfully!" to WS-DISPLAY
+    perform say
+    move "----------------------------------" to WS-DISPLAY
+    perform say
+    .
+
+save-job-posting.
+    open extend job-file
+    if FILESTAT-JOB not = "00"
+        open output job-file
+        close job-file
+        open extend job-file
+    end-if
+    
+    if FILESTAT-JOB not = "00"
+        move "Error: Could not save job posting." to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+    
+    *> Format: username|title|description|employer|location|salary
+    move spaces to job-line
+    string 
+        function trim(job-poster-username) "|"
+        function trim(job-title) "|"
+        function trim(job-description) "|"
+        function trim(job-employer) "|"
+        function trim(job-location) "|"
+        function trim(job-salary)
+        delimited by size
+        into job-line
+    end-string
+    
+    write job-line
+    close job-file
+    .
