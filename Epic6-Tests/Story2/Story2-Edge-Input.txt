@@ -1,0 +1,5 @@
+Senior Software Architect
+We are seeking a highly skilled Senior Software Architect with at least 10 years of experience in designing and implementing large-scale distributed systems. The ideal candidate will have expertise in microservices architecture, cloud computing, database design, and API development. You will lead technical discussions, mentor junior developers, and make critical architectural decisions.
+Enterprise Solutions Group
+Washington, DC
+
