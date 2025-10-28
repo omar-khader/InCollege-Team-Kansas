@@ -16,6 +16,9 @@ identification division.
            select job-file assign to "jobs.dat"
     	       organization is line sequential
     	       file status is FILESTAT-JOB.
+    	   select application-file assign to "applications.dat"
+    	       organization is line sequential
+               file status is FILESTAT-APP.
            select InpFile assign to "InCollege-Input.txt"
                organization is line sequential
                file status is FILESTAT.
@@ -49,6 +52,9 @@ identification division.
        
        fd  job-file.
        01  job-line                  pic x(500).
+       
+       fd  application-file.
+       01  application-line           pic x(300).
 
 
        working-storage section.
@@ -182,6 +188,22 @@ identification division.
            05  job-salary             pic x(30).
 
        01  ws-job-choice              pic 9 value 0.
+       
+       *> Epic #7: Job browsing and application variables
+       01  ws-job-count              pic 9(03) value 0.
+       01  ws-job-selection          pic 9(03) value 0.
+       01  ws-application-exists     pic x value "n".
+       01  ws-application-count      pic 9(03) value 0.
+       01  FILESTAT-APP              pic xx.
+
+       01  JOBS-TABLE.
+           05 JOB-TABLE-ENTRY occurs 100 times pic x(500).
+
+       01  application-data.
+           05  app-username           pic x(32).
+           05  app-job-title          pic x(50).
+           05  app-employer           pic x(100).
+           05  app-location           pic x(50).
 
        procedure division.
        main.
@@ -217,6 +239,13 @@ identification division.
               close job-file
            end-if
            close job-file
+           
+           open input application-file
+           if FILESTAT-APP = "35"  
+              open output application-file
+              close application-file
+           end-if
+           close application-file
            
            open input InpFile
            if FILESTAT not = "00"
@@ -1834,7 +1863,7 @@ parse-profile-line-complete.
            .
 
 job-search-menu.
-    perform until ws-job-choice = 3 or WS-EOF = "Y"
+    perform until ws-job-choice = 4 or WS-EOF = "Y"
         move "--- Job Search/Internship Menu ---" to WS-DISPLAY
         perform say
         
@@ -1844,7 +1873,10 @@ job-search-menu.
         move "2. Browse Jobs/Internships" to WS-DISPLAY
         perform say
         
-        move "3. Back to Main Menu" to WS-DISPLAY
+        move "3. View My Applications" to WS-DISPLAY
+        perform say
+        
+        move "4. Back to Main Menu" to WS-DISPLAY
         perform say
         
         move "Enter your choice:" to WS-DISPLAY
@@ -1862,13 +1894,13 @@ job-search-menu.
                 when 1
                     perform post-job-internship
                 when 2
-                    move "Browse Jobs/Internships is under construction." 
-                        to WS-DISPLAY
-                    perform say
+                    perform browse-jobs-internships
                 when 3
+                    perform view-my-applications
+                when 4
                     continue
                 when other
-                    move "Invalid choice. Please enter 1, 2, or 3." 
+                    move "Invalid choice. Please enter 1, 2, 3, or 4." 
                         to WS-DISPLAY
                     perform say
             end-evaluate
@@ -2003,4 +2035,323 @@ save-job-posting.
     
     write job-line
     close job-file
+    .
+    
+browse-jobs-internships.
+    move "--- Available Job Listings ---" to WS-DISPLAY
+    perform say
+    
+    move 0 to ws-job-count
+    move 0 to ws-i
+    
+    *> Load all jobs into memory
+    open input job-file
+    if FILESTAT-JOB = "00"
+        perform until 1 = 2
+            read job-file into job-line
+                at end exit perform
+            end-read
+            add 1 to ws-job-count
+            move job-line to JOB-TABLE-ENTRY(ws-job-count)
+        end-perform
+        close job-file
+    end-if
+    
+    *> Display job summaries
+    if ws-job-count = 0
+        move "No job listings available at this time." to WS-DISPLAY
+        perform say
+        move "-----------------------------" to WS-DISPLAY
+        perform say
+        exit paragraph
+    else
+        perform varying ws-i from 1 by 1 until ws-i > ws-job-count
+            move JOB-TABLE-ENTRY(ws-i) to job-line
+            perform parse-job-line
+            perform display-job-summary
+        end-perform
+        move "-----------------------------" to WS-DISPLAY
+        perform say
+    end-if
+    
+    *> Allow user to view job details
+    perform view-job-details-loop
+    .
+
+display-job-summary.
+    move spaces to WS-DISPLAY
+    string ws-i ". " 
+           function trim(job-title) " at " 
+           function trim(job-employer) " (" 
+           function trim(job-location) ")"
+           delimited by size into WS-DISPLAY
+    perform say
+    .
+
+parse-job-line.
+    *> Format: username|title|description|employer|location|salary
+    move spaces to PARSE-FIELD(1)
+    move spaces to PARSE-FIELD(2)
+    move spaces to PARSE-FIELD(3)
+    move spaces to PARSE-FIELD(4)
+    move spaces to PARSE-FIELD(5)
+    move spaces to PARSE-FIELD(6)
+    
+    unstring job-line delimited by "|" into
+        PARSE-FIELD(1)
+        PARSE-FIELD(2)
+        PARSE-FIELD(3)
+        PARSE-FIELD(4)
+        PARSE-FIELD(5)
+        PARSE-FIELD(6)
+    end-unstring
+    
+    move function trim(PARSE-FIELD(1)) to job-poster-username
+    move function trim(PARSE-FIELD(2)) to job-title
+    move function trim(PARSE-FIELD(3)) to job-description
+    move function trim(PARSE-FIELD(4)) to job-employer
+    move function trim(PARSE-FIELD(5)) to job-location
+    move function trim(PARSE-FIELD(6)) to job-salary
+    .
+
+view-job-details-loop.
+    perform until WS-EOF = "Y"
+        move "Enter job number to view details, or 0 to go back:" to WS-DISPLAY
+        perform say
+        
+        read InpFile into temp-input
+            at end move "Y" to WS-EOF exit paragraph
+        end-read
+        
+        move function numval(function trim(temp-input)) to ws-job-selection
+        
+        if ws-job-selection = 0
+            exit paragraph
+        end-if
+        
+        if ws-job-selection < 1 or ws-job-selection > ws-job-count
+            move "Invalid job number. Please try again." to WS-DISPLAY
+            perform say
+        else
+            move JOB-TABLE-ENTRY(ws-job-selection) to job-line
+            perform parse-job-line
+            perform display-full-job-details
+            perform show-apply-option
+        end-if
+    end-perform
+    .
+
+display-full-job-details.
+    move "--- Job Details ---" to WS-DISPLAY
+    perform say
+    
+    move spaces to WS-DISPLAY
+    string "Title: " function trim(job-title) 
+           delimited by size into WS-DISPLAY
+    perform say
+    
+    move spaces to WS-DISPLAY
+    string "Description: " function trim(job-description) 
+           delimited by size into WS-DISPLAY
+    perform say
+    
+    move spaces to WS-DISPLAY
+    string "Employer: " function trim(job-employer) 
+           delimited by size into WS-DISPLAY
+    perform say
+    
+    move spaces to WS-DISPLAY
+    string "Location: " function trim(job-location) 
+           delimited by size into WS-DISPLAY
+    perform say
+    
+    if function length(function trim(job-salary)) > 0
+        move spaces to WS-DISPLAY
+        string "Salary: " function trim(job-salary) 
+               delimited by size into WS-DISPLAY
+        perform say
+    end-if
+    
+    move "-------------------" to WS-DISPLAY
+    perform say
+    .
+
+show-apply-option.
+    move "1. Apply for this Job" to WS-DISPLAY
+    perform say
+    move "2. Back to Job List" to WS-DISPLAY
+    perform say
+    move "Enter your choice:" to WS-DISPLAY
+    perform say
+    
+    read InpFile into temp-input
+        at end move "Y" to WS-EOF exit paragraph
+    end-read
+    
+    move function numval(function trim(temp-input)) to WS-USER-CHOICE
+    
+    if WS-USER-CHOICE = 1
+        perform apply-for-job
+    end-if
+    .
+
+apply-for-job.
+    perform check-existing-application
+    
+    if ws-application-exists = "y"
+        move "You have already applied for this job." to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+    
+    perform save-job-application
+    .
+
+check-existing-application.
+    move "n" to ws-application-exists
+    
+    open input application-file
+    if FILESTAT-APP = "00"
+        perform until 1 = 2
+            read application-file into application-line
+                at end exit perform
+            end-read
+            
+            perform parse-application-line
+            
+            if function trim(app-username) = current-user
+               and function trim(app-job-title) = function trim(job-title)
+               and function trim(app-employer) = function trim(job-employer)
+                move "y" to ws-application-exists
+                exit perform
+            end-if
+        end-perform
+        close application-file
+    end-if
+    .
+
+save-job-application.
+    open extend application-file
+    if FILESTAT-APP not = "00"
+        open output application-file
+        close application-file
+        open extend application-file
+    end-if
+    
+    if FILESTAT-APP not = "00"
+        move "Error: Could not save application." to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+    
+    *> Format: username|job-title|employer|location
+    move spaces to application-line
+    string 
+        function trim(current-user) "|"
+        function trim(job-title) "|"
+        function trim(job-employer) "|"
+        function trim(job-location)
+        delimited by size
+        into application-line
+    end-string
+    
+    write application-line
+    close application-file
+    
+    *> Display confirmation message
+    move spaces to WS-DISPLAY
+    string "Your application for " 
+           function trim(job-title) " at " 
+           function trim(job-employer) 
+           " has been submitted."
+           delimited by size into WS-DISPLAY
+    perform say
+    .
+
+view-my-applications.
+    move "--- Your Job Applications ---" to WS-DISPLAY
+    perform say
+    
+    move spaces to WS-DISPLAY
+    string "Application Summary for " function trim(current-user)
+           delimited by size into WS-DISPLAY
+    perform say
+    
+    move "------------------------------" to WS-DISPLAY
+    perform say
+    
+    move 0 to ws-application-count
+    
+    open input application-file
+    if FILESTAT-APP = "00"
+        perform until 1 = 2
+            read application-file into application-line
+                at end exit perform
+            end-read
+            
+            perform parse-application-line
+            
+            if function trim(app-username) = current-user
+                add 1 to ws-application-count
+                perform display-application-summary
+            end-if
+        end-perform
+        close application-file
+    end-if
+    
+    move "------------------------------" to WS-DISPLAY
+    perform say
+    
+    if ws-application-count = 0
+        move "You have not applied to any jobs yet." to WS-DISPLAY
+        perform say
+    else
+        move spaces to WS-DISPLAY
+        string "Total Applications: " ws-application-count
+               delimited by size into WS-DISPLAY
+        perform say
+    end-if
+    
+    move "------------------------------" to WS-DISPLAY
+    perform say
+    .
+
+parse-application-line.
+    *> Format: username|job-title|employer|location
+    move spaces to PARSE-FIELD(1)
+    move spaces to PARSE-FIELD(2)
+    move spaces to PARSE-FIELD(3)
+    move spaces to PARSE-FIELD(4)
+    
+    unstring application-line delimited by "|" into
+        PARSE-FIELD(1)
+        PARSE-FIELD(2)
+        PARSE-FIELD(3)
+        PARSE-FIELD(4)
+    end-unstring
+    
+    move function trim(PARSE-FIELD(1)) to app-username
+    move function trim(PARSE-FIELD(2)) to app-job-title
+    move function trim(PARSE-FIELD(3)) to app-employer
+    move function trim(PARSE-FIELD(4)) to app-location
+    .
+
+display-application-summary.
+    move spaces to WS-DISPLAY
+    string "Job Title: " function trim(app-job-title)
+           delimited by size into WS-DISPLAY
+    perform say
+    
+    move spaces to WS-DISPLAY
+    string "Employer: " function trim(app-employer)
+           delimited by size into WS-DISPLAY
+    perform say
+    
+    move spaces to WS-DISPLAY
+    string "Location: " function trim(app-location)
+           delimited by size into WS-DISPLAY
+    perform say
+    
+    move "---" to WS-DISPLAY
+    perform say
     .

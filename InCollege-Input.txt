@@ -1,15 +1,19 @@
 2
-MyUser
-MyPass@1
+testuser
+TestPass1!
 1
-MyUser
-MyPass@1
+testuser
+TestPass1!
 2
 1
-Software Intern
-Exciting opportunity to work with cutting-edge technologies
-Tech Solutions Inc
-Tampa, FL
-$20/hour
+Software Engineer
+Build amazing apps
+TechCorp
+New York
+60000
 2
+1
+1
+0
 3
+4
