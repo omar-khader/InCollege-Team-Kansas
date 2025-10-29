@@ -1,0 +1,9 @@
+Reading profile data with validation:
+=== COLLECTED PROFILE DATA ===
+First Name: Alice
+Last Name: Smith
+University: State University
+Major: Computer Science
+Graduation Year: 2024
+About Me: I enjoy learning new technologies and contributing to open-source.
+Processed 6 input lines total.

@@ -1,0 +1,5 @@
+Senior Developer
+BigCo
+2019-2021
+This description is intentionally very long to test the 100-character truncation behavior in the story. It contains many words, commas, and extra filler text to exceed the limit significantly.
+DONE

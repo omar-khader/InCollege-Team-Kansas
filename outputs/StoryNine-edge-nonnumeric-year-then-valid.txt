@@ -1,0 +1,12 @@
+Reading profile data with validation:
+Reading input line 4: 20x5
+Please enter a valid 4-digit year.
+Reading input line 5: 2025
+=== COLLECTED PROFILE DATA ===
+First Name: Charlie
+Last Name: Brown
+University: Tech University
+Major: Software Engineering
+Graduation Year: 2025
+About Me: Optional about me text.
+Processed 7 input lines total.

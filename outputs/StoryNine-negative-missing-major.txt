@@ -1,0 +1,9 @@
+Reading profile data with validation:
+=== COLLECTED PROFILE DATA ===
+First Name: Bob
+Last Name: Jones
+University: Community College
+Major:
+Graduation Year: 2023
+About Me: About me here.
+Processed 5 input lines total.

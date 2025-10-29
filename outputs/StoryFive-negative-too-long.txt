@@ -1,0 +1,3 @@
+Enter About Me (optional, max 80 chars, enter blank line to skip):
+About Me section truncated to 200 characters.
+About Me: This About Me text is intentionally very long to test truncation behavior. It should e

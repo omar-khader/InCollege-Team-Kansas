@@ -1,0 +1,1 @@
+This About Me text is intentionally very long to test truncation behavior. It should exceed eighty characters and trigger the truncation/notification logic in the story code. Extra filler to ensure length over 100.
