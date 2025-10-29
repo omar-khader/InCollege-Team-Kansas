@@ -1,7 +1,0 @@
-=== Job Persistence Test ===
-1. Save Job
-2. Load and Display Jobs
-Enter choice:
-=== Loading Jobs from Persistent Storage ===
-Job #001: testuser|Cybersecurity Analyst|Monitor and protect network security in
-Total jobs loaded: 001
