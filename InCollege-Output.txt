@@ -4,80 +4,52 @@ Welcome to InCollege!
 Enter your choice:
 Please enter your username:
 Please enter your password:
-You have successfully logged in.
-Welcome, alice!
-1. Create/Edit My Profile
-2. View My Profile
-3. Search for User
-4. View My Network
-5. Learn a New Skill
-6. View My Pending Connection Requests
-Enter your choice:
---- My Network ---
-1. Send Connection Request
-2. View Pending Connection Requests
-3. View My Connections
-4. Go Back
-Enter your choice:
---- Pending Connection Requests ---
-Request from: bob
-1. Accept
-2. Reject
-Enter your choice for bob:
-Connection request from bob accepted!
-Request from: charlie
-1. Accept
-2. Reject
-Enter your choice for charlie:
-Connection request from charlie rejected!
-Request from: david
-1. Accept
-2. Reject
-Enter your choice for david:
-Connection request from david accepted!
-Request from: emily
-1. Accept
-2. Reject
-Enter your choice for emily:
-Connection request from emily rejected!
-
---- My Network ---
-1. Send Connection Request
-2. View Pending Connection Requests
-3. View My Connections
-4. Go Back
-Enter your choice:
---- Pending Connection Requests ---
-No pending connection requests.
-
---- My Network ---
-1. Send Connection Request
-2. View Pending Connection Requests
-3. View My Connections
-4. Go Back
-Enter your choice:
---- My Connections ---
-001. bob
-002. david
-
-Total connections: 002
-
------------------------------------
---- My Network ---
-1. Send Connection Request
-2. View Pending Connection Requests
-3. View My Connections
-4. Go Back
-Enter your choice:
-1. Create/Edit My Profile
-2. View My Profile
-3. Search for User
-4. View My Network
-5. Learn a New Skill
-6. View My Pending Connection Requests
-Enter your choice:
+created: MyUser
 Welcome to InCollege!
 1. Log In
 2. Create New Account
 Enter your choice:
-goodbye
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, MyUser!
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+Enter your choice:
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. Back to Main Menu
+Enter your choice:
+--- Post a New Job/Internship ---
+Enter Job Title:
+Enter Description (max 200 chars):
+Enter Employer Name:
+Enter Location:
+Enter Salary (optional, enter 'NONE' to skip):
+Job posted successfully!
+----------------------------------
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. Back to Main Menu
+Enter your choice:
+Browse Jobs/Internships is under construction.
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. Back to Main Menu
+Enter your choice:
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+Enter your choice:

@@ -1,0 +1,10 @@
+=== Job Persistence Test ===
+1. Save Job
+2. Load and Display Jobs
+Enter choice:
+Enter Job Title:
+Enter Description:
+Enter Employer:
+Enter Location:
+Enter Salary (or NONE):
+Job saved to persistent storage!

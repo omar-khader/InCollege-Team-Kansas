@@ -1,0 +1,10 @@
+=== Capturing Job Fields ===
+Enter Job Title:
+Captured Title: Senior Software Architect
+Enter Description (max 200 chars):
+Captured Description: We are seeking a highly skilled Senior Software Architect
+Enter Employer Name:
+Captured Employer: Enterprise Solutions Group
+Enter Location:
+Captured Location: Washington, DC
+=== All Required Fields Captured Successfully ===
