@@ -1,5 +1,5 @@
 identification division.
-program-id. StorySeven.
+program-id. StoryEight.
 
 environment division.
 input-output section.
@@ -107,6 +107,11 @@ view-my-applications.
     
     if ws-application-count = 0
         move "You have not applied to any jobs yet." to WS-DISPLAY
+        perform say
+    else
+        move spaces to WS-DISPLAY
+        string "Total Applications: " ws-application-count
+               delimited by size into WS-DISPLAY
         perform say
     end-if
     

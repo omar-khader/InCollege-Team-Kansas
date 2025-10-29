@@ -1,237 +1,283 @@
 identification division.
-       program-id. Story5.
+program-id. StoryFive.
 
-       environment division.
-       input-output section.
-       file-control.
-           select job-file assign to "jobs.dat"
-               organization is line sequential
-               file status is FILESTAT-JOB.
-           select InpFile assign to "InCollege-Input.txt"
-               organization is line sequential
-               file status is FILESTAT.
-           select OutFile assign to "InCollege-Output.txt"
-               organization is line sequential
-               file status is FILESTAT-Out.
+environment division.
+input-output section.
+file-control.
+    select job-file assign to "jobs.dat"
+        organization is line sequential
+        file status is FILESTAT-JOB.
+    select application-file assign to "applications.dat"
+        organization is line sequential
+        file status is FILESTAT-APP.
+    select InpFile assign to "InCollege-Input.txt"
+        organization is line sequential
+        file status is FILESTAT.
+    select OutFile assign to "InCollege-Output.txt"
+        organization is line sequential
+        file status is FILESTAT-Out.
 
-       data division.
-       file section.
-       fd  job-file.
-       01  job-line                  pic x(500).
+data division.
+file section.
+fd  job-file.
+01  job-line                  pic x(500).
 
-       fd  InpFile.
-       01  InpRecord                 pic x(200).
+fd  application-file.
+01  application-line          pic x(300).
 
-       fd  OutFile.
-       01  OutRecord                 pic x(80).
+fd  InpFile.
+01  InpRecord                 pic x(200).
 
-       working-storage section.
-       01  FILESTAT                  pic xx.
-       01  FILESTAT-JOB              pic xx.
-       01  FILESTAT-Out              pic xx.
-       01  WS-EOF                    pic x value "N".
-       01  WS-DISPLAY                pic x(80).
-       01  temp-input                pic x(200).
-       01  ws-job-choice             pic 9 value 0.
+fd  OutFile.
+01  OutRecord                 pic x(80).
 
-       01  job-data.
-           05  job-poster-username    pic x(32).
-           05  job-title              pic x(50).
-           05  job-description        pic x(200).
-           05  job-employer           pic x(100).
-           05  job-location           pic x(50).
-           05  job-salary             pic x(30).
+working-storage section.
+01  FILESTAT                  pic xx.
+01  FILESTAT-JOB              pic xx.
+01  FILESTAT-APP              pic xx.
+01  FILESTAT-Out              pic xx.
+01  WS-EOF                    pic x value "N".
+01  WS-DISPLAY                pic x(80).
+01  ws-job-count              pic 9(03) value 0.
+01  ws-i                      pic 9(03) value 0.
+01  ws-job-selection          pic 9(03) value 0.
+01  ws-application-exists     pic x value "n".
+01  temp-input                pic x(200).
+01  current-user              pic x(32) value "testuser".
 
-       procedure division.
-       main.
-           open input job-file
-           if FILESTAT-JOB = "35"  
-              open output job-file
-              close job-file
-           end-if
-           close job-file
-           
-           open input InpFile
-           if FILESTAT not = "00"
-              display "ERROR opening InCollege-Input.txt"
-              stop run
-           end-if
+01  JOBS-TABLE.
+    05 JOB-TABLE-ENTRY occurs 100 times pic x(500).
 
-           open output OutFile
-           if FILESTAT-Out not = "00"
-              display "ERROR opening InCollege-Output.txt"
-              stop run
-           end-if
+01  job-data.
+    05  job-poster-username    pic x(32).
+    05  job-title              pic x(50).
+    05  job-description        pic x(200).
+    05  job-employer           pic x(100).
+    05  job-location           pic x(50).
+    05  job-salary             pic x(30).
 
-           perform job-search-menu
+01  application-data.
+    05  app-username           pic x(32).
+    05  app-job-title          pic x(50).
+    05  app-employer           pic x(100).
+    05  app-location           pic x(50).
 
-           close InpFile
-           close OutFile
-           stop run.
+01  PARSE-FIELDS.
+    05 PARSE-FIELD occurs 50 times pic x(200).
 
-       job-search-menu.
-           perform until ws-job-choice = 3 or WS-EOF = "Y"
-               move "--- Job Search/Internship Menu ---" to WS-DISPLAY
-               perform say
-               
-               move "1. Post a Job/Internship" to WS-DISPLAY
-               perform say
-               
-               move "2. Browse Jobs/Internships" to WS-DISPLAY
-               perform say
-               
-               move "3. Back to Main Menu" to WS-DISPLAY
-               perform say
-               
-               move "Enter your choice:" to WS-DISPLAY
-               perform say
-               
-               read InpFile into InpRecord
-                   at end move "Y" to WS-EOF
-                   not at end
-                       move function numval(function trim(InpRecord)) 
-                           to ws-job-choice
-               end-read
-               
-               if WS-EOF = "N"
-                   evaluate ws-job-choice
-                       when 1
-                           perform post-job-internship
-                       when 2
-                           move "Browse Jobs/Internships is under construction." 
-                               to WS-DISPLAY
-                           perform say
-                       when 3
-                           move "Returning to Main Menu..." to WS-DISPLAY
-                           perform say
-                       when other
-                           move "Invalid choice. Please enter 1, 2, or 3." 
-                               to WS-DISPLAY
-                           perform say
-                   end-evaluate
-               end-if
-           end-perform
-           
-           move 0 to ws-job-choice
-           .
+procedure division.
+main.
+    open input job-file
+    if FILESTAT-JOB = "35"
+        open output job-file
+        close job-file
+        open input job-file
+    end-if
+    
+    if FILESTAT-JOB = "00"
+        perform until 1 = 2
+            read job-file into job-line
+                at end exit perform
+            end-read
+            add 1 to ws-job-count
+            move job-line to JOB-TABLE-ENTRY(ws-job-count)
+        end-perform
+        close job-file
+    end-if
+    
+    open input application-file
+    if FILESTAT-APP = "35"
+        open output application-file
+        close application-file
+    end-if
+    close application-file
+    
+    open input InpFile
+    if FILESTAT not = "00"
+        display "ERROR opening InCollege-Input.txt"
+        stop run
+    end-if
+    
+    open output OutFile
+    if FILESTAT-Out not = "00"
+        display "ERROR opening InCollege-Output.txt"
+        stop run
+    end-if
+    
+    perform test-persistence
+    
+    close InpFile
+    close OutFile
+    stop run.
 
-       post-job-internship.
-           move "--- Post a New Job/Internship ---" to WS-DISPLAY
-           perform say
-           
-           initialize job-data
-           move "testuser" to job-poster-username
-           
-           move "Enter Job Title:" to WS-DISPLAY
-           perform say
-           read InpFile into temp-input
-               at end move "Y" to WS-EOF exit paragraph
-           end-read
-           move function trim(temp-input) to job-title
-           
-           if function length(function trim(job-title)) = 0
-               move "Job title is required." to WS-DISPLAY
-               perform say
-               exit paragraph
-           end-if
-           
-           move "Enter Description (max 200 chars):" to WS-DISPLAY
-           perform say
-           read InpFile into temp-input
-               at end move "Y" to WS-EOF exit paragraph
-           end-read
-           
-           if function length(function trim(temp-input)) > 200
-               move temp-input(1:200) to job-description
-           else
-               move function trim(temp-input) to job-description
-           end-if
-           
-           if function length(function trim(job-description)) = 0
-               move "Job description is required." to WS-DISPLAY
-               perform say
-               exit paragraph
-           end-if
-           
-           move "Enter Employer Name:" to WS-DISPLAY
-           perform say
-           read InpFile into temp-input
-               at end move "Y" to WS-EOF exit paragraph
-           end-read
-           move function trim(temp-input) to job-employer
-           
-           if function length(function trim(job-employer)) = 0
-               move "Employer name is required." to WS-DISPLAY
-               perform say
-               exit paragraph
-           end-if
-           
-           move "Enter Location:" to WS-DISPLAY
-           perform say
-           read InpFile into temp-input
-               at end move "Y" to WS-EOF exit paragraph
-           end-read
-           move function trim(temp-input) to job-location
-           
-           if function length(function trim(job-location)) = 0
-               move "Location is required." to WS-DISPLAY
-               perform say
-               exit paragraph
-           end-if
-           
-           move "Enter Salary (optional, enter 'NONE' to skip):" to WS-DISPLAY
-           perform say
-           read InpFile into temp-input
-               at end move "Y" to WS-EOF exit paragraph
-           end-read
-           
-           if function upper-case(function trim(temp-input)) = "NONE"
-               move spaces to job-salary
-           else
-               move function trim(temp-input) to job-salary
-           end-if
-           
-           perform save-job-posting
-           
-           move "Job posted successfully!" to WS-DISPLAY
-           perform say
-           move "----------------------------------" to WS-DISPLAY
-           perform say
-           .
+test-persistence.
+    move "=== Testing Application Persistence ===" to WS-DISPLAY
+    perform say
+    
+    move "--- Available Job Listings ---" to WS-DISPLAY
+    perform say
+    
+    if ws-job-count = 0
+        move "No job listings available." to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+    
+    perform varying ws-i from 1 by 1 until ws-i > ws-job-count
+        move JOB-TABLE-ENTRY(ws-i) to job-line
+        perform parse-job-line
+        perform display-job-summary
+    end-perform
+    
+    move "-----------------------------" to WS-DISPLAY
+    perform say
+    
+    move "Enter job number to apply:" to WS-DISPLAY
+    perform say
+    
+    read InpFile into temp-input
+        at end move "Y" to WS-EOF exit paragraph
+    end-read
+    
+    move function numval(function trim(temp-input)) to ws-job-selection
+    
+    if ws-job-selection < 1 or ws-job-selection > ws-job-count
+        move "Invalid job number." to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+    
+    move JOB-TABLE-ENTRY(ws-job-selection) to job-line
+    perform parse-job-line
+    
+    perform check-existing-application
+    
+    if ws-application-exists = "y"
+        move "PERSISTENCE TEST PASSED: Duplicate detected!" to WS-DISPLAY
+        perform say
+        move "You have already applied for this job." to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+    
+    perform save-job-application
+    move "PERSISTENCE TEST PASSED: Application saved!" to WS-DISPLAY
+    perform say
+    .
 
-       save-job-posting.
-           open extend job-file
-           if FILESTAT-JOB not = "00"
-               open output job-file
-               close job-file
-               open extend job-file
-           end-if
-           
-           if FILESTAT-JOB not = "00"
-               move "Error: Could not save job posting." to WS-DISPLAY
-               perform say
-               exit paragraph
-           end-if
-           
-           move spaces to job-line
-           string 
-               function trim(job-poster-username) "|"
-               function trim(job-title) "|"
-               function trim(job-description) "|"
-               function trim(job-employer) "|"
-               function trim(job-location) "|"
-               function trim(job-salary)
-               delimited by size
-               into job-line
-           end-string
-           
-           write job-line
-           close job-file
-           .
+parse-job-line.
+    move spaces to PARSE-FIELD(1)
+    move spaces to PARSE-FIELD(2)
+    move spaces to PARSE-FIELD(3)
+    move spaces to PARSE-FIELD(4)
+    move spaces to PARSE-FIELD(5)
+    move spaces to PARSE-FIELD(6)
+    
+    unstring job-line delimited by "|" into
+        PARSE-FIELD(1)
+        PARSE-FIELD(2)
+        PARSE-FIELD(3)
+        PARSE-FIELD(4)
+        PARSE-FIELD(5)
+        PARSE-FIELD(6)
+    end-unstring
+    
+    move function trim(PARSE-FIELD(1)) to job-poster-username
+    move function trim(PARSE-FIELD(2)) to job-title
+    move function trim(PARSE-FIELD(3)) to job-description
+    move function trim(PARSE-FIELD(4)) to job-employer
+    move function trim(PARSE-FIELD(5)) to job-location
+    move function trim(PARSE-FIELD(6)) to job-salary
+    .
 
-       say.
-           display WS-DISPLAY
-           move WS-DISPLAY to OutRecord
-           write OutRecord
-           .
+display-job-summary.
+    move spaces to WS-DISPLAY
+    string ws-i ". " 
+           function trim(job-title) " at " 
+           function trim(job-employer) " (" 
+           function trim(job-location) ")"
+           delimited by size into WS-DISPLAY
+    perform say
+    .
 
+check-existing-application.
+    move "n" to ws-application-exists
+    
+    move "Checking for existing application..." to WS-DISPLAY
+    perform say
+    
+    open input application-file
+    if FILESTAT-APP = "00"
+        perform until 1 = 2
+            read application-file into application-line
+                at end exit perform
+            end-read
+            
+            perform parse-application-line
+            
+            if function trim(app-username) = current-user
+               and function trim(app-job-title) = function trim(job-title)
+               and function trim(app-employer) = function trim(job-employer)
+                move "y" to ws-application-exists
+                exit perform
+            end-if
+        end-perform
+        close application-file
+    end-if
+    .
+
+parse-application-line.
+    move spaces to PARSE-FIELD(1)
+    move spaces to PARSE-FIELD(2)
+    move spaces to PARSE-FIELD(3)
+    move spaces to PARSE-FIELD(4)
+    
+    unstring application-line delimited by "|" into
+        PARSE-FIELD(1)
+        PARSE-FIELD(2)
+        PARSE-FIELD(3)
+        PARSE-FIELD(4)
+    end-unstring
+    
+    move function trim(PARSE-FIELD(1)) to app-username
+    move function trim(PARSE-FIELD(2)) to app-job-title
+    move function trim(PARSE-FIELD(3)) to app-employer
+    move function trim(PARSE-FIELD(4)) to app-location
+    .
+
+save-job-application.
+    open extend application-file
+    if FILESTAT-APP not = "00"
+        open output application-file
+        close application-file
+        open extend application-file
+    end-if
+    
+    if FILESTAT-APP not = "00"
+        move "Error: Could not save application." to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+    
+    move spaces to application-line
+    string 
+        function trim(current-user) "|"
+        function trim(job-title) "|"
+        function trim(job-employer) "|"
+        function trim(job-location)
+        delimited by size
+        into application-line
+    end-string
+    
+    write application-line
+    close application-file
+    
+    move "Application persisted to applications.dat" to WS-DISPLAY
+    perform say
+    .
+
+say.
+    display WS-DISPLAY
+    move WS-DISPLAY to OutRecord
+    write OutRecord
+    .
