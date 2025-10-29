@@ -1,0 +1,6 @@
+=== Testing Confirmation Message ===
+--- Available Job Listings ---
+1. Job One at Employer One (City A)
+-----------------------------
+Enter job number to apply:
+Invalid job number.

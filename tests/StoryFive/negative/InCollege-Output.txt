@@ -1,0 +1,9 @@
+=== Testing Application Persistence ===
+--- Available Job Listings ---
+1. Job One at Employer One (City A)
+2. Job Two at Employer Two (City B)
+-----------------------------
+Enter job number to apply:
+Checking for existing application...
+PERSISTENCE TEST PASSED: Duplicate detected!
+You have already applied for this job.

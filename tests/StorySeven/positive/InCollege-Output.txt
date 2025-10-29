@@ -1,0 +1,9 @@
+--- Your Job Applications ---
+Application Summary for testuser
+------------------------------
+Job Title: Software Engineer
+Employer: TechCorp
+Location: Remote
+---
+------------------------------
+------------------------------

@@ -1,0 +1,6 @@
+otheruser|Some Role|OtherCorp|City X
+testuser|Software Engineer|TechCorp|Remote
+testuser|Data Analyst|DataCorp|Onsite
+malformed-line-without-delimiters
+
+testuser|Intern|SmallCo|Campus

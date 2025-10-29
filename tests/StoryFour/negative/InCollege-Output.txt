@@ -1,0 +1,5 @@
+--- Available Job Listings ---
+1. Software Engineer at TechCorp (Remote)
+-----------------------------
+Enter job number to apply:
+Invalid job number.

@@ -1,0 +1,14 @@
+--- Your Job Applications ---
+Application Summary for testuser
+------------------------------
+Job Title: Software Engineer
+Employer: TechCorp
+Location: Remote
+---
+Job Title: Data Analyst
+Employer: DataCorp
+Location: Onsite
+---
+------------------------------
+Total Applications: 002
+------------------------------

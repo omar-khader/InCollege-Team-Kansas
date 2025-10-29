@@ -1,0 +1,10 @@
+=== Testing Confirmation Message ===
+--- Available Job Listings ---
+1. Job One at Employer One (City A)
+-----------------------------
+Enter job number to apply:
+Application persisted to applications.dat
+
+*** CONFIRMATION MESSAGE ***
+Your application for Job One at Employer One has been submitted.
+****************************
