@@ -1,0 +1,6 @@
+jsmith123|mjones456|connected
+jsmith123|alee789|pending
+mjones456|bwilson321|connected
+alee789|scarcia654|connected
+bwilson321|jsmith123|pending
+scarcia654|mjones456|rejected

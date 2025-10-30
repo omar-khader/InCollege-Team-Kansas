@@ -1,0 +1,79 @@
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, jsmith123!
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Send a New Message ---
+Enter recipient's username (must be a connection):
+Enter your message (max 200 chars):
+Message sent to mjones456 successfully!
+---------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Send a New Message ---
+Enter recipient's username (must be a connection):
+You must be connected with the user to send a message.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Invalid choice. Please enter 1, 2, or 3.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Send a New Message ---
+Enter recipient's username (must be a connection):
+You must be connected with the user to send a message.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Invalid choice. Please enter 1, 2, or 3.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+View My Messages is under construction.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:

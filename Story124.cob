@@ -1,0 +1,1 @@
+cobc -x -free Story124.cob -o test
