@@ -1,0 +1,166 @@
+# InCollege Messaging Feature - Comprehensive Test Cases
+
+## Test Data Setup:
+- user1 and user2 are connected (connections.dat: user1|user2|connected)
+- user3 exists but is not connected to anyone
+- All users have password: Pass1234!
+
+## TEST CASE 1: Successful Message Send (Positive)
+# Login as user1
+1
+user1
+Pass1234!
+# Go to Messages menu
+8
+# Send a new message
+1
+# Enter recipient
+user2
+# Enter message
+Hello user2! This is a test message from user1.
+# View messages (should be empty for sender)
+2
+# Back to messages menu
+3
+# Back to main menu
+8
+# Exit
+
+## TEST CASE 2: Send to Non-Existent User (Negative)
+# Send message option
+1
+# Enter non-existent username
+nonexistentuser
+# Should show "User not found." and return to menu
+# View messages
+2
+# Back
+3
+
+## TEST CASE 3: Send to Self (Negative)
+# Messages menu
+8
+# Send new message
+1
+# Enter own username
+user1
+# Should show "You cannot send a message to yourself."
+# View messages
+2
+# Back
+3
+
+## TEST CASE 4: Send to Non-Connected User (Negative)
+# Messages menu
+8
+# Send new message
+1
+# Enter user3 (not connected)
+user3
+# Should show "You can only send messages to users you are connected with."
+# View messages
+2
+# Back
+3
+# Logout
+0
+
+## TEST CASE 5: Receive and View Messages (Positive)
+# Login as user2
+1
+user2
+Pass1234!
+# Messages menu
+8
+# View messages
+2
+# Should see message from user1: "Hello user2! This is a test message from user1."
+# Back
+3
+
+## TEST CASE 6: Reply to Message (Positive)
+# Send new message
+8
+1
+# Send to user1
+user1
+# Message content
+Hi user1! This is a reply from user2.
+# Back
+3
+# Logout
+0
+
+## TEST CASE 7: Empty Message (Negative)
+# Login as user1
+1
+user1
+Pass1234!
+# Messages
+8
+# Send new message
+1
+# Recipient
+user2
+# Empty message (just press enter)
+
+# Should show "Message cannot be empty."
+# Back
+3
+
+## TEST CASE 8: Long Message Truncation (Boundary)
+# Send message
+8
+1
+# Recipient
+user2
+# Very long message (over 200 chars)
+This is a very long message that exceeds the 200 character limit. It should be truncated automatically by the system when saved. This part of the message will be cut off because it goes beyond the maximum allowed length of 200 characters total.
+# View to verify truncation
+2
+# Back
+3
+# Logout
+0
+
+## TEST CASE 9: User Without Messages (Positive)
+# Login as user3
+1
+user3
+Pass1234!
+# Messages
+8
+# Send attempt to user1 (should fail - not connected)
+1
+user1
+# Should show not connected error
+# View messages
+2
+# Should show "You have no messages."
+# Back
+3
+# Logout
+0
+
+## TEST CASE 10: Exit Program
+3
+
+## Expected Results Summary:
+1. ✓ User1 can send message to connected user2
+2. ✓ Error when sending to non-existent user
+3. ✓ Error when sending to self
+4. ✓ Error when sending to non-connected user
+5. ✓ User2 can view received messages
+6. ✓ User2 can reply to user1
+7. ✓ Error when sending empty message
+8. ✓ Long messages are truncated to 200 chars
+9. ✓ Users with no messages see appropriate message
+10. ✓ All operations are logged to InCollege-Output.txt
+
+## Files to Check After Test:
+1. messages.dat - Should contain:
+   - user1|user2|Hello user2! This is a test message from user1.|[timestamp]
+   - user2|user1|Hi user1! This is a reply from user2.|[timestamp]
+   - user1|user2|[200 char truncated message]|[timestamp]
+
+2. InCollege-Output.txt - Should contain all menu displays and operations
