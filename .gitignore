@@ -1,0 +1,30 @@
+# Compiled COBOL programs
+InCollege
+*.exe
+
+# Runtime data files
+users.dat
+profiles.dat
+connections.dat
+
+# Runtime output files
+Connections-Output.txt
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Log files
+*.log
