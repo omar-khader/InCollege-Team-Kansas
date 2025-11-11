@@ -18,15 +18,41 @@ Welcome to InCollege!
 Enter your choice:
 Please enter your username:
 Please enter your password:
+created: user3
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
 You have successfully logged in.
 Welcome, user1!
 1. Create/Edit My Profile
-2. Search for a job
-3. View My Profile
-4. Find someone you know
-5. View My Network
-6. Learn a new skill
-7. View My Pending Connection Requests
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+You have no messages to display.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
 8. Messages
 Enter your choice:
 --- Messages Menu ---
@@ -42,13 +68,43 @@ Message sent successfully to user2!
 2. View My Messages
 3. Back to Main Menu
 Enter your choice:
+Enter recipient username:
+Enter your message (max 200 chars):
+User not found.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Enter recipient username:
+Enter your message (max 200 chars):
+You cannot send a message to yourself.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Enter recipient username:
+Enter your message (max 200 chars):
+Message sent successfully to user2!
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+You have no messages to display.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
 1. Create/Edit My Profile
-2. Search for a job
-3. View My Profile
-4. Find someone you know
-5. View My Network
-6. Learn a new skill
-7. View My Pending Connection Requests
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
 8. Messages
 Enter your choice:
 Welcome to InCollege!
@@ -60,13 +116,38 @@ Please enter your password:
 You have successfully logged in.
 Welcome, user2!
 1. Create/Edit My Profile
-2. Search for a job
-3. View My Profile
-4. Find someone you know
-5. View My Network
-6. Learn a new skill
-7. View My Pending Connection Requests
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
 8. Messages
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Invalid choice. Please enter 1, 2, or 3.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+From: user1
+Time: 2024-11-11 12:00:00
+Message: Hello user2! This is a test message from user1.
+---
+From: user1
+Time: 2024-11-11 12:00:00
+Message: This is an extremely long message that should be truncated at exactly 200 characters. It contains lots of text to test the boundary condition. This part here will definitely be cut off when t
+---
+Total messages: 2 (1 unread)
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
 Enter your choice:
 --- Messages Menu ---
 1. Send a New Message
@@ -78,19 +159,107 @@ From: user1
 Time: 2024-11-11 12:00:00
 Message: Hello user2! This is a test message from user1.
 ---
-Total messages: 1 (1 unread)
+From: user1
+Time: 2024-11-11 12:00:00
+Message: This is an extremely long message that should be truncated at exactly 200 characters. It contains lots of text to test the boundary condition. This part here will definitely be cut off when t
+---
+Total messages: 2 (1 unread)
 --- Messages Menu ---
 1. Send a New Message
 2. View My Messages
 3. Back to Main Menu
 Enter your choice:
 1. Create/Edit My Profile
-2. Search for a job
-3. View My Profile
-4. Find someone you know
-5. View My Network
-6. Learn a new skill
-7. View My Pending Connection Requests
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, user3!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+You have no messages to display.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, user1!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Enter recipient username:
+Enter your message (max 200 chars):
+Message sent successfully to user3!
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+You have no messages to display.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for User
+4. View My Network
+5. Learn a New Skill
+6. View My Pending Connection Requests
 8. Messages
 Enter your choice:
 goodbye

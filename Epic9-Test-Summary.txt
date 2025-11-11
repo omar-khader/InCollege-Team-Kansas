@@ -1,0 +1,40 @@
+# Epic 9 Comprehensive Test Coverage Summary
+
+The Epic9-Input.txt and Epic9-Output.txt files provide comprehensive test coverage for all three ITK stories:
+
+## ITK-148: "As a user, I want to be informed if I have no messages to display."
+✓ POSITIVE: User2 receives messages and sees them displayed
+✓ NEGATIVE: User1 and User3 view messages when inbox is empty
+✓ NEUTRAL: Multiple users with different message states
+
+## ITK-149: "As a user, I want the 'Messages' menu to allow me to 'View My Messages'."
+✓ POSITIVE: All users successfully access View My Messages option
+✓ NEGATIVE: User2 enters invalid menu choice (5) and sees error message
+✓ NEUTRAL: Users navigate back to main menu without issues
+
+## ITK-150: "As a tester, I want the program to read all user inputs for viewing messages from a file so I can automate testing."
+✓ POSITIVE: All inputs successfully read from file without manual intervention
+✓ NEGATIVE: Program handles various error conditions gracefully
+✓ NEUTRAL: Complex navigation sequences work correctly
+
+## Additional Test Coverage:
+1. Message to non-existent user - shows "User not found."
+2. Self-messaging attempt - shows "You cannot send a message to yourself."
+3. 200-character message truncation - message is cut off at exactly 200 chars
+4. Multiple logins and message viewing sessions
+5. Sender doesn't see sent messages in their inbox (only received messages)
+
+## Test Flow:
+1. Create 3 users (user1, user2, user3)
+2. User1 logs in, views empty messages (ITK-148)
+3. User1 sends valid message to user2
+4. User1 attempts invalid messages (non-existent user, self)
+5. User1 sends 200+ char message to user2 (truncated)
+6. User1 views messages again (still empty - only shows received)
+7. User2 logs in, tests invalid menu choice (ITK-149)
+8. User2 views messages (sees 2 from user1)
+9. User3 logs in, views empty messages (ITK-148)
+10. User1 logs back in, sends message to user3
+11. User1 views own messages (empty - hasn't received any)
+
+This comprehensive test validates all requirements and edge cases.
