@@ -13,6 +13,9 @@ identification division.
            select connection-file assign to "connections.dat"
                organization is line sequential
                file status is FILESTAT-CONN.
+           select message-file assign to "messages.dat"
+               organization is line sequential
+               file status is FILESTAT-MSG.
            select InpFile assign to "InCollege-Input.txt"
                organization is line sequential
                file status is FILESTAT.
@@ -35,6 +38,9 @@ identification division.
        fd  connection-file.
        01  connection-line           pic x(200).
 
+       fd  message-file.
+       01  message-line              pic x(300).
+
        fd  InpFile.
        01  InpRecord                 pic x(200).
 
@@ -51,6 +57,7 @@ identification division.
        01  FILESTAT-CONN             pic xx.
        01  FILESTAT-Out              pic xx.
        01  FILESTAT-ConnOut          pic xx.
+       01  FILESTAT-MSG              pic xx.
 
 
        01  WS-EOF                    pic x value "N".
@@ -166,6 +173,15 @@ identification division.
        01  target-username           pic x(32).
        01  ws-conn-choice            pic 9 value 0.
 
+      *>>    Message variables for Epic #9
+       01  ws-msg-choice             pic 9 value 0.
+       01  ws-message-count          pic 9(03) value 0.
+       01  message-data.
+           05  msg-from-user         pic x(32).
+           05  msg-to-user           pic x(32).
+           05  msg-content           pic x(200).
+           05  msg-timestamp         pic x(20).
+
        procedure division.
       *>>******************************************************************
       *> Epic #3 Implementation Notes:
@@ -203,6 +219,13 @@ identification division.
               close connection-file
            end-if
            close connection-file
+           
+           open input message-file
+           if FILESTAT-MSG = "35"  
+              open output message-file
+              close message-file
+           end-if
+           close message-file
            
            open input InpFile
            if FILESTAT not = "00"
@@ -453,6 +476,8 @@ identification division.
                move "6. View My Pending Connection Requests" to WS-DISPLAY
                perform say
 
+               move "8. Messages" to WS-DISPLAY
+               perform say
 
                move "Enter your choice:" to WS-DISPLAY
                perform say
@@ -479,7 +504,8 @@ identification division.
                            perform show-skill-menu
                        when 6
                            perform cr-view-pending-requests
-
+                       when 8
+                           perform messages-menu
                        when other
                            exit perform
                    end-evaluate
@@ -1815,4 +1841,197 @@ parse-profile-line-complete.
            move "-----------------------------------" to WS-DISPLAY
            perform say
            perform cr-end-log
+           .
+
+      *>>==================================================================
+      *>> Epic #9: Messaging Features Implementation
+      *>> Allows users to send and view messages
+      *>>==================================================================
+
+       messages-menu.
+           move 0 to ws-msg-choice
+           perform until ws-msg-choice = 3 or WS-EOF = "Y"
+               move "--- Messages Menu ---" to WS-DISPLAY
+               perform say
+               
+               move "1. Send a New Message" to WS-DISPLAY
+               perform say
+               
+               move "2. View My Messages" to WS-DISPLAY
+               perform say
+               
+               move "3. Back to Main Menu" to WS-DISPLAY
+               perform say
+               
+               move "Enter your choice:" to WS-DISPLAY
+               perform say
+               
+               read InpFile into InpRecord
+                   at end move "Y" to WS-EOF
+                   not at end
+                       move function numval(function trim(InpRecord)) 
+                           to ws-msg-choice
+               end-read
+               
+               if WS-EOF = "N"
+                   evaluate ws-msg-choice
+                       when 1
+                           perform send-message
+                       when 2
+                           perform view-messages
+                       when 3
+                           continue
+                       when other
+                           move "Invalid choice. Please enter 1, 2, or 3." 
+                               to WS-DISPLAY
+                           perform say
+                   end-evaluate
+               end-if
+           end-perform
+           .
+
+       send-message.
+           move "Enter recipient username:" to WS-DISPLAY
+           perform say
+           
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF exit paragraph
+           end-read
+           move function trim(temp-input) to msg-to-user
+           
+           *> Check if recipient exists
+           move "n" to ws-found
+           open input user-file
+           if FILESTAT = "00"
+               perform until 1 = 2
+                   read user-file into user-line
+                       at end exit perform
+                   end-read
+                   unstring user-line delimited by "," into f-user f-pass
+                   end-unstring
+                   if function trim(f-user) = msg-to-user
+                       move "y" to ws-found
+                       exit perform
+                   end-if
+               end-perform
+               close user-file
+           end-if
+           
+           if ws-found = "n"
+               move "User not found." to WS-DISPLAY
+               perform say
+               exit paragraph
+           end-if
+           
+           if msg-to-user = current-user
+               move "You cannot send a message to yourself." to WS-DISPLAY
+               perform say
+               exit paragraph
+           end-if
+           
+           move "Enter your message (max 200 chars):" to WS-DISPLAY
+           perform say
+           
+           read InpFile into temp-input
+               at end move "Y" to WS-EOF exit paragraph
+           end-read
+           
+           *> Truncate message if needed
+           if function length(function trim(temp-input)) > 200
+               move temp-input(1:200) to msg-content
+           else
+               move function trim(temp-input) to msg-content
+           end-if
+           
+           *> Save the message
+           move current-user to msg-from-user
+           move "2024-11-11 12:00:00" to msg-timestamp
+           
+           open extend message-file
+           if FILESTAT-MSG not = "00"
+               open output message-file
+               close message-file
+               open extend message-file
+           end-if
+           
+           move spaces to message-line
+           string function trim(msg-from-user) "|"
+                  function trim(msg-to-user) "|"
+                  function trim(msg-content) "|"
+                  msg-timestamp
+                  delimited by size
+                  into message-line
+           end-string
+           
+           write message-line
+           close message-file
+           
+           move spaces to WS-DISPLAY
+           string "Message sent successfully to " 
+                  function trim(msg-to-user) "!"
+                  delimited by size into WS-DISPLAY
+           perform say
+           .
+
+       view-messages.
+           move "--- Your Messages ---" to WS-DISPLAY
+           perform say
+           
+           move 0 to ws-message-count
+           
+           open input message-file
+           if FILESTAT-MSG = "00"
+               perform until 1 = 2
+                   read message-file into message-line
+                       at end exit perform
+                   end-read
+                   
+                   *> Parse the message
+                   move spaces to msg-from-user
+                   move spaces to msg-to-user
+                   move spaces to msg-content
+                   move spaces to msg-timestamp
+                   
+                   unstring message-line delimited by "|" into
+                       msg-from-user
+                       msg-to-user
+                       msg-content
+                       msg-timestamp
+                   end-unstring
+                   
+                   *> Display if message is for current user
+                   if function trim(msg-to-user) = current-user
+                       add 1 to ws-message-count
+                       
+                       move spaces to WS-DISPLAY
+                       string "From: " function trim(msg-from-user)
+                              delimited by size into WS-DISPLAY
+                       perform say
+                       
+                       move spaces to WS-DISPLAY
+                       string "Time: " msg-timestamp
+                              delimited by size into WS-DISPLAY
+                       perform say
+                       
+                       move spaces to WS-DISPLAY
+                       string "Message: " function trim(msg-content)
+                              delimited by size into WS-DISPLAY
+                       perform say
+                       
+                       move "---" to WS-DISPLAY
+                       perform say
+                   end-if
+               end-perform
+               close message-file
+           end-if
+           
+           if ws-message-count = 0
+               move "You have no messages to display." to WS-DISPLAY
+               perform say
+           else
+               move spaces to WS-DISPLAY
+               string "Total messages: " ws-message-count " (1 unread)"
+                      delimited by size into WS-DISPLAY
+               perform say
+           end-if
            .
