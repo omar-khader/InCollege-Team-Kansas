@@ -1,0 +1,60 @@
+2
+SendingUser
+passwordSend
+FirstNameSend
+LastNameSend
+USA
+Computer Science
+1
+ReceivingUser
+passwordRec
+FirstNameRec
+LastNameRec
+USA
+Business
+1
+AnotherConnection
+passAnother
+FirstNameAnother
+LastNameAnother
+USA
+Engineering
+1
+1
+SendingUser
+passwordSend
+8
+1
+ReceivingUser
+Hi there! Glad we connected on InCollege.
+2025-07-28 10:30
+3
+1
+AnotherConnection
+passAnother
+8
+1
+ReceivingUser
+Check out this interesting job posting I found!
+2025-07-29 09:15
+3
+1
+ReceivingUser
+passwordRec
+8
+2
+3
+1
+NoMessagesUser
+password456
+FirstNoMsg
+LastNoMsg
+USA
+Math
+1
+1
+NoMessagesUser
+password456
+8
+2
+3

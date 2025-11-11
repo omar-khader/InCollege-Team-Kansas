@@ -1,0 +1,179 @@
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter a username for your new account:
+Please enter a password:
+Please enter your first name:
+Please enter your last name:
+Please enter your country:
+Please enter your major:
+Your account has been created successfully.
+
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter a username for your new account:
+Please enter a password:
+Please enter your first name:
+Please enter your last name:
+Please enter your country:
+Please enter your major:
+Your account has been created successfully.
+
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter a username for your new account:
+Please enter a password:
+Please enter your first name:
+Please enter your last name:
+Please enter your country:
+Please enter your major:
+Your account has been created successfully.
+
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, SendingUser!
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Please enter recipient username:
+Please enter your message:
+(Optional: Enter timestamp)
+Message sent successfully.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, AnotherConnection!
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Please enter recipient username:
+Please enter your message:
+(Optional: Enter timestamp)
+Message sent successfully.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, ReceivingUser!
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+-----------------------------------
+From: SendingUser
+Date: 2025-07-28 10:30
+Message: Hi there! Glad we connected on InCollege.
+-----------------------------------
+From: AnotherConnection
+Date: 2025-07-29 09:15
+Message: Check out this interesting job posting I found!
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter a username for your new account:
+Please enter a password:
+Please enter your first name:
+Please enter your last name:
+Please enter your country:
+Please enter your major:
+Your account has been created successfully.
+
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, NoMessagesUser!
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+You have no messages.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
