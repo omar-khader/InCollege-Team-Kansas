@@ -1,0 +1,474 @@
+Enter logged-in username:
+--- Your Messages ---
+-----------------------------------
+From: AliceSmith
+Date: 20250728
+Message: Hey John, how are you doing?
+-----------------------------------
+From: BobJones
+Date: 20250729
+Message: Check out this job posting I found!
+-----------------------------------
+From: CarolWhite
+Date: 20250730
+Message: Thanks for connecting with me!
+-----------------------------------
+From: EmilyBrown
+Date: 20250801
+Message: Congratulations on your new position!
+-----------------------------------
+Total messages: 004
+-----------------------------------
+Enter logged-in username:
+--- Your Messages ---
+You have no messages.
+-----------------------------------
+Enter logged-in username:
+--- Your Messages ---
+-----------------------------------
+From: FrankMiller
+Date: 20250802
+Message: Welcome to InCollege!
+-----------------------------------
+Total messages: 001
+-----------------------------------
+Enter logged-in username:
+--- Your Messages ---
+-----------------------------------
+From: JohnDoe
+Date: 20250728
+Message: I'm doing great, thanks for asking!
+-----------------------------------
+From: DaveWilson
+Date: 20250729
+Message: Let's schedule a meeting
+-----------------------------------
+Total messages: 002
+-----------------------------------
+Enter logged-in username:
+--- Your Messages ---
+You have no messages.
+-----------------------------------
+Enter logged-in username:
+--- Your Messages ---
+-----------------------------------
+From: AliceSmith
+Date: 20250728
+Message: Hey John, how are you doing?
+-----------------------------------
+From: BobJones
+Date: 20250729
+Message: Check out this job posting I found!
+-----------------------------------
+From: CarolWhite
+Date: 20250730
+Message: Thanks for connecting with me!
+-----------------------------------
+From: EmilyBrown
+Date: 20250801
+Message: Congratulations on your new position!
+-----------------------------------
+Total messages: 004
+-----------------------------------
+Enter logged-in username:
+--- Your Messages ---
+You have no messages.
+-----------------------------------
+Enter logged-in username:
+--- Your Messages ---
+-----------------------------------
+From: AliceSmith
+Date: 20250728
+Message: Hey John, how are you doing?
+-----------------------------------
+From: BobJones
+Date: 20250729
+Message: Check out this job posting I found!
+-----------------------------------
+From: CarolWhite
+Date: 20250730
+Message: Thanks for connecting with me!
+-----------------------------------
+From: EmilyBrown
+Date: 20250801
+Message: Congratulations on your new position!
+-----------------------------------
+Total messages: 004
+-----------------------------------
+Enter logged-in username:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+-----------------------------------
+From: AliceSmith
+Date: 20250728
+Message: Hey John, how are you doing?
+-----------------------------------
+From: BobJones
+Date: 20250729
+Message: Check out this job posting I found!
+-----------------------------------
+From: CarolWhite
+Date: 20250730
+Message: Thanks for connecting with me!
+-----------------------------------
+From: EmilyBrown
+Date: 20250801
+Message: Congratulations on your new position!
+-----------------------------------
+Total messages: 004
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Enter logged-in username:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Invalid choice. Please enter 1, 2, or 3.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Enter logged-in username:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+You have no messages.
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Enter logged-in username:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+-----------------------------------
+From: AliceSmith
+Date: 20250728
+Message: Hey John, how are you doing?
+-----------------------------------
+From: BobJones
+Date: 20250729
+Message: Check out this job posting I found!
+-----------------------------------
+From: CarolWhite
+Date: 20250730
+Message: Thanks for connecting with me!
+-----------------------------------
+From: EmilyBrown
+Date: 20250801
+Message: Congratulations on your new position!
+-----------------------------------
+Total messages: 004
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+-----------------------------------
+From: AliceSmith
+Date: 20250728
+Message: Hey John, how are you doing?
+-----------------------------------
+From: BobJones
+Date: 20250729
+Message: Check out this job posting I found!
+-----------------------------------
+From: CarolWhite
+Date: 20250730
+Message: Thanks for connecting with me!
+-----------------------------------
+From: EmilyBrown
+Date: 20250801
+Message: Congratulations on your new position!
+-----------------------------------
+Total messages: 004
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Enter logged-in username:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Invalid choice. Please enter 1, 2, or 3.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+-----------------------------------
+From: JohnDoe
+Date: 20250728
+Message: I'm doing great, thanks for asking!
+-----------------------------------
+From: DaveWilson
+Date: 20250729
+Message: Let's schedule a meeting
+-----------------------------------
+Total messages: 002
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Enter logged-in username:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+You have no messages.
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Send message feature not yet implemented.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Enter logged-in username:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+-----------------------------------
+From: AliceSmith
+Date: 20250728
+Message: Hey John, how are you doing?
+-----------------------------------
+From: BobJones
+Date: 20250729
+Message: Check out this job posting I found!
+-----------------------------------
+From: CarolWhite
+Date: 20250730
+Message: Thanks for connecting with me!
+-----------------------------------
+From: EmilyBrown
+Date: 20250801
+Message: Congratulations on your new position!
+-----------------------------------
+Total messages: 004
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Enter logged-in username:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+You have no messages.
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Enter logged-in username:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+-----------------------------------
+From: JohnDoe
+Date: 20250728
+Message: I'm doing great, thanks for asking!
+-----------------------------------
+From: DaveWilson
+Date: 20250729
+Message: Let's schedule a meeting
+-----------------------------------
+Total messages: 002
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Send message feature not yet implemented.
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+-----------------------------------
+From: JohnDoe
+Date: 20250728
+Message: I'm doing great, thanks for asking!
+-----------------------------------
+From: DaveWilson
+Date: 20250729
+Message: Let's schedule a meeting
+-----------------------------------
+Total messages: 002
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+Logged in as testuser1.
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+[Input #001: 8]
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+[Input #002: 1]
+--- Send a New Message ---
+Enter recipient username:
+[Input #003: testuser2]
+Enter your message (max 200 chars):
+[Input #004: Hello from automated test!]
+Message sent to testuser2 successfully!
+---------------------
+Total input lines read: 004
+Logged in as testuser1.
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+[Input #001: 8]
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+[Input #002: 1]
+--- Send a New Message ---
+Enter recipient username:
+[Input #003: vex]
+User not found.
+Total input lines read: 003
+Logged in as testuser1.
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+[Input #001: ]
+Option not tested in this story.
+Total input lines read: 001
+Logged in as testuser1.
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Send a New Message ---
+Enter recipient username:
+Enter your message (max 200 chars):
+Message sent to testuser2 successfully!
+---------------------
+
+Total output lines written: 021
+Logged in as testuser1.
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Send a New Message ---
+Enter recipient username:
+User not found.
+
+Total output lines written: 019
+Logged in as testuser1.
+1. Create/Edit My Profile
+2. Search for a job
+3. View My Profile
+4. Find someone you know
+5. View My Network
+6. Learn a new skill
+7. View My Pending Connection Requests
+8. Messages
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Send a New Message ---
+Enter recipient username:
+Enter your message (max 200 chars):
+Message sent to alice successfully!
+---------------------
+
+Total output lines written: 021

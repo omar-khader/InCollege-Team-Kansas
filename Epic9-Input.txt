@@ -1,0 +1,57 @@
+JohnDoe
+DaveWilson
+NewUser123
+AliceSmith
+EmilyBrown
+JohnDoe
+EmilyBrown
+JohnDoe 
+NonExistentUser
+JohnDoe
+2
+3
+AliceSmith
+5
+3
+DaveWilson
+2
+3
+JohnDoe
+2
+2
+3
+EmilyBrown
+2
+1
+3
+JohnDoe
+2
+3
+EmilyBrown
+2
+3
+AliceSmith
+2
+1
+2
+3
+8
+1
+testuser2
+Hello from automated test!
+8
+1
+vex
+This should fail
+ 
+8
+1
+testuser2
+Testing 123
+8
+1
+nonexistentuser
+8
+1
+alice
+This is a very long message that will test whether output file writing handles large content properly%^&*()jfihfiheniggggnhi43g904hgefhi3bngibifb3bg0ghg9h43hfi4fhihefh3hg03gh934hgi3nefhn304hg034hg34g3G+G_$OG$HK$H%GIGI4gijehrghrhgh45ghhgurghrghrhg099g34gj34g
