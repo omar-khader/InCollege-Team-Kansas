@@ -119,10 +119,12 @@ identification division.
            05  profile-aboutme       pic x(200).
            05  profile-exp-count     pic 9.
            05  profile-experiences   occurs 3 times.
-               10  exp-title         pic x(50).
-               10  exp-company       pic x(50).
-               10  exp-dates         pic x(30).
-               10  exp-description   pic x(100).
+             10  exp-title         pic x(50).
+             10  exp-company       pic x(50).
+             10  exp-dates         pic x(30).
+             10  exp-description   pic x(100).
+             10  exp-location      pic x(50).
+             10  exp-achievements  pic x(150).
            05  profile-edu-count     pic 9.
            05  profile-educations    occurs 3 times.
                10  edu-degree        pic x(50).
@@ -650,6 +652,8 @@ post-login-menu.
                move spaces to exp-company(ws-exp-index)
                move spaces to exp-dates(ws-exp-index)
                move spaces to exp-description(ws-exp-index)
+               move spaces to exp-location(ws-exp-index)
+               move spaces to exp-achievements(ws-exp-index)
            end-perform
 
            perform until profile-exp-count >= 3 or WS-EOF = "Y"
@@ -671,7 +675,9 @@ post-login-menu.
                move spaces to WS-DISPLAY
                string "Experience #" ws-entry-number " - Title:" delimited by size into WS-DISPLAY
                perform say
-
+               read InpFile into temp-input
+                   at end move "Y" to WS-EOF exit paragraph
+               end-read
                move function trim(temp-input) to exp-title(ws-exp-index)
 
                move spaces to WS-DISPLAY
@@ -693,11 +699,9 @@ post-login-menu.
                move spaces to WS-DISPLAY
                string "Experience #" ws-exp-index " - Description (optional, max 100 chars, blank to skip):" delimited by size into WS-DISPLAY
                perform say
-
                read InpFile into temp-input
                    at end move "Y" to WS-EOF exit paragraph
                end-read
-
                if function length(function trim(temp-input)) > 0
                    if function length(function trim(temp-input)) <= 100
                        move function trim(temp-input) to exp-description(ws-exp-index)
@@ -706,6 +710,34 @@ post-login-menu.
                    end-if
                else
                    move spaces to exp-description(ws-exp-index)
+               end-if
+
+               move spaces to WS-DISPLAY
+               string "Experience #" ws-exp-index " - Location (optional):" delimited by size into WS-DISPLAY
+               perform say
+               read InpFile into temp-input
+                   at end move "Y" to WS-EOF exit paragraph
+               end-read
+               if function length(function trim(temp-input)) > 0
+                   move function trim(temp-input) to exp-location(ws-exp-index)
+               else
+                   move spaces to exp-location(ws-exp-index)
+               end-if
+
+               move spaces to WS-DISPLAY
+               string "Experience #" ws-exp-index " - Achievements (optional, max 150 chars, blank to skip):" delimited by size into WS-DISPLAY
+               perform say
+               read InpFile into temp-input
+                   at end move "Y" to WS-EOF exit paragraph
+               end-read
+               if function length(function trim(temp-input)) > 0
+                   if function length(function trim(temp-input)) <= 150
+                       move function trim(temp-input) to exp-achievements(ws-exp-index)
+                   else
+                       move temp-input(1:150) to exp-achievements(ws-exp-index)
+                   end-if
+               else
+                   move spaces to exp-achievements(ws-exp-index)
                end-if
            end-perform
            .
@@ -827,6 +859,8 @@ post-login-menu.
                    function trim(exp-company(ws-i)) "|"
                    function trim(exp-dates(ws-i)) "|"
                    function trim(exp-description(ws-i)) "|"
+                   function trim(exp-location(ws-i)) "|"
+                   function trim(exp-achievements(ws-i)) "|"
                    delimited by size
                    into profile-line
                    with pointer ws-parse-pos
@@ -939,6 +973,16 @@ post-login-menu.
                            string "  Description: " function trim(exp-description(ws-i)) delimited by size into WS-DISPLAY
                            perform say
                        end-if
+                       if function trim(exp-location(ws-i)) not = spaces
+                           move spaces to WS-DISPLAY
+                           string "  Location: " function trim(exp-location(ws-i)) delimited by size into WS-DISPLAY
+                           perform say
+                       end-if
+                       if function trim(exp-achievements(ws-i)) not = spaces
+                           move spaces to WS-DISPLAY
+                           string "  Achievements: " function trim(exp-achievements(ws-i)) delimited by size into WS-DISPLAY
+                           perform say
+                       end-if
                    end-perform
                else
       *>>            Epic #3: Show message when no experience entries exist
@@ -999,6 +1043,8 @@ post-login-menu.
                move spaces to exp-company(ws-i)
                move spaces to exp-dates(ws-i)
                move spaces to exp-description(ws-i)
+               move spaces to exp-location(ws-i)
+               move spaces to exp-achievements(ws-i)
                move spaces to edu-degree(ws-i)
                move spaces to edu-university(ws-i)
                move spaces to edu-years(ws-i)
@@ -1494,7 +1540,9 @@ parse-profile-line-complete.
                move function trim(PARSE-FIELD(ws-field-num + 1)) to exp-company(1)
                move function trim(PARSE-FIELD(ws-field-num + 2)) to exp-dates(1)
                move function trim(PARSE-FIELD(ws-field-num + 3)) to exp-description(1)
-               add 4 to ws-field-num
+               move function trim(PARSE-FIELD(ws-field-num + 4)) to exp-location(1)
+               move function trim(PARSE-FIELD(ws-field-num + 5)) to exp-achievements(1)
+               add 6 to ws-field-num
            end-if
 
            if profile-exp-count >= 2
@@ -1502,7 +1550,9 @@ parse-profile-line-complete.
                move function trim(PARSE-FIELD(ws-field-num + 1)) to exp-company(2)
                move function trim(PARSE-FIELD(ws-field-num + 2)) to exp-dates(2)
                move function trim(PARSE-FIELD(ws-field-num + 3)) to exp-description(2)
-               add 4 to ws-field-num
+               move function trim(PARSE-FIELD(ws-field-num + 4)) to exp-location(2)
+               move function trim(PARSE-FIELD(ws-field-num + 5)) to exp-achievements(2)
+               add 6 to ws-field-num
            end-if
 
            if profile-exp-count >= 3
@@ -1510,7 +1560,9 @@ parse-profile-line-complete.
                move function trim(PARSE-FIELD(ws-field-num + 1)) to exp-company(3)
                move function trim(PARSE-FIELD(ws-field-num + 2)) to exp-dates(3)
                move function trim(PARSE-FIELD(ws-field-num + 3)) to exp-description(3)
-               add 4 to ws-field-num
+               move function trim(PARSE-FIELD(ws-field-num + 4)) to exp-location(3)
+               move function trim(PARSE-FIELD(ws-field-num + 5)) to exp-achievements(3)
+               add 6 to ws-field-num
            end-if
 
            if function trim(PARSE-FIELD(ws-field-num)) not = spaces
