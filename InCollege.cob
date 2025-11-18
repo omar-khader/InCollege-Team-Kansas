@@ -224,6 +224,8 @@ identification division.
            05  msg-content            pic x(200).
            05  msg-timestamp          pic x(20).
 
+      01  MSG-TS-TRIM              pic x(20).
+
        01  ws-msg-choice              pic 9 value 0.
        01  ws-recipient-username      pic x(32).
        01  ws-message-content         pic x(200).
@@ -2613,8 +2615,8 @@ save-user-message.
     move ws-recipient-username to msg-to-user
     move ws-message-content to msg-content
 
-    *> Get current timestamp (simplified format)
-    move function current-date to msg-timestamp
+    *> Get current timestamp (YYYYMMDD) and store only date portion
+    move function current-date(1:8) to msg-timestamp
 
     *> Open message file for appending
     open extend message-file
@@ -2677,9 +2679,10 @@ view-my-messages.
                        delimited by size into WS-DISPLAY
                 perform say
 
-                move spaces to WS-DISPLAY
-                string "Date: " msg-timestamp(1:8)
-                       delimited by size into WS-DISPLAY
+                  move function trim(msg-timestamp) to MSG-TS-TRIM
+                  move spaces to WS-DISPLAY
+                  string "Date: " MSG-TS-TRIM(1:8)
+                      delimited by size into WS-DISPLAY
                 perform say
 
                 move spaces to WS-DISPLAY
