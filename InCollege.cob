@@ -140,6 +140,10 @@ identification division.
        01  ws-login-successful       pic x value "n".
        01  WS-CR-LOGGING             pic x value "N".
 
+    *> Helper fields for formatting numeric values without leading zeros/spaces
+    01  WS-NUM-IN                pic 9(03) value 0.
+    01  WS-NUM-OUT               pic x(03) value spaces.
+
 
        01  ws-parse-pos              pic 9(04).
        01  ws-field-start            pic 9(04).
@@ -1414,6 +1418,13 @@ post-login-menu.
           perform cr-end-log
           .
 
+       format-number.
+           *> Move numeric into an alphanumeric buffer and trim leading spaces
+           move spaces to WS-NUM-OUT
+           move WS-NUM-IN to WS-NUM-OUT
+           move function trim(WS-NUM-OUT) to WS-NUM-OUT
+           .
+
       view-my-connections.
           move "--- My Connections ---" to WS-DISPLAY
           perform say
@@ -2163,8 +2174,10 @@ browse-jobs-internships.
 
 display-job-summary.
     move spaces to WS-DISPLAY
-    string ws-i ". "
-           function trim(job-title) " at "
+        move ws-i to WS-NUM-IN
+        perform format-number
+        string WS-NUM-OUT ". "
+            function trim(job-title) " at "
            function trim(job-employer) " ("
            function trim(job-location) ")"
            delimited by size into WS-DISPLAY
@@ -2389,9 +2402,11 @@ view-my-applications.
         move "You have not applied to any jobs yet." to WS-DISPLAY
         perform say
     else
-        move spaces to WS-DISPLAY
-        string "Total Applications: " ws-application-count
-               delimited by size into WS-DISPLAY
+         move ws-application-count to WS-NUM-IN
+         perform format-number
+         move spaces to WS-DISPLAY
+         string "Total Applications: " WS-NUM-OUT
+             delimited by size into WS-DISPLAY
         perform say
     end-if
 
@@ -2682,9 +2697,11 @@ view-my-messages.
     else
         move "-----------------------------------" to WS-DISPLAY
         perform say
-        move spaces to WS-DISPLAY
-        string "Total messages: " ws-message-count
-               delimited by size into WS-DISPLAY
+         move ws-message-count to WS-NUM-IN
+         perform format-number
+         move spaces to WS-DISPLAY
+         string "Total messages: " WS-NUM-OUT
+             delimited by size into WS-DISPLAY
         perform say
     end-if
 
