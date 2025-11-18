@@ -52,13 +52,13 @@ identification division.
 
        fd  ConnOutFile.
        01  ConnOutRecord            pic x(80).
-       
+
        fd  job-file.
        01  job-line                  pic x(500).
-       
+
        fd  application-file.
        01  application-line           pic x(300).
-       
+
        fd  message-file.
        01  message-line               pic x(500).
 
@@ -108,7 +108,7 @@ identification division.
 
        01  current-user              pic x(32).
        01  ws-profile-exists         pic x value "n".
-       
+
        01  profile-data.
            05  profile-username      pic x(32).
            05  profile-firstname     pic x(50).
@@ -137,7 +137,7 @@ identification division.
        01  ws-entry-number           pic 9.
        01  ws-login-successful       pic x value "n".
        01  WS-CR-LOGGING             pic x value "N".
-       
+
 
        01  ws-parse-pos              pic 9(04).
        01  ws-field-start            pic 9(04).
@@ -156,7 +156,7 @@ identification division.
        01  ws-parse-idx              pic 9(02) value 0.
 
        01  TEMP-EDU-COUNT-STR       pic x(200).
-       
+
       *>>    Epic #3: Variables for search functionality
        01  search-firstname          pic x(50).
        01  search-lastname           pic x(50).
@@ -185,7 +185,7 @@ identification division.
        01  CONNECTIONS-COUNT         pic 9(03) value 0.
        01  target-username           pic x(32).
        01  ws-conn-choice            pic 9 value 0.
-       
+
        01  job-data.
            05  job-poster-username    pic x(32).
            05  job-title              pic x(50).
@@ -195,7 +195,7 @@ identification division.
            05  job-salary             pic x(30).
 
        01  ws-job-choice              pic 9 value 0.
-       
+
        *> Epic #7: Job browsing and application variables
        01  ws-job-count              pic 9(03) value 0.
        01  ws-job-selection          pic 9(03) value 0.
@@ -211,13 +211,13 @@ identification division.
            05  app-job-title          pic x(50).
            05  app-employer           pic x(100).
            05  app-location           pic x(50).
-           
+
        01  message-data.
            05  msg-from-user          pic x(32).
            05  msg-to-user            pic x(32).
            05  msg-content            pic x(200).
            05  msg-timestamp          pic x(20).
-           
+
        01  ws-msg-choice              pic 9 value 0.
        01  ws-recipient-username      pic x(32).
        01  ws-message-content         pic x(200).
@@ -227,7 +227,7 @@ identification division.
        procedure division.
        main.
            open input user-file
-           if FILESTAT = "35"  
+           if FILESTAT = "35"
               open output user-file
               close user-file
               open input user-file
@@ -239,40 +239,40 @@ identification division.
            close user-file
 
            open input profile-file
-           if FILESTAT-PROFILE = "35"  
+           if FILESTAT-PROFILE = "35"
               open output profile-file
               close profile-file
            end-if
            close profile-file
-           
+
            open input connection-file
-           if FILESTAT-CONN = "35"  
+           if FILESTAT-CONN = "35"
               open output connection-file
               close connection-file
            end-if
            close connection-file
-           
+
            open input job-file
-	   if FILESTAT-JOB = "35"  
+	   if FILESTAT-JOB = "35"
               open output job-file
               close job-file
            end-if
            close job-file
-           
+
            open input application-file
-           if FILESTAT-APP = "35"  
+           if FILESTAT-APP = "35"
               open output application-file
               close application-file
            end-if
            close application-file
-           
+
            open input message-file
-           if FILESTAT-MSG = "35"  
+           if FILESTAT-MSG = "35"
               open output message-file
               close message-file
            end-if
            close message-file
-           
+
            open input InpFile
            if FILESTAT not = "00"
               display "ERROR opening InCollege-Input.txt, status: " FILESTAT
@@ -488,13 +488,13 @@ identification division.
               move spaces to WS-DISPLAY
               string "You have successfully logged in." delimited by size into WS-DISPLAY
               perform say
-              
+
               move function trim(u) to current-user
-              
+
               move spaces to WS-DISPLAY
               string "Welcome, " function trim(u) "!" delimited by size into WS-DISPLAY
               perform say
-              
+
               perform post-login-menu
            else
               move "Incorrect username/password, please try again" to WS-DISPLAY
@@ -534,7 +534,7 @@ post-login-menu.
         read InpFile into InpRecord
             at end move "Y" to WS-EOF
             not at end
-                move function numval(function trim(InpRecord)) 
+                move function numval(function trim(InpRecord))
                     to WS-USER-CHOICE
         end-read
 
@@ -603,7 +603,7 @@ post-login-menu.
            perform say
            read InpFile into temp-input
                at end move "Y" to WS-EOF
-               not at end 
+               not at end
                    if function trim(temp-input) = spaces
                        move spaces to profile-aboutme
                    else
@@ -627,11 +627,11 @@ post-login-menu.
                move "Enter Graduation Year (YYYY):" to WS-DISPLAY
                perform say
                read InpFile into temp-input
-                   at end 
+                   at end
                        move "Y" to WS-EOF
                        exit perform
                end-read
-               
+
                move function numval(function trim(temp-input)) to ws-year
                if ws-year >= 1950 and ws-year <= 2030
                    move ws-year to profile-gradyear
@@ -655,7 +655,7 @@ post-login-menu.
            perform until profile-exp-count >= 3 or WS-EOF = "Y"
                move "Add Experience (optional, max 3 entries. Enter 'DONE' to finish):" to WS-DISPLAY
                perform say
-               
+
                read InpFile into temp-input
                    at end move "Y" to WS-EOF exit paragraph
                end-read
@@ -667,7 +667,7 @@ post-login-menu.
                add 1 to profile-exp-count
                move profile-exp-count to ws-exp-index
                move ws-exp-index to ws-entry-number
-               
+
                move spaces to WS-DISPLAY
                string "Experience #" ws-entry-number " - Title:" delimited by size into WS-DISPLAY
                perform say
@@ -693,7 +693,7 @@ post-login-menu.
                move spaces to WS-DISPLAY
                string "Experience #" ws-exp-index " - Description (optional, max 100 chars, blank to skip):" delimited by size into WS-DISPLAY
                perform say
-               
+
                read InpFile into temp-input
                    at end move "Y" to WS-EOF exit paragraph
                end-read
@@ -721,11 +721,11 @@ post-login-menu.
            perform until profile-edu-count >= 3 or WS-EOF = "Y"
                move "Add Education (optional, max 3 entries. Enter 'DONE' to finish):" to WS-DISPLAY
                perform say
-               
+
                read InpFile into temp-input
                    at end move "Y" to WS-EOF exit paragraph
                end-read
-               
+
                if function upper-case(function trim(temp-input)) = "DONE"
                    exit perform
                end-if
@@ -733,7 +733,7 @@ post-login-menu.
                add 1 to profile-edu-count
                move profile-edu-count to ws-edu-index
                move ws-edu-index to ws-entry-number
-               
+
                move spaces to WS-DISPLAY
                string "Education #" ws-entry-number " - Degree:" delimited by size into WS-DISPLAY
                perform say
@@ -761,15 +761,15 @@ post-login-menu.
        load-profile.
            move "n" to ws-profile-exists
            move current-user to profile-username
-           
+
            open input profile-file
            if FILESTAT-PROFILE = "00"
                perform until 1 = 2
                    read profile-file into profile-line
                        at end exit perform
                    end-read
-                   
-                   if profile-line(1:function length(function trim(current-user))) = 
+
+                   if profile-line(1:function length(function trim(current-user))) =
                       function trim(current-user)
                        and profile-line(function length(function trim(current-user)) + 1:1) = "|"
                        move "y" to ws-profile-exists
@@ -779,7 +779,7 @@ post-login-menu.
                end-perform
                close profile-file
            end-if
-           
+
            if ws-profile-exists = "n"
                initialize profile-data
                move current-user to profile-username
@@ -806,8 +806,8 @@ post-login-menu.
 
            move spaces to profile-line
            move 1 to ws-parse-pos
-           
-           string 
+
+           string
                function trim(current-user) "|"
                function trim(profile-firstname) "|"
                function trim(profile-lastname) "|"
@@ -816,13 +816,13 @@ post-login-menu.
                profile-gradyear "|"
                function trim(profile-aboutme) "|"
                profile-exp-count "|"
-               delimited by size 
+               delimited by size
                into profile-line
                with pointer ws-parse-pos
            end-string
 
            perform varying ws-i from 1 by 1 until ws-i > profile-exp-count
-               string 
+               string
                    function trim(exp-title(ws-i)) "|"
                    function trim(exp-company(ws-i)) "|"
                    function trim(exp-dates(ws-i)) "|"
@@ -833,15 +833,15 @@ post-login-menu.
                end-string
            end-perform
 
-           string 
+           string
                profile-edu-count "|"
                delimited by size
                into profile-line
                with pointer ws-parse-pos
            end-string
-           
+
            perform varying ws-i from 1 by 1 until ws-i > profile-edu-count
-               string 
+               string
                    function trim(edu-degree(ws-i)) "|"
                    function trim(edu-university(ws-i)) "|"
                    function trim(edu-years(ws-i)) "|"
@@ -864,7 +864,7 @@ post-login-menu.
                move PROFILE-TABLE-ENTRY(ws-i) to profile-line
                write profile-line
            end-perform
-           
+
            move TEMP-PROFILE-LINE to profile-line
            write profile-line
            close profile-file
@@ -885,9 +885,9 @@ post-login-menu.
            if ws-profile-exists = "y"
                move "--- Personal Information ---" to WS-DISPLAY
                perform say
-               
+
                move spaces to WS-DISPLAY
-               string "Name: " function trim(profile-firstname) " " 
+               string "Name: " function trim(profile-firstname) " "
                       function trim(profile-lastname) delimited by size into WS-DISPLAY
                perform say
 
@@ -1003,16 +1003,16 @@ post-login-menu.
                move spaces to edu-university(ws-i)
                move spaces to edu-years(ws-i)
            end-perform
-           
+
            open input profile-file
            if FILESTAT-PROFILE = "00"
                perform until 1 = 2
                    read profile-file into profile-line
                        at end exit perform
                    end-read
-                   
+
                    if function length(function trim(current-user)) > 0
-                       if profile-line(1:function length(function trim(current-user))) = 
+                       if profile-line(1:function length(function trim(current-user))) =
                           function trim(current-user)
                            and profile-line(function length(function trim(current-user)) + 1:1) = "|"
                            move "y" to ws-profile-exists
@@ -1033,41 +1033,41 @@ post-login-menu.
            perform say
            move "Enter the first name of the person you're looking for:" to WS-DISPLAY
            perform say
-           
+
            read InpFile into temp-input
                at end move "Y" to WS-EOF exit paragraph
            end-read
            move function trim(temp-input) to search-firstname
-           
+
            move "Enter the last name of the person you're looking for:" to WS-DISPLAY
            perform say
-           
+
            read InpFile into temp-input
                at end move "Y" to WS-EOF exit paragraph
            end-read
            move function trim(temp-input) to search-lastname
-           
+
            move 0 to search-results-count
-           
+
            move " " to WS-DISPLAY
            perform say
            move "Searching..." to WS-DISPLAY
            perform say
            move " " to WS-DISPLAY
            perform say
-           
+
            open input profile-file
            if FILESTAT-PROFILE = "00"
                perform until 1 = 2
                    read profile-file into profile-line
                        at end exit perform
                    end-read
-                   
+
                    perform parse-search-profile
-                   
-                   if function upper-case(function trim(temp-profile-firstname)) = 
+
+                   if function upper-case(function trim(temp-profile-firstname)) =
                       function upper-case(function trim(search-firstname))
-                      and function upper-case(function trim(temp-profile-lastname)) = 
+                      and function upper-case(function trim(temp-profile-lastname)) =
                           function upper-case(function trim(search-lastname))
                        add 1 to search-results-count
                        perform display-search-result
@@ -1075,7 +1075,7 @@ post-login-menu.
                end-perform
                close profile-file
            end-if
-           
+
            if search-results-count = 0
                move "No users found matching that name." to WS-DISPLAY
                perform say
@@ -1086,11 +1086,11 @@ post-login-menu.
                string search-results-count " user(s) found." delimited by size into WS-DISPLAY
                perform say
            end-if
-           
+
            move " " to WS-DISPLAY
            perform say
            .
-           
+
        parse-search-profile.
       *>>    Epic #3: Helper procedure to parse profile data for search
       *>>    Extracts basic fields needed for search results display
@@ -1100,7 +1100,7 @@ post-login-menu.
            move spaces to PARSE-FIELD(4)
            move spaces to PARSE-FIELD(5)
            move spaces to PARSE-FIELD(6)
-           
+
            unstring profile-line delimited by "|" into
                PARSE-FIELD(1)
                PARSE-FIELD(2)
@@ -1109,14 +1109,14 @@ post-login-menu.
                PARSE-FIELD(5)
                PARSE-FIELD(6)
            end-unstring
-           
+
            move function trim(PARSE-FIELD(1)) to temp-profile-username
            move function trim(PARSE-FIELD(2)) to temp-profile-firstname
            move function trim(PARSE-FIELD(3)) to temp-profile-lastname
            move function trim(PARSE-FIELD(4)) to temp-profile-university
            move function trim(PARSE-FIELD(5)) to temp-profile-major
            .
-           
+
        display-search-result.
       *>>    Epic #3: Display formatted search result for a matching user
       *>>    Shows username, full name, university, and major
@@ -1126,7 +1126,7 @@ post-login-menu.
            string "Username: " function trim(temp-profile-username) delimited by size into WS-DISPLAY
            perform say
            move spaces to WS-DISPLAY
-           string "Name: " function trim(temp-profile-firstname) " " 
+           string "Name: " function trim(temp-profile-firstname) " "
                   function trim(temp-profile-lastname) delimited by size into WS-DISPLAY
            perform say
            move spaces to WS-DISPLAY
@@ -1153,14 +1153,14 @@ post-login-menu.
               perform say
               move "Enter your choice:" to WS-DISPLAY
               perform say
-              
+
               read InpFile into InpRecord
                   at end move "Y" to WS-EOF
                   not at end
-                      move function numval(function trim(InpRecord)) 
+                      move function numval(function trim(InpRecord))
                           to ws-conn-choice
               end-read
-              
+
               if WS-EOF = "N"
                   evaluate ws-conn-choice
                       when 1
@@ -1185,12 +1185,12 @@ post-login-menu.
            perform say
            move "Enter username to send request to:" to WS-DISPLAY
            perform say
-           
+
            read InpFile into temp-input
                at end move "Y" to WS-EOF exit paragraph
            end-read
            move function trim(temp-input) to target-username
-           
+
       *>>    Check if target user exists
            move "n" to ws-found
            open input user-file
@@ -1208,28 +1208,28 @@ post-login-menu.
                end-perform
                close user-file
            end-if
-           
+
            if ws-found = "n"
                move "User not found." to WS-DISPLAY
                perform say
                exit paragraph
            end-if
-           
+
            if target-username = current-user
                move "You cannot send a connection request to yourself." to WS-DISPLAY
                perform say
                exit paragraph
            end-if
-           
+
       *>>    Check if connection already exists or reverse connection exists
            perform check-existing-connections
-           
+
            if ws-connection-exists = "y"
                move "Connection request already sent to this user." to WS-DISPLAY
                perform say
                exit paragraph
            end-if
-           
+
            if ws-reverse-conn-exists = "y"
                move "This user has already sent you a connection request." to WS-DISPLAY
                perform say
@@ -1237,7 +1237,7 @@ post-login-menu.
                perform say
                exit paragraph
            end-if
-           
+
       *>>    Save the connection request
            open extend connection-file
            if FILESTAT-CONN not = "00"
@@ -1245,7 +1245,7 @@ post-login-menu.
                close connection-file
                open extend connection-file
            end-if
-           
+
            move spaces to connection-line
            string function trim(current-user) delimited by size
                   "|" delimited by size
@@ -1255,7 +1255,7 @@ post-login-menu.
            end-string
            write connection-line
            close connection-file
-           
+
            move "Connection request sent successfully!" to WS-DISPLAY
            perform say
            perform cr-end-log
@@ -1265,10 +1265,10 @@ post-login-menu.
           perform cr-begin-log
           move "--- Pending Connection Requests ---" to WS-DISPLAY
           perform say
-          
+
           move 0 to CONNECTIONS-COUNT
           move 0 to connection-count
-          
+
           open input connection-file
           if FILESTAT-CONN = "00"
               perform until 1 = 2
@@ -1280,7 +1280,7 @@ post-login-menu.
               end-perform
               close connection-file
           end-if
-          
+
           perform varying ws-i from 1 by 1 until ws-i > CONNECTIONS-COUNT
               move CONNECTION-ENTRY(ws-i) to connection-line
               unstring connection-line delimited by "|" into
@@ -1288,39 +1288,39 @@ post-login-menu.
                   conn-to-user
                   conn-status
               end-unstring
-              
+
               if function trim(conn-to-user) = current-user
                   and function trim(conn-status) = "pending"
                   add 1 to connection-count
-                  
+
                   move spaces to WS-DISPLAY
-                  string "Request from: " function trim(conn-from-user) 
+                  string "Request from: " function trim(conn-from-user)
                          delimited by size into WS-DISPLAY
                   perform say
                   move "1. Accept" to WS-DISPLAY
                   perform say
                   move "2. Reject" to WS-DISPLAY
                   perform say
-                  
+
                   move spaces to WS-DISPLAY
-                  string "Enter your choice for " 
-                         function trim(conn-from-user) ":" 
+                  string "Enter your choice for "
+                         function trim(conn-from-user) ":"
                          delimited by size into WS-DISPLAY
                   perform say
-                  
+
                   read InpFile into temp-input
                       at end move "Y" to WS-EOF exit paragraph
                   end-read
                   move function numval(function trim(temp-input)) to ws-conn-choice
-                  
+
                   if ws-conn-choice = 1
                       move spaces to WS-DISPLAY
-                      string "Connection request from " 
-                             function trim(conn-from-user) 
-                             " accepted!" 
+                      string "Connection request from "
+                             function trim(conn-from-user)
+                             " accepted!"
                              delimited by size into WS-DISPLAY
                       perform say
-                      
+
                       move spaces to connection-line
                       string function trim(conn-from-user) delimited by size
                              "|" delimited by size
@@ -1331,12 +1331,12 @@ post-login-menu.
                       move connection-line to CONNECTION-ENTRY(ws-i)
                   else
                       move spaces to WS-DISPLAY
-                      string "Connection request from " 
-                             function trim(conn-from-user) 
-                             " rejected!" 
+                      string "Connection request from "
+                             function trim(conn-from-user)
+                             " rejected!"
                              delimited by size into WS-DISPLAY
                       perform say
-                      
+
                       move spaces to connection-line
                       string function trim(conn-from-user) delimited by size
                              "|" delimited by size
@@ -1348,7 +1348,7 @@ post-login-menu.
                   end-if
               end-if
           end-perform
-          
+
           open output connection-file
           if FILESTAT-CONN = "00"
               perform varying ws-i from 1 by 1 until ws-i > CONNECTIONS-COUNT
@@ -1357,12 +1357,12 @@ post-login-menu.
               end-perform
               close connection-file
           end-if
-          
+
           if connection-count = 0
               move "No pending connection requests." to WS-DISPLAY
               perform say
           end-if
-          
+
           move " " to WS-DISPLAY
           perform say
           perform cr-end-log
@@ -1372,25 +1372,25 @@ post-login-menu.
           move "--- My Connections ---" to WS-DISPLAY
           perform say
           move 0 to connection-count
-          
+
           open input connection-file
           if FILESTAT-CONN = "00"
               perform until 1 = 2
                   read connection-file into connection-line
                       at end exit perform
                   end-read
-                  
+
                   unstring connection-line delimited by "|" into
                       conn-from-user
                       conn-to-user
                       conn-status
                   end-unstring
-                  
+
                   if function trim(conn-status) = "connected"
                       if function trim(conn-from-user) = current-user
                           add 1 to connection-count
                           move spaces to WS-DISPLAY
-                          string connection-count ". " 
+                          string connection-count ". "
                                  function trim(conn-to-user)
                                  delimited by size into WS-DISPLAY
                           perform say
@@ -1398,7 +1398,7 @@ post-login-menu.
                       if function trim(conn-to-user) = current-user
                           add 1 to connection-count
                           move spaces to WS-DISPLAY
-                          string connection-count ". " 
+                          string connection-count ". "
                                  function trim(conn-from-user)
                                  delimited by size into WS-DISPLAY
                           perform say
@@ -1407,7 +1407,7 @@ post-login-menu.
               end-perform
               close connection-file
           end-if
-          
+
           if connection-count = 0
               move "You have no established connections yet." to WS-DISPLAY
               perform say
@@ -1415,11 +1415,11 @@ post-login-menu.
               move " " to WS-DISPLAY
               perform say
               move spaces to WS-DISPLAY
-              string "Total connections: " connection-count 
+              string "Total connections: " connection-count
                      delimited by size into WS-DISPLAY
               perform say
           end-if
-          
+
           move " " to WS-DISPLAY
           perform say
           move "-----------------------------------" to WS-DISPLAY
@@ -1488,7 +1488,7 @@ parse-profile-line-complete.
 
       *>>    Epic #3 Fix: Corrected field indexing for proper data extraction
            move 9 to ws-field-num
-           
+
            if profile-exp-count >= 1
                move function trim(PARSE-FIELD(ws-field-num)) to exp-title(1)
                move function trim(PARSE-FIELD(ws-field-num + 1)) to exp-company(1)
@@ -1496,7 +1496,7 @@ parse-profile-line-complete.
                move function trim(PARSE-FIELD(ws-field-num + 3)) to exp-description(1)
                add 4 to ws-field-num
            end-if
-           
+
            if profile-exp-count >= 2
                move function trim(PARSE-FIELD(ws-field-num)) to exp-title(2)
                move function trim(PARSE-FIELD(ws-field-num + 1)) to exp-company(2)
@@ -1504,7 +1504,7 @@ parse-profile-line-complete.
                move function trim(PARSE-FIELD(ws-field-num + 3)) to exp-description(2)
                add 4 to ws-field-num
            end-if
-           
+
            if profile-exp-count >= 3
                move function trim(PARSE-FIELD(ws-field-num)) to exp-title(3)
                move function trim(PARSE-FIELD(ws-field-num + 1)) to exp-company(3)
@@ -1529,14 +1529,14 @@ parse-profile-line-complete.
                move function trim(PARSE-FIELD(ws-field-num + 2)) to edu-years(1)
                add 3 to ws-field-num
            end-if
-           
+
            if profile-edu-count >= 2
                move function trim(PARSE-FIELD(ws-field-num)) to edu-degree(2)
                move function trim(PARSE-FIELD(ws-field-num + 1)) to edu-university(2)
                move function trim(PARSE-FIELD(ws-field-num + 2)) to edu-years(2)
                add 3 to ws-field-num
            end-if
-           
+
            if profile-edu-count >= 3
                move function trim(PARSE-FIELD(ws-field-num)) to edu-degree(3)
                move function trim(PARSE-FIELD(ws-field-num + 1)) to edu-university(3)
@@ -1552,19 +1552,19 @@ parse-profile-line-complete.
                move "Learn a New Skill:" to WS-DISPLAY
                perform say
 
-               move "1. Learn COBOL!" to WS-DISPLAY
+               move "1. Learn COBOL! - Basics of COBOL syntax, data, and file I/O." to WS-DISPLAY
                perform say
 
-               move "2. Learn Jira!" to WS-DISPLAY
+               move "2. Learn Jira! - Track work, create issues, and manage sprints." to WS-DISPLAY
                perform say
 
-               move "3. Learn Git!" to WS-DISPLAY
+               move "3. Learn Git! - Version control fundamentals: commits and branches." to WS-DISPLAY
                perform say
 
-               move "4. Learn Github!" to WS-DISPLAY
+               move "4. Learn Github! - Remote repositories, pull requests, and collaboration." to WS-DISPLAY
                perform say
 
-               move "5. Learn Software Engineering!" to WS-DISPLAY
+               move "5. Learn Software Engineering! - Core concepts, design, and best practices." to WS-DISPLAY
                perform say
 
                move "6. Go Back" to WS-DISPLAY
@@ -1576,13 +1576,13 @@ parse-profile-line-complete.
                read InpFile into InpRecord
                    at end move "Y" to WS-EOF
                    not at end
-                       move function numval(function trim(InpRecord)) 
+                       move function numval(function trim(InpRecord))
                            to WS-USER-CHOICE
                end-read
 
                if WS-EOF = "N"
                    if WS-USER-CHOICE >= 1 and WS-USER-CHOICE <= 5
-                       move "This skill is under construction." 
+                       move "This skill is under construction."
                            to WS-DISPLAY
                        perform say
                    end-if
@@ -1669,7 +1669,7 @@ parse-profile-line-complete.
        say.
       *>>    Epic #3: All screen output is written to InCollege-Output.txt
       *>>    This includes profile viewing and search results for easy verification
-           
+
            display WS-DISPLAY
            move WS-DISPLAY to OutRecord
            write OutRecord
@@ -1704,7 +1704,7 @@ parse-profile-line-complete.
 
        cr-offer-send-menu.
            perform cr-begin-log
-       
+
            move "1. Send Connection Request" to WS-DISPLAY
            perform say
            move "2. Back to Main Menu" to WS-DISPLAY
@@ -1723,14 +1723,14 @@ parse-profile-line-complete.
               perform send-connection-request-from-profile
            end-if
            perform cr-end-log
-           
+
            .
 
        send-connection-request-from-profile.
-       
+
            *> Begins to print ouput to a separate file
            perform cr-begin-log
-           
+
            *> Target is the user whose card we just displayed
            move function trim(temp-profile-username) to target-username
 
@@ -1897,29 +1897,29 @@ job-search-menu.
     perform until ws-job-choice = 4 or WS-EOF = "Y"
         move "--- Job Search/Internship Menu ---" to WS-DISPLAY
         perform say
-        
+
         move "1. Post a Job/Internship" to WS-DISPLAY
         perform say
-        
+
         move "2. Browse Jobs/Internships" to WS-DISPLAY
         perform say
-        
+
         move "3. View My Applications" to WS-DISPLAY
         perform say
-        
+
         move "4. Back to Main Menu" to WS-DISPLAY
         perform say
-        
+
         move "Enter your choice:" to WS-DISPLAY
         perform say
-        
+
         read InpFile into InpRecord
             at end move "Y" to WS-EOF
             not at end
-                move function numval(function trim(InpRecord)) 
+                move function numval(function trim(InpRecord))
                     to ws-job-choice
         end-read
-        
+
         if WS-EOF = "N"
             evaluate ws-job-choice
                 when 1
@@ -1931,13 +1931,13 @@ job-search-menu.
                 when 4
                     continue
                 when other
-                    move "Invalid choice. Please enter 1, 2, 3, or 4." 
+                    move "Invalid choice. Please enter 1, 2, 3, or 4."
                         to WS-DISPLAY
                     perform say
             end-evaluate
         end-if
     end-perform
-    
+
     *> Reset choice for next time
     move 0 to ws-job-choice
     .
@@ -1945,11 +1945,11 @@ job-search-menu.
 post-job-internship.
     move "--- Post a New Job/Internship ---" to WS-DISPLAY
     perform say
-    
+
     *> Initialize job data
     initialize job-data
     move function trim(current-user) to job-poster-username
-    
+
     *> Capture job title (required)
     move "Enter Job Title:" to WS-DISPLAY
     perform say
@@ -1957,34 +1957,34 @@ post-job-internship.
         at end move "Y" to WS-EOF exit paragraph
     end-read
     move function trim(temp-input) to job-title
-    
+
     *> Validate required field
     if function length(function trim(job-title)) = 0
         move "Job title is required." to WS-DISPLAY
         perform say
         exit paragraph
     end-if
-    
+
     *> Capture description (required)
     move "Enter Description (max 200 chars):" to WS-DISPLAY
     perform say
     read InpFile into temp-input
         at end move "Y" to WS-EOF exit paragraph
     end-read
-    
+
     if function length(function trim(temp-input)) > 200
         move temp-input(1:200) to job-description
     else
         move function trim(temp-input) to job-description
     end-if
-    
+
     *> Validate required field
     if function length(function trim(job-description)) = 0
         move "Job description is required." to WS-DISPLAY
         perform say
         exit paragraph
     end-if
-    
+
     *> Capture employer (required)
     move "Enter Employer Name:" to WS-DISPLAY
     perform say
@@ -1992,14 +1992,14 @@ post-job-internship.
         at end move "Y" to WS-EOF exit paragraph
     end-read
     move function trim(temp-input) to job-employer
-    
+
     *> Validate required field
     if function length(function trim(job-employer)) = 0
         move "Employer name is required." to WS-DISPLAY
         perform say
         exit paragraph
     end-if
-    
+
     *> Capture location (required)
     move "Enter Location:" to WS-DISPLAY
     perform say
@@ -2007,30 +2007,30 @@ post-job-internship.
         at end move "Y" to WS-EOF exit paragraph
     end-read
     move function trim(temp-input) to job-location
-    
+
     *> Validate required field
     if function length(function trim(job-location)) = 0
         move "Location is required." to WS-DISPLAY
         perform say
         exit paragraph
     end-if
-    
+
     *> Capture salary (optional)
     move "Enter Salary (optional, enter 'NONE' to skip):" to WS-DISPLAY
     perform say
     read InpFile into temp-input
         at end move "Y" to WS-EOF exit paragraph
     end-read
-    
+
     if function upper-case(function trim(temp-input)) = "NONE"
         move spaces to job-salary
     else
         move function trim(temp-input) to job-salary
     end-if
-    
+
     *> Save the job posting
     perform save-job-posting
-    
+
     move "Job posted successfully!" to WS-DISPLAY
     perform say
     move "----------------------------------" to WS-DISPLAY
@@ -2044,16 +2044,16 @@ save-job-posting.
         close job-file
         open extend job-file
     end-if
-    
+
     if FILESTAT-JOB not = "00"
         move "Error: Could not save job posting." to WS-DISPLAY
         perform say
         exit paragraph
     end-if
-    
+
     *> Format: username|title|description|employer|location|salary
     move spaces to job-line
-    string 
+    string
         function trim(job-poster-username) "|"
         function trim(job-title) "|"
         function trim(job-description) "|"
@@ -2063,18 +2063,18 @@ save-job-posting.
         delimited by size
         into job-line
     end-string
-    
+
     write job-line
     close job-file
     .
-    
+
 browse-jobs-internships.
     move "--- Available Job Listings ---" to WS-DISPLAY
     perform say
-    
+
     move 0 to ws-job-count
     move 0 to ws-i
-    
+
     *> Load all jobs into memory
     open input job-file
     if FILESTAT-JOB = "00"
@@ -2087,7 +2087,7 @@ browse-jobs-internships.
         end-perform
         close job-file
     end-if
-    
+
     *> Display job summaries
     if ws-job-count = 0
         move "No job listings available at this time." to WS-DISPLAY
@@ -2104,16 +2104,16 @@ browse-jobs-internships.
         move "-----------------------------" to WS-DISPLAY
         perform say
     end-if
-    
+
     *> Allow user to view job details
     perform view-job-details-loop
     .
 
 display-job-summary.
     move spaces to WS-DISPLAY
-    string ws-i ". " 
-           function trim(job-title) " at " 
-           function trim(job-employer) " (" 
+    string ws-i ". "
+           function trim(job-title) " at "
+           function trim(job-employer) " ("
            function trim(job-location) ")"
            delimited by size into WS-DISPLAY
     perform say
@@ -2127,7 +2127,7 @@ parse-job-line.
     move spaces to PARSE-FIELD(4)
     move spaces to PARSE-FIELD(5)
     move spaces to PARSE-FIELD(6)
-    
+
     unstring job-line delimited by "|" into
         PARSE-FIELD(1)
         PARSE-FIELD(2)
@@ -2136,7 +2136,7 @@ parse-job-line.
         PARSE-FIELD(5)
         PARSE-FIELD(6)
     end-unstring
-    
+
     move function trim(PARSE-FIELD(1)) to job-poster-username
     move function trim(PARSE-FIELD(2)) to job-title
     move function trim(PARSE-FIELD(3)) to job-description
@@ -2149,17 +2149,17 @@ view-job-details-loop.
     perform until WS-EOF = "Y"
         move "Enter job number to view details, or 0 to go back:" to WS-DISPLAY
         perform say
-        
+
         read InpFile into temp-input
             at end move "Y" to WS-EOF exit paragraph
         end-read
-        
+
         move function numval(function trim(temp-input)) to ws-job-selection
-        
+
         if ws-job-selection = 0
             exit paragraph
         end-if
-        
+
         if ws-job-selection < 1 or ws-job-selection > ws-job-count
             move "Invalid job number. Please try again." to WS-DISPLAY
             perform say
@@ -2175,34 +2175,34 @@ view-job-details-loop.
 display-full-job-details.
     move "--- Job Details ---" to WS-DISPLAY
     perform say
-    
+
     move spaces to WS-DISPLAY
-    string "Title: " function trim(job-title) 
+    string "Title: " function trim(job-title)
            delimited by size into WS-DISPLAY
     perform say
-    
+
     move spaces to WS-DISPLAY
-    string "Description: " function trim(job-description) 
+    string "Description: " function trim(job-description)
            delimited by size into WS-DISPLAY
     perform say
-    
+
     move spaces to WS-DISPLAY
-    string "Employer: " function trim(job-employer) 
+    string "Employer: " function trim(job-employer)
            delimited by size into WS-DISPLAY
     perform say
-    
+
     move spaces to WS-DISPLAY
-    string "Location: " function trim(job-location) 
+    string "Location: " function trim(job-location)
            delimited by size into WS-DISPLAY
     perform say
-    
+
     if function length(function trim(job-salary)) > 0
         move spaces to WS-DISPLAY
-        string "Salary: " function trim(job-salary) 
+        string "Salary: " function trim(job-salary)
                delimited by size into WS-DISPLAY
         perform say
     end-if
-    
+
     move "-------------------" to WS-DISPLAY
     perform say
     .
@@ -2214,13 +2214,13 @@ show-apply-option.
     perform say
     move "Enter your choice:" to WS-DISPLAY
     perform say
-    
+
     read InpFile into temp-input
         at end move "Y" to WS-EOF exit paragraph
     end-read
-    
+
     move function numval(function trim(temp-input)) to WS-USER-CHOICE
-    
+
     if WS-USER-CHOICE = 1
         perform apply-for-job
     end-if
@@ -2228,28 +2228,28 @@ show-apply-option.
 
 apply-for-job.
     perform check-existing-application
-    
+
     if ws-application-exists = "y"
         move "You have already applied for this job." to WS-DISPLAY
         perform say
         exit paragraph
     end-if
-    
+
     perform save-job-application
     .
 
 check-existing-application.
     move "n" to ws-application-exists
-    
+
     open input application-file
     if FILESTAT-APP = "00"
         perform until 1 = 2
             read application-file into application-line
                 at end exit perform
             end-read
-            
+
             perform parse-application-line
-            
+
             if function trim(app-username) = current-user
                and function trim(app-job-title) = function trim(job-title)
                and function trim(app-employer) = function trim(job-employer)
@@ -2268,16 +2268,16 @@ save-job-application.
         close application-file
         open extend application-file
     end-if
-    
+
     if FILESTAT-APP not = "00"
         move "Error: Could not save application." to WS-DISPLAY
         perform say
         exit paragraph
     end-if
-    
+
     *> Format: username|job-title|employer|location
     move spaces to application-line
-    string 
+    string
         function trim(current-user) "|"
         function trim(job-title) "|"
         function trim(job-employer) "|"
@@ -2285,15 +2285,15 @@ save-job-application.
         delimited by size
         into application-line
     end-string
-    
+
     write application-line
     close application-file
-    
+
     *> Display confirmation message
     move spaces to WS-DISPLAY
-    string "Your application for " 
-           function trim(job-title) " at " 
-           function trim(job-employer) 
+    string "Your application for "
+           function trim(job-title) " at "
+           function trim(job-employer)
            " has been submitted."
            delimited by size into WS-DISPLAY
     perform say
@@ -2302,26 +2302,26 @@ save-job-application.
 view-my-applications.
     move "--- Your Job Applications ---" to WS-DISPLAY
     perform say
-    
+
     move spaces to WS-DISPLAY
     string "Application Summary for " function trim(current-user)
            delimited by size into WS-DISPLAY
     perform say
-    
+
     move "------------------------------" to WS-DISPLAY
     perform say
-    
+
     move 0 to ws-application-count
-    
+
     open input application-file
     if FILESTAT-APP = "00"
         perform until 1 = 2
             read application-file into application-line
                 at end exit perform
             end-read
-            
+
             perform parse-application-line
-            
+
             if function trim(app-username) = current-user
                 add 1 to ws-application-count
                 perform display-application-summary
@@ -2329,10 +2329,10 @@ view-my-applications.
         end-perform
         close application-file
     end-if
-    
+
     move "------------------------------" to WS-DISPLAY
     perform say
-    
+
     if ws-application-count = 0
         move "You have not applied to any jobs yet." to WS-DISPLAY
         perform say
@@ -2342,7 +2342,7 @@ view-my-applications.
                delimited by size into WS-DISPLAY
         perform say
     end-if
-    
+
     move "------------------------------" to WS-DISPLAY
     perform say
     .
@@ -2353,14 +2353,14 @@ parse-application-line.
     move spaces to PARSE-FIELD(2)
     move spaces to PARSE-FIELD(3)
     move spaces to PARSE-FIELD(4)
-    
+
     unstring application-line delimited by "|" into
         PARSE-FIELD(1)
         PARSE-FIELD(2)
         PARSE-FIELD(3)
         PARSE-FIELD(4)
     end-unstring
-    
+
     move function trim(PARSE-FIELD(1)) to app-username
     move function trim(PARSE-FIELD(2)) to app-job-title
     move function trim(PARSE-FIELD(3)) to app-employer
@@ -2372,17 +2372,17 @@ display-application-summary.
     string "Job Title: " function trim(app-job-title)
            delimited by size into WS-DISPLAY
     perform say
-    
+
     move spaces to WS-DISPLAY
     string "Employer: " function trim(app-employer)
            delimited by size into WS-DISPLAY
     perform say
-    
+
     move spaces to WS-DISPLAY
     string "Location: " function trim(app-location)
            delimited by size into WS-DISPLAY
     perform say
-    
+
     move "---" to WS-DISPLAY
     perform say
     .
@@ -2391,26 +2391,26 @@ messages-menu.
     perform until ws-msg-choice = 3 or WS-EOF = "Y"
         move "--- Messages Menu ---" to WS-DISPLAY
         perform say
-        
+
         move "1. Send a New Message" to WS-DISPLAY
         perform say
-        
+
         move "2. View My Messages" to WS-DISPLAY
         perform say
-        
+
         move "3. Back to Main Menu" to WS-DISPLAY
         perform say
-        
+
         move "Enter your choice:" to WS-DISPLAY
         perform say
-        
+
         read InpFile into InpRecord
             at end move "Y" to WS-EOF
             not at end
-                move function numval(function trim(InpRecord)) 
+                move function numval(function trim(InpRecord))
                     to ws-msg-choice
         end-read
-        
+
         if WS-EOF = "N"
             evaluate ws-msg-choice
                 when 1
@@ -2420,28 +2420,28 @@ messages-menu.
                 when 3
                     continue
                 when other
-                    move "Invalid choice. Please enter 1, 2, or 3." 
+                    move "Invalid choice. Please enter 1, 2, or 3."
                         to WS-DISPLAY
                     perform say
             end-evaluate
         end-if
     end-perform
-    
+
     move 0 to ws-msg-choice
     .
 
 send-new-message.
     move "--- Send a New Message ---" to WS-DISPLAY
     perform say
-    
+
     move "Enter recipient username:" to WS-DISPLAY
     perform say
-    
+
     read InpFile into temp-input
         at end move "Y" to WS-EOF exit paragraph
     end-read
     move function trim(temp-input) to ws-recipient-username
-    
+
     *> Check if recipient exists
     move "n" to ws-found
     open input user-file
@@ -2459,50 +2459,50 @@ send-new-message.
         end-perform
         close user-file
     end-if
-    
+
     if ws-found = "n"
         move "User not found." to WS-DISPLAY
         perform say
         exit paragraph
     end-if
-    
+
     if ws-recipient-username = current-user
         move "You cannot send a message to yourself." to WS-DISPLAY
         perform say
         exit paragraph
     end-if
-    
+
     *> Check if users are connected
     perform check-message-connection
-    
+
     if ws-is-connected = "n"
         move "You can only send messages to users you are connected with." to WS-DISPLAY
         perform say
         exit paragraph
     end-if
-    
+
     move "Enter your message (max 200 chars):" to WS-DISPLAY
     perform say
-    
+
     read InpFile into temp-input
         at end move "Y" to WS-EOF exit paragraph
     end-read
-    
+
     if function length(function trim(temp-input)) > 200
         move temp-input(1:200) to ws-message-content
     else
         move function trim(temp-input) to ws-message-content
     end-if
-    
+
     if function length(function trim(ws-message-content)) = 0
         move "Message cannot be empty." to WS-DISPLAY
         perform say
         exit paragraph
     end-if
-    
+
     *> Save the message
     perform save-user-message
-    
+
     move "Message sent successfully!" to WS-DISPLAY
     perform say
     move "-----------------------------------" to WS-DISPLAY
@@ -2511,20 +2511,20 @@ send-new-message.
 
 check-message-connection.
     move "n" to ws-is-connected
-    
+
     open input connection-file
     if FILESTAT-CONN = "00"
         perform until 1 = 2
             read connection-file into connection-line
                 at end exit perform
             end-read
-            
+
             unstring connection-line delimited by "|" into
                 conn-from-user
                 conn-to-user
                 conn-status
             end-unstring
-            
+
             *> Check if users are connected (bidirectional check)
             if function trim(conn-status) = "connected"
                 if (function trim(conn-from-user) = current-user
@@ -2545,10 +2545,10 @@ save-user-message.
     move current-user to msg-from-user
     move ws-recipient-username to msg-to-user
     move ws-message-content to msg-content
-    
+
     *> Get current timestamp (simplified format)
     move function current-date to msg-timestamp
-    
+
     *> Open message file for appending
     open extend message-file
     if FILESTAT-MSG not = "00"
@@ -2556,11 +2556,11 @@ save-user-message.
         close message-file
         open extend message-file
     end-if
-    
+
     if FILESTAT-MSG = "00"
         *> Format: from|to|content|timestamp
         move spaces to message-line
-        string 
+        string
             function trim(msg-from-user) "|"
             function trim(msg-to-user) "|"
             function trim(msg-content) "|"
@@ -2568,7 +2568,7 @@ save-user-message.
             delimited by size
             into message-line
         end-string
-        
+
         write message-line
         close message-file
     else
@@ -2581,40 +2581,40 @@ save-user-message.
 view-my-messages.
     move "--- Your Messages ---" to WS-DISPLAY
     perform say
-    
+
     move 0 to ws-message-count
-    
+
     open input message-file
     if FILESTAT-MSG = "00"
         perform until 1 = 2
             read message-file into message-line
                 at end exit perform
             end-read
-            
+
             unstring message-line delimited by "|" into
                 msg-from-user
                 msg-to-user
                 msg-content
                 msg-timestamp
             end-unstring
-            
+
             *> Display messages where current user is the recipient
             if function trim(msg-to-user) = current-user
                 add 1 to ws-message-count
-                
+
                 move "-----------------------------------" to WS-DISPLAY
                 perform say
-                
+
                 move spaces to WS-DISPLAY
                 string "From: " function trim(msg-from-user)
                        delimited by size into WS-DISPLAY
                 perform say
-                
+
                 move spaces to WS-DISPLAY
                 string "Date: " msg-timestamp(1:8)
                        delimited by size into WS-DISPLAY
                 perform say
-                
+
                 move spaces to WS-DISPLAY
                 string "Message: " function trim(msg-content)
                        delimited by size into WS-DISPLAY
@@ -2623,7 +2623,7 @@ view-my-messages.
         end-perform
         close message-file
     end-if
-    
+
     if ws-message-count = 0
         move "You have no messages." to WS-DISPLAY
         perform say
@@ -2635,7 +2635,7 @@ view-my-messages.
                delimited by size into WS-DISPLAY
         perform say
     end-if
-    
+
     move "-----------------------------------" to WS-DISPLAY
     perform say
     .
