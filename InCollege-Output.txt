@@ -1,20 +1,374 @@
-Please enter your username
-Please enter your password
+========================================
+     Welcome to InCollege!             
+========================================
+ 
+  [1] Log In
+  [2] Create New Account
+  [3] Exit
+ 
+Enter your choice:
+Please enter your username:
+Please enter your password:
 You have successfully logged in.
-Welcome, testuser1!
-Please enter your username
-Please enter your password
-You have successfully logged in.
-Welcome, user1!
-Please enter your username
-Please enter your password
-You have successfully logged in.
-Welcome, user2!
-Please enter your username
-Please enter your password
-You have successfully logged in.
-Welcome, user3!
-Welcome to InCollege! 1. Log In 2. Create New Account Enter your choice
---- Create/Edit Profile --- Enter First Name Enter Last Name
+Welcome, testuser!
+ 
+========================================
+          MAIN MENU                     
+========================================
+ 
+  [1] Create/Edit My Profile
+  [2] Search for a Job/Internship
+  [3] View My Profile
+  [4] Find Someone You Know
+  [5] View My Network
+  [6] Learn a New Skill
+  [7] View Pending Connection Requests
+  [8] Messages
+  [9] Logout
+ 
+Enter your choice:
+--- Create/Edit Profile ---
+Enter First Name:
+Enter Last Name:
+Enter University/College Attended:
+Enter Major:
+Enter Graduation Year (YYYY):
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Experience #1 - Title:
+Experience #1 - Company/Organization:
+Experience #1 - Dates (e.g., Summer 2024):
+Experience #1 - Description (optional, max 100 chars, blank to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
+Education #1 - Degree:
+Education #1 - University/College:
+Education #1 - Years Attended (e.g., 2023-2025):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
 Profile saved successfully!
-...
+ 
+========================================
+          MAIN MENU                     
+========================================
+ 
+  [1] Create/Edit My Profile
+  [2] Search for a Job/Internship
+  [3] View My Profile
+  [4] Find Someone You Know
+  [5] View My Network
+  [6] Learn a New Skill
+  [7] View Pending Connection Requests
+  [8] Messages
+  [9] Logout
+ 
+Enter your choice:
+--- Search for User ---
+Enter the first name of the person you're looking for:
+Enter the last name of the person you're looking for:
+ 
+Searching...
+ 
+No users found matching that name.
+ 
+========================================
+          MAIN MENU                     
+========================================
+ 
+  [1] Create/Edit My Profile
+  [2] Search for a Job/Internship
+  [3] View My Profile
+  [4] Find Someone You Know
+  [5] View My Network
+  [6] Learn a New Skill
+  [7] View Pending Connection Requests
+  [8] Messages
+  [9] Logout
+ 
+Enter your choice:
+--- My Network ---
+1. Send Connection Request
+2. View Pending Connection Requests
+3. View My Connections
+4. Go Back
+Enter your choice:
+--- Send Connection Request ---
+Enter username to send request to:
+Connection request sent successfully!
+ 
+========================================
+          MAIN MENU                     
+========================================
+ 
+  [1] Create/Edit My Profile
+  [2] Search for a Job/Internship
+  [3] View My Profile
+  [4] Find Someone You Know
+  [5] View My Network
+  [6] Learn a New Skill
+  [7] View Pending Connection Requests
+  [8] Messages
+  [9] Logout
+ 
+Enter your choice:
+Logging out...
+========================================
+     Welcome to InCollege!             
+========================================
+ 
+  [1] Log In
+  [2] Create New Account
+  [3] Exit
+ 
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, testuser2!
+ 
+========================================
+          MAIN MENU                     
+========================================
+ 
+  [1] Create/Edit My Profile
+  [2] Search for a Job/Internship
+  [3] View My Profile
+  [4] Find Someone You Know
+  [5] View My Network
+  [6] Learn a New Skill
+  [7] View Pending Connection Requests
+  [8] Messages
+  [9] Logout
+ 
+Enter your choice:
+--- Search for User ---
+Enter the first name of the person you're looking for:
+Enter the last name of the person you're looking for:
+ 
+Searching...
+ 
+================================
+Username: testuser
+Name: John Doe
+University: Florida State University
+Major: Computer Science
+================================
+1. Send Connection Request
+2. Back to Main Menu
+Enter your choice:
+Connection request sent to John Doe.
+ 
+========================================
+          MAIN MENU                     
+========================================
+ 
+  [1] Create/Edit My Profile
+  [2] Search for a Job/Internship
+  [3] View My Profile
+  [4] Find Someone You Know
+  [5] View My Network
+  [6] Learn a New Skill
+  [7] View Pending Connection Requests
+  [8] Messages
+  [9] Logout
+ 
+Enter your choice:
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. View My Applications
+4. Back to Main Menu
+Enter your choice:
+--- Post a New Job/Internship ---
+Enter Job Title:
+Enter Description (max 200 chars):
+Enter Employer Name:
+Enter Location:
+Enter Salary (optional, enter 'NONE' to skip):
+Job posted successfully!
+----------------------------------
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. View My Applications
+4. Back to Main Menu
+Enter your choice:
+--- Available Job Listings ---
+1. Senior Developer at TechCorp Inc (Remote)
+-----------------------------
+Enter job number to view details, or 0 to go back:
+--- Job Details ---
+Title: Senior Developer
+Description: Build amazing software
+Employer: TechCorp Inc
+Location: Remote
+Salary: 120000
+-------------------
+1. Apply for this Job
+2. Back to Job List
+Enter your choice:
+Your application for Senior Developer at TechCorp Inc has been submitted.
+--- Available Job Listings ---
+1. Senior Developer at TechCorp Inc (Remote)
+-----------------------------
+Enter job number to view details, or 0 to go back:
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. View My Applications
+4. Back to Main Menu
+Enter your choice:
+--- Your Job Applications ---
+Application Summary for testuser2
+------------------------------
+Job Title: Senior Developer
+Employer: TechCorp Inc
+Location: Remote
+---
+------------------------------
+Total Applications: 1
+------------------------------
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. View My Applications
+4. Back to Main Menu
+Enter your choice:
+ 
+========================================
+          MAIN MENU                     
+========================================
+ 
+  [1] Create/Edit My Profile
+  [2] Search for a Job/Internship
+  [3] View My Profile
+  [4] Find Someone You Know
+  [5] View My Network
+  [6] Learn a New Skill
+  [7] View Pending Connection Requests
+  [8] Messages
+  [9] Logout
+ 
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Send a New Message ---
+Enter recipient username:
+Enter your message (max 200 chars):
+Message sent successfully!
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+You have no messages.
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+ 
+========================================
+          MAIN MENU                     
+========================================
+ 
+  [1] Create/Edit My Profile
+  [2] Search for a Job/Internship
+  [3] View My Profile
+  [4] Find Someone You Know
+  [5] View My Network
+  [6] Learn a New Skill
+  [7] View Pending Connection Requests
+  [8] Messages
+  [9] Logout
+ 
+Enter your choice:
+Logging out...
+========================================
+     Welcome to InCollege!             
+========================================
+ 
+  [1] Log In
+  [2] Create New Account
+  [3] Exit
+ 
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, testuser!
+ 
+========================================
+          MAIN MENU                     
+========================================
+ 
+  [1] Create/Edit My Profile
+  [2] Search for a Job/Internship
+  [3] View My Profile
+  [4] Find Someone You Know
+  [5] View My Network
+  [6] Learn a New Skill
+  [7] View Pending Connection Requests
+  [8] Messages
+  [9] Logout
+ 
+Enter your choice:
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Send a New Message ---
+Enter recipient username:
+Enter your message (max 200 chars):
+Message sent successfully!
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+--- Your Messages ---
+-----------------------------------
+From: testuser2
+Date/Time: [TIMESTAMP]
+Message: Hi testuser2!
+-----------------------------------
+Total messages: 1
+-----------------------------------
+--- Messages Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter your choice:
+ 
+========================================
+          MAIN MENU                     
+========================================
+ 
+  [1] Create/Edit My Profile
+  [2] Search for a Job/Internship
+  [3] View My Profile
+  [4] Find Someone You Know
+  [5] View My Network
+  [6] Learn a New Skill
+  [7] View Pending Connection Requests
+  [8] Messages
+  [9] Logout
+ 
+Enter your choice:
+Logging out...
+========================================
+     Welcome to InCollege!             
+========================================
+ 
+  [1] Log In
+  [2] Create New Account
+  [3] Exit
+ 
+Enter your choice:
