@@ -208,7 +208,6 @@
        01  ws-job-selection          pic 9(03) value 0.
        01  ws-application-exists     pic x value "n".
        01  ws-application-count      pic 9(03) value 0.
-       01  FILESTAT-APP              pic xx.
 
        01  JOBS-TABLE.
            05 JOB-TABLE-ENTRY occurs 100 times pic x(500).
