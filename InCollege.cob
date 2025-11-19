@@ -1,4 +1,4 @@
-identification division.
+       identification division.
        program-id. InCollege.
 
        environment division.
@@ -71,8 +71,7 @@ identification division.
        01  FILESTAT-ConnOut          pic xx.
        01  FILESTAT-JOB              pic xx.
        01  FILESTAT-MSG              pic xx.
-
-
+       01  FILESTAT-APP              pic xx.
        01  WS-EOF                    pic x value "N".
        01  WS-USER-CHOICE            pic 9 value 0.
        01  username-in               pic x(32).
@@ -102,6 +101,8 @@ identification division.
        01  ws-commas                 pic 9(04) value 0.
        01  ws-spaces                 pic 9(04) value 0.
        01  ws-bad-char               pic x value "n".
+      *> ITK-154 Fix: Track pipe symbols
+       01  ws-pipes                  pic 9(04) value 0.
 
        01  ws-user-count             pic 9(02) value 0.
        01  WS-DISPLAY                pic x(80).
@@ -119,12 +120,12 @@ identification division.
            05  profile-aboutme       pic x(200).
            05  profile-exp-count     pic 9.
            05  profile-experiences   occurs 3 times.
-             10  exp-title         pic x(50).
-             10  exp-company       pic x(50).
-             10  exp-dates         pic x(30).
-             10  exp-description   pic x(100).
-             10  exp-location      pic x(50).
-             10  exp-achievements  pic x(150).
+               10  exp-title         pic x(50).
+               10  exp-company       pic x(50).
+               10  exp-dates         pic x(30).
+               10  exp-description   pic x(100).
+               10  exp-location      pic x(50).
+               10  exp-achievements  pic x(150).
            05  profile-edu-count     pic 9.
            05  profile-educations    occurs 3 times.
                10  edu-degree        pic x(50).
@@ -232,6 +233,18 @@ identification division.
        01  ws-is-connected            pic x value "n".
        01  ws-message-count           pic 9(03) value 0.
 
+      *> ITK-157: Enhanced timestamp formatting variables
+       01  ws-timestamp-fields.
+           05  ws-ts-year             pic x(4).
+           05  ws-ts-month            pic x(2).
+           05  ws-ts-day              pic x(2).
+           05  ws-ts-hour             pic x(2).
+           05  ws-ts-minute           pic x(2).
+           05  ws-ts-second           pic x(2).
+       01  ws-formatted-timestamp     pic x(50).
+       01  ws-formatted-date          pic x(30).
+       01  ws-formatted-time          pic x(20).
+
        procedure division.
        main.
            open input user-file
@@ -323,12 +336,23 @@ identification division.
            stop run.
 
        show-menu.
+      *> ITK-156: Enhanced menu formatting with visual separators
            move spaces to WS-DISPLAY
-           move "Welcome to InCollege!" to WS-DISPLAY
+           move "========================================" to WS-DISPLAY
            perform say
-           move "1. Log In" to WS-DISPLAY
+           move "     Welcome to InCollege!             " to WS-DISPLAY
            perform say
-           move "2. Create New Account" to WS-DISPLAY
+           move "========================================" to WS-DISPLAY
+           perform say
+           move " " to WS-DISPLAY
+           perform say
+           move "  [1] Log In" to WS-DISPLAY
+           perform say
+           move "  [2] Create New Account" to WS-DISPLAY
+           perform say
+           move "  [3] Exit" to WS-DISPLAY
+           perform say
+           move " " to WS-DISPLAY
            perform say
            move "Enter your choice:" to WS-DISPLAY
            perform say
@@ -512,30 +536,48 @@ identification division.
 
 post-login-menu.
     perform until WS-EOF = "Y"
-        move "1. Create/Edit My Profile" to WS-DISPLAY
+      *> ITK-156: Enhanced menu formatting
+      *> ITK-153: Updated menu to reflect all epic work
+        move " " to WS-DISPLAY
+        perform say
+        move "========================================" to WS-DISPLAY
+        perform say
+        move "          MAIN MENU                     " to WS-DISPLAY
+        perform say
+        move "========================================" to WS-DISPLAY
+        perform say
+        move " " to WS-DISPLAY
         perform say
 
-        move "2. Search for a job" to WS-DISPLAY
+        move "  [1] Create/Edit My Profile" to WS-DISPLAY
         perform say
 
-        move "3. View My Profile" to WS-DISPLAY
+        move "  [2] Search for a Job/Internship" to WS-DISPLAY
         perform say
 
-        move "4. Find someone you know" to WS-DISPLAY
+        move "  [3] View My Profile" to WS-DISPLAY
         perform say
 
-        move "5. View My Network" to WS-DISPLAY
+        move "  [4] Find Someone You Know" to WS-DISPLAY
         perform say
 
-        move "6. Learn a new skill" to WS-DISPLAY
+        move "  [5] View My Network" to WS-DISPLAY
         perform say
 
-        move "7. View My Pending Connection Requests" to WS-DISPLAY
+        move "  [6] Learn a New Skill" to WS-DISPLAY
         perform say
 
-        move "8. Messages" to WS-DISPLAY
+        move "  [7] View Pending Connection Requests" to WS-DISPLAY
         perform say
 
+        move "  [8] Messages" to WS-DISPLAY
+        perform say
+
+        move "  [9] Logout" to WS-DISPLAY
+        perform say
+
+        move " " to WS-DISPLAY
+        perform say
         move "Enter your choice:" to WS-DISPLAY
         perform say
 
@@ -564,8 +606,13 @@ post-login-menu.
                     perform cr-view-pending-requests
                 when 8
                     perform messages-menu
-                when other
+                when 9
+                    move "Logging out..." to WS-DISPLAY
+                    perform say
                     exit perform
+                when other
+                    move "Invalid choice. Please enter 1-9." to WS-DISPLAY
+                    perform say
             end-evaluate
         end-if
     end-perform
@@ -581,28 +628,61 @@ post-login-menu.
            perform say
            read InpFile into temp-input
                at end move "Y" to WS-EOF
-               not at end move function trim(temp-input) to profile-firstname
+               not at end
+      *> ITK-154 Fix: Validate for pipe symbols
+                   perform validate-no-pipes
+                   if ws-pipes = 0
+                       move function trim(temp-input) to profile-firstname
+                   else
+                       move "Error: Pipe symbol (|) not allowed in names" to WS-DISPLAY
+                       perform say
+                       exit paragraph
+                   end-if
            end-read
 
            move "Enter Last Name:" to WS-DISPLAY
            perform say
            read InpFile into temp-input
                at end move "Y" to WS-EOF
-               not at end move function trim(temp-input) to profile-lastname
+               not at end
+                   perform validate-no-pipes
+                   if ws-pipes = 0
+                       move function trim(temp-input) to profile-lastname
+                   else
+                       move "Error: Pipe symbol (|) not allowed in names" to WS-DISPLAY
+                       perform say
+                       exit paragraph
+                   end-if
            end-read
 
            move "Enter University/College Attended:" to WS-DISPLAY
            perform say
            read InpFile into temp-input
                at end move "Y" to WS-EOF
-               not at end move function trim(temp-input) to profile-university
+               not at end
+                   perform validate-no-pipes
+                   if ws-pipes = 0
+                       move function trim(temp-input) to profile-university
+                   else
+                       move "Error: Pipe symbol (|) not allowed" to WS-DISPLAY
+                       perform say
+                       exit paragraph
+                   end-if
            end-read
 
            move "Enter Major:" to WS-DISPLAY
            perform say
            read InpFile into temp-input
                at end move "Y" to WS-EOF
-               not at end move function trim(temp-input) to profile-major
+               not at end
+                   perform validate-no-pipes
+                   if ws-pipes = 0
+                       move function trim(temp-input) to profile-major
+                   else
+                       move "Error: Pipe symbol (|) not allowed" to WS-DISPLAY
+                       perform say
+                       exit paragraph
+                   end-if
            end-read
 
            perform get-graduation-year
@@ -615,7 +695,14 @@ post-login-menu.
                    if function trim(temp-input) = spaces
                        move spaces to profile-aboutme
                    else
-                       move function trim(temp-input) to profile-aboutme
+                       perform validate-no-pipes
+                       if ws-pipes = 0
+                           move function trim(temp-input) to profile-aboutme
+                       else
+                           move "Error: Pipe symbol (|) not allowed" to WS-DISPLAY
+                           perform say
+                           exit paragraph
+                       end-if
                    end-if
            end-read
 
@@ -627,6 +714,12 @@ post-login-menu.
 
            move "Profile saved successfully!" to WS-DISPLAY
            perform say
+           .
+
+      *> ITK-154 Fix: Helper to validate no pipe symbols in input
+       validate-no-pipes.
+           move 0 to ws-pipes
+           inspect temp-input tallying ws-pipes for all "|"
            .
 
        get-graduation-year.
@@ -681,9 +774,15 @@ post-login-menu.
                move spaces to WS-DISPLAY
                string "Experience #" ws-entry-number " - Title:" delimited by size into WS-DISPLAY
                perform say
-               read InpFile into temp-input
-                   at end move "Y" to WS-EOF exit paragraph
-               end-read
+
+      *> ITK-154 Fix: Validate experience input
+               perform validate-no-pipes
+               if ws-pipes > 0
+                   move "Error: Pipe symbol (|) not allowed" to WS-DISPLAY
+                   perform say
+                   subtract 1 from profile-exp-count
+                   exit paragraph
+               end-if
                move function trim(temp-input) to exp-title(ws-exp-index)
 
                move spaces to WS-DISPLAY
@@ -692,6 +791,13 @@ post-login-menu.
                read InpFile into temp-input
                    at end move "Y" to WS-EOF exit paragraph
                end-read
+               perform validate-no-pipes
+               if ws-pipes > 0
+                   move "Error: Pipe symbol (|) not allowed" to WS-DISPLAY
+                   perform say
+                   subtract 1 from profile-exp-count
+                   exit paragraph
+               end-if
                move function trim(temp-input) to exp-company(ws-exp-index)
 
                move spaces to WS-DISPLAY
@@ -700,15 +806,31 @@ post-login-menu.
                read InpFile into temp-input
                    at end move "Y" to WS-EOF exit paragraph
                end-read
+               perform validate-no-pipes
+               if ws-pipes > 0
+                   move "Error: Pipe symbol (|) not allowed" to WS-DISPLAY
+                   perform say
+                   subtract 1 from profile-exp-count
+                   exit paragraph
+               end-if
                move function trim(temp-input) to exp-dates(ws-exp-index)
 
                move spaces to WS-DISPLAY
                string "Experience #" ws-exp-index " - Description (optional, max 100 chars, blank to skip):" delimited by size into WS-DISPLAY
                perform say
+
                read InpFile into temp-input
                    at end move "Y" to WS-EOF exit paragraph
                end-read
+
                if function length(function trim(temp-input)) > 0
+                   perform validate-no-pipes
+                   if ws-pipes > 0
+                       move "Error: Pipe symbol (|) not allowed" to WS-DISPLAY
+                       perform say
+                       subtract 1 from profile-exp-count
+                       exit paragraph
+                   end-if
                    if function length(function trim(temp-input)) <= 100
                        move function trim(temp-input) to exp-description(ws-exp-index)
                    else
@@ -776,6 +898,14 @@ post-login-menu.
                string "Education #" ws-entry-number " - Degree:" delimited by size into WS-DISPLAY
                perform say
 
+      *> ITK-154 Fix: Validate education input
+               perform validate-no-pipes
+               if ws-pipes > 0
+                   move "Error: Pipe symbol (|) not allowed" to WS-DISPLAY
+                   perform say
+                   subtract 1 from profile-edu-count
+                   exit paragraph
+               end-if
                move function trim(temp-input) to edu-degree(ws-edu-index)
 
                move spaces to WS-DISPLAY
@@ -784,6 +914,13 @@ post-login-menu.
                read InpFile into temp-input
                    at end move "Y" to WS-EOF exit paragraph
                end-read
+               perform validate-no-pipes
+               if ws-pipes > 0
+                   move "Error: Pipe symbol (|) not allowed" to WS-DISPLAY
+                   perform say
+                   subtract 1 from profile-edu-count
+                   exit paragraph
+               end-if
                move function trim(temp-input) to edu-university(ws-edu-index)
 
                move spaces to WS-DISPLAY
@@ -792,6 +929,13 @@ post-login-menu.
                read InpFile into temp-input
                    at end move "Y" to WS-EOF exit paragraph
                end-read
+               perform validate-no-pipes
+               if ws-pipes > 0
+                   move "Error: Pipe symbol (|) not allowed" to WS-DISPLAY
+                   perform say
+                   subtract 1 from profile-edu-count
+                   exit paragraph
+               end-if
                move function trim(temp-input) to edu-years(ws-edu-index)
            end-perform
            .
@@ -1188,6 +1332,7 @@ post-login-menu.
            string "Major: " function trim(temp-profile-major) delimited by size into WS-DISPLAY
            perform say
            move "================================" to WS-DISPLAY
+           perform say
            perform cr-offer-send-menu
            .
 
@@ -1313,7 +1458,7 @@ post-login-menu.
            perform cr-end-log
            .
 
-      view-pending-requests.
+       view-pending-requests.
           perform cr-begin-log
           move "--- Pending Connection Requests ---" to WS-DISPLAY
           perform say
@@ -1425,7 +1570,7 @@ post-login-menu.
            move spaces to WS-NUM-OUT
            move WS-NUM-IN to WS-NUM-OUT
            move function trim(WS-NUM-OUT) to WS-NUM-OUT
-           .
+          .
 
       view-my-connections.
           move "--- My Connections ---" to WS-DISPLAY
@@ -1485,7 +1630,7 @@ post-login-menu.
           perform say
           .
 
-parse-profile-line-complete.
+       parse-profile-line-complete.
            perform varying ws-parse-idx from 1 by 1 until ws-parse-idx > 50
                move spaces to PARSE-FIELD(ws-parse-idx)
            end-perform
@@ -1765,7 +1910,7 @@ parse-profile-line-complete.
 
 
 
-*> Integration: call 'perform cr-offer-send-menu' at the end of display-search-result.
+       *> Integration: call 'perform cr-offer-send-menu' at the end of display-search-result.
 
        cr-offer-send-menu.
            perform cr-begin-log
@@ -1912,7 +2057,7 @@ parse-profile-line-complete.
            close connection-file
            .
 
-*> Lists all entries in connections.dat where conn-u2 = current-user and status=pending.
+       *> Lists all entries in connections.dat where conn-u2 = current-user and status=pending.
        cr-view-pending-requests.
            perform cr-begin-log
            move "--- Pending Connection Requests ---" to WS-DISPLAY
@@ -2007,7 +2152,7 @@ job-search-menu.
     move 0 to ws-job-choice
     .
 
-post-job-internship.
+       post-job-internship.
     move "--- Post a New Job/Internship ---" to WS-DISPLAY
     perform say
 
@@ -2021,6 +2166,15 @@ post-job-internship.
     read InpFile into temp-input
         at end move "Y" to WS-EOF exit paragraph
     end-read
+
+      *> ITK-154 Fix: Validate job title
+    perform validate-no-pipes
+    if ws-pipes > 0
+        move "Error: Pipe symbol (|) not allowed in job title" to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+
     move function trim(temp-input) to job-title
 
     *> Validate required field
@@ -2036,6 +2190,14 @@ post-job-internship.
     read InpFile into temp-input
         at end move "Y" to WS-EOF exit paragraph
     end-read
+
+      *> ITK-154 Fix: Validate description
+    perform validate-no-pipes
+    if ws-pipes > 0
+        move "Error: Pipe symbol (|) not allowed in description" to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
 
     if function length(function trim(temp-input)) > 200
         move temp-input(1:200) to job-description
@@ -2056,6 +2218,14 @@ post-job-internship.
     read InpFile into temp-input
         at end move "Y" to WS-EOF exit paragraph
     end-read
+
+      *> ITK-154 Fix: Validate employer
+    perform validate-no-pipes
+    if ws-pipes > 0
+        move "Error: Pipe symbol (|) not allowed in employer name" to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
     move function trim(temp-input) to job-employer
 
     *> Validate required field
@@ -2071,6 +2241,14 @@ post-job-internship.
     read InpFile into temp-input
         at end move "Y" to WS-EOF exit paragraph
     end-read
+
+      *> ITK-154 Fix: Validate location
+    perform validate-no-pipes
+    if ws-pipes > 0
+        move "Error: Pipe symbol (|) not allowed in location" to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
     move function trim(temp-input) to job-location
 
     *> Validate required field
@@ -2090,6 +2268,13 @@ post-job-internship.
     if function upper-case(function trim(temp-input)) = "NONE"
         move spaces to job-salary
     else
+      *> ITK-154 Fix: Validate salary
+        perform validate-no-pipes
+        if ws-pipes > 0
+            move "Error: Pipe symbol (|) not allowed in salary" to WS-DISPLAY
+            perform say
+            exit paragraph
+        end-if
         move function trim(temp-input) to job-salary
     end-if
 
@@ -2174,12 +2359,12 @@ browse-jobs-internships.
     perform view-job-details-loop
     .
 
-display-job-summary.
+       display-job-summary.
     move spaces to WS-DISPLAY
         move ws-i to WS-NUM-IN
         perform format-number
         string WS-NUM-OUT ". "
-            function trim(job-title) " at "
+           function trim(job-title) " at "
            function trim(job-employer) " ("
            function trim(job-location) ")"
            delimited by size into WS-DISPLAY
@@ -2293,7 +2478,7 @@ show-apply-option.
     end-if
     .
 
-apply-for-job.
+       apply-for-job.
     perform check-existing-application
 
     if ws-application-exists = "y"
@@ -2408,7 +2593,7 @@ view-my-applications.
          perform format-number
          move spaces to WS-DISPLAY
          string "Total Applications: " WS-NUM-OUT
-             delimited by size into WS-DISPLAY
+               delimited by size into WS-DISPLAY
         perform say
     end-if
 
@@ -2456,7 +2641,7 @@ display-application-summary.
     perform say
     .
 
-messages-menu.
+       messages-menu.
     perform until ws-msg-choice = 3 or WS-EOF = "Y"
         move "--- Messages Menu ---" to WS-DISPLAY
         perform say
@@ -2557,6 +2742,14 @@ send-new-message.
         at end move "Y" to WS-EOF exit paragraph
     end-read
 
+      *> ITK-154 Fix: Validate message content
+    perform validate-no-pipes
+    if ws-pipes > 0
+        move "Error: Pipe symbol (|) not allowed in messages" to WS-DISPLAY
+        perform say
+        exit paragraph
+    end-if
+
     if function length(function trim(temp-input)) > 200
         move temp-input(1:200) to ws-message-content
     else
@@ -2609,7 +2802,7 @@ check-message-connection.
     end-if
     .
 
-save-user-message.
+       save-user-message.
     *> Initialize message data
     move current-user to msg-from-user
     move ws-recipient-username to msg-to-user
@@ -2679,10 +2872,11 @@ view-my-messages.
                        delimited by size into WS-DISPLAY
                 perform say
 
-                  move function trim(msg-timestamp) to MSG-TS-TRIM
-                  move spaces to WS-DISPLAY
-                  string "Date: " MSG-TS-TRIM(1:8)
-                      delimited by size into WS-DISPLAY
+      *> ITK-157 Fix: Format timestamp with date and time
+                perform format-timestamp
+                move spaces to WS-DISPLAY
+                string "Date/Time: " ws-formatted-timestamp
+                       delimited by size into WS-DISPLAY
                 perform say
 
                 move spaces to WS-DISPLAY
@@ -2700,14 +2894,40 @@ view-my-messages.
     else
         move "-----------------------------------" to WS-DISPLAY
         perform say
-         move ws-message-count to WS-NUM-IN
-         perform format-number
-         move spaces to WS-DISPLAY
-         string "Total messages: " WS-NUM-OUT
-             delimited by size into WS-DISPLAY
+        move spaces to WS-DISPLAY
+        string "Total messages: " ws-message-count
+               delimited by size into WS-DISPLAY
         perform say
     end-if
 
     move "-----------------------------------" to WS-DISPLAY
     perform say
     .
+
+      *> ITK-157 Fix: New procedure to format timestamp
+       format-timestamp.
+           *> msg-timestamp format: YYYYMMDDHHMMSS...
+           *> Extract components
+           move msg-timestamp(1:4) to ws-ts-year
+           move msg-timestamp(5:2) to ws-ts-month
+           move msg-timestamp(7:2) to ws-ts-day
+           move msg-timestamp(9:2) to ws-ts-hour
+           move msg-timestamp(11:2) to ws-ts-minute
+           move msg-timestamp(13:2) to ws-ts-second
+
+           *> Format as readable date
+           move spaces to ws-formatted-date
+           string ws-ts-month "/" ws-ts-day "/" ws-ts-year
+                  delimited by size into ws-formatted-date
+
+           *> Format as readable time
+           move spaces to ws-formatted-time
+           string ws-ts-hour ":" ws-ts-minute ":" ws-ts-second
+                  delimited by size into ws-formatted-time
+
+           *> Combine both
+           move spaces to ws-formatted-timestamp
+           string function trim(ws-formatted-date) " "
+                  function trim(ws-formatted-time)
+                  delimited by size into ws-formatted-timestamp
+           .
