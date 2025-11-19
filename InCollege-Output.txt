@@ -1,6 +1,3 @@
-# InCollege-Output.txt
-
-```
 Welcome to InCollege!
 1. Log In
 2. Create New Account
@@ -132,32 +129,32 @@ Enter job number to view details, or 0 to go back:
 8. Messages
 Enter your choice:
 ================================
-         YOUR PROFILE           
+         YOUR PROFILE
 ================================
 --- Personal Information ---
 Name: John Doe
 University: University of South Florida
 Major: Computer Science
 Graduation Year: 2024
- 
+
 --- About Me ---
 I am a passionate software engineer.
- 
+
 --- Professional Experience ---
- 
+
 Experience #1:
   Title: Software Engineer Intern
   Company: Tech Corp
   Dates: Summer 2023
   Description: Developed web applications
- 
+
 --- Education ---
- 
+
 Education #1:
   Degree: Bachelor of Science
   University: University of South Florida
   Years: 2020-2024
- 
+
 ================================
 1. Create/Edit My Profile
 2. Search for a job
@@ -171,9 +168,9 @@ Enter your choice:
 --- Search for User ---
 Enter the first name of the person you're looking for:
 Enter the last name of the person you're looking for:
- 
+
 Searching...
- 
+
 ================================
 Username: user1
 Name: John Doe
@@ -195,9 +192,9 @@ You cannot send a connection request to yourself.
 7. View My Pending Connection Requests
 8. Messages
 Enter your choice:
- 
+
 1 user(s) found.
- 
+
 1. Create/Edit My Profile
 2. Search for a job
 3. View My Profile
@@ -224,7 +221,7 @@ Connection request sent successfully!
 Enter your choice:
 --- My Connections ---
 You have no established connections yet.
- 
+
 -----------------------------------
 --- My Network ---
 1. Send Connection Request
@@ -314,7 +311,7 @@ Request from: user1
 2. Reject
 Enter your choice for user1:
 Connection request from user1 accepted!
- 
+
 1. Create/Edit My Profile
 2. Search for a job
 3. View My Profile
@@ -377,9 +374,9 @@ Enter your choice:
 Enter your choice:
 --- My Connections ---
 1. user1
- 
+
 Total connections: 1
- 
+
 -----------------------------------
 --- My Network ---
 1. Send Connection Request
@@ -399,9 +396,9 @@ Enter your choice:
 --- Search for User ---
 Enter the first name of the person you're looking for:
 Enter the last name of the person you're looking for:
- 
+
 Searching...
- 
+
 ================================
 Username: user1
 Name: John Doe
@@ -423,9 +420,9 @@ You are already connected with this user.
 7. View My Pending Connection Requests
 8. Messages
 Enter your choice:
- 
+
 1 user(s) found.
- 
+
 1. Create/Edit My Profile
 2. Search for a job
 3. View My Profile
@@ -692,4 +689,3 @@ Enter your choice:
 8. Messages
 Enter your choice:
 goodbye
-```
